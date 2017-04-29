@@ -1,0 +1,5 @@
+Poisonus Arrow
+COMMON
+ARROW
+shootingDamage 7
+life -2
