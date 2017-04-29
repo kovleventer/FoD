@@ -76,7 +76,11 @@ void Unit::setTeamOne(bool newTeamOne) {
 }
 
 void Unit::setPositionIndicator(Point newPos) {
-	position = newPos;
+	//Weird NULL checking
+	//It would cause an error otherwise
+	if (this != NULL) {
+		position = newPos;
+	}
 }
 
 void Unit::setPositionIndicator(int newX, int newY) {

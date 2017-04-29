@@ -124,6 +124,11 @@ void PermanentGUI::init() {
 	guiArmy->addPart(tempUnitInfo);
 	tempArmy->setUnitInfo(tempUnitInfo);
 	
+	//Minimap
+	Minimap* tempMinimap = new Minimap(tempX + tempH / 20, tempY + tempH / 10, tempW * 9 / 10, tempH * 9 / 10);
+	guiMinimap->addPart(tempMinimap);
+	Global::minimap = tempMinimap;
+	
 	//Buttons init
 	int buttonCount = 3;
 	//Vertical and horizontal padding

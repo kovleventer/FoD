@@ -40,23 +40,21 @@ void Camera::setPosition(Point newPosition) {
 	//NOTE this is the only place where we use setters for a strong reason
 	//Check if we reached the border of the gameboard
 	
-	//FIXME do not return, if we are at the corners, we should set the camera the nearest available position
-	//We are at a corner
-	if ((newPosition.getX() < 0 || newPosition.getX() >= Global::gameBoardWidth * Global::tileSize - Global::screenWidth)
-		&& (newPosition.getY() < 0 || newPosition.getY() >= Global::gameBoardHeight * Global::tileSize - Global::screenHeight)) {
-		return;
+	//Much cleaner and efficent code now
+	//We do the bottom left checking first
+	//So in case our map is degenerate
+	//It will be placed at the top-left corner
+	if (newPosition.getX() >= Global::gameBoardWidth * Global::tileSize - Global::screenWidth) {
+		newPosition.setX(Global::gameBoardWidth * Global::tileSize - Global::screenWidth);
 	}
-	
-	//we are only moving vertically, if we reached the left or right borders
-	if (newPosition.getX() < 0 || newPosition.getX() >= Global::gameBoardWidth * Global::tileSize - Global::screenWidth) {
-		position = Point(position.getX(), newPosition.getY());
-		return;
+	if (newPosition.getY() >= Global::gameBoardHeight * Global::tileSize - Global::screenHeight + Global::permaGUI->getLowerHeight()) {
+		newPosition.setY(Global::gameBoardHeight * Global::tileSize - Global::screenHeight + Global::permaGUI->getLowerHeight());
 	}
-	
-	//we are only moving horizontally, if we reached the top or bottom borders
-	if(newPosition.getY() < 0 || newPosition.getY() >= Global::gameBoardHeight * Global::tileSize - Global::screenHeight) {
-		position = Point(newPosition.getX(), position.getY());
-		return;
+	if (newPosition.getX() < 0) {
+		newPosition.setX(0);
+	}
+	if (newPosition.getY() < -Global::permaGUI->getUpperHeight()) {
+		newPosition.setY(-Global::permaGUI->getUpperHeight());
 	}
 	
 	position = newPosition;

@@ -4,12 +4,13 @@ Text::Text(std::string t, SDL_Color col) {
 	text = t;
 	color = col;
 	
-	//On Windows std::hash returns a 32-bit size_t, which does not require any additional shifting
-	#ifdef _WIN32
-		stringHash32 = std::hash<std::string>()(text);
-	#else
-		//Linux case
+	//On 32-bit sytems std::hash returns a 32-bit size_t, which does not require any additional shifting
+	#if _WIN64 || __x86_64__ || __ppc64__
+        //64 bit case
 		stringHash32 = std::hash<std::string>()(text) >> 32;
+	#else
+		//32 bit case
+		stringHash32 = std::hash<std::string>()(text);
 	#endif
 	scHash32 = 0x00 | (color.r << 8) | (color.g << 16) | (color.b << 24);
 }

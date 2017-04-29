@@ -41,6 +41,11 @@ SOURCES=(
 	"battle.cpp"
 	"version.cpp"
 	"unitinventoryhandler.cpp"
+	"minimap.cpp"
+	"npchandler.cpp"
+	"filesystemhandler.cpp"
+	"worldobjecthandler.cpp"
+	"impassableworldobject.cpp"
 )
 
 LINKER=(
@@ -57,6 +62,27 @@ if [[ $1 == "R" || $1 == "r" ]]; then
 	else
 		echo "Executable not found"
 	fi
+elif [[ $1 == "D" || $1 == "d" ]]; then
+	ts=$(date +%s%N)
+	echo "Fully Compiling Debug Version..."
+	mkdir -p o
+	for i in ${SOURCES[@]}; do
+		g++ -O0 -g -Wall -std=c++0x -c "src/"$i -o "o/${i%%.*}d.o"
+		echo " $i"
+	done
+	
+	LINKCOMMAND="g++ -o $EXECUTABLE""_DEBUG "
+	for i in ${SOURCES[@]}; do
+		LINKCOMMAND=$LINKCOMMAND" o/${i%%.*}d.o"
+	done
+	echo "Linking"
+	for i in ${LINKER[@]}; do
+		LINKCOMMAND=$LINKCOMMAND" $i"
+	done
+	eval $LINKCOMMAND
+	echo "Compilation finished"
+	tt=$((($(date +%s%N) - $ts)/1000000))
+	echo "Time taken: $tt ms"
 elif [[ $1 == "F" || $1 == "f" ]]; then
 	ts=$(date +%s%N)
 	echo "Fully Compiling..."
@@ -129,7 +155,8 @@ elif [[ $1 == "C" || $1 == "c" ]]; then
 	echo "Clearing..."
 	rm -rf o
 	rm $EXECUTABLE
+	rm $EXECUTABLE"_DEBUG"
 	echo "Clearing done"
 else
-	echo "Invalid options, use 'c', 'r', 'f' or 'm'"
+	echo "Invalid options, use 'c', 'r', 'f', 'd' or 'm'"
 fi

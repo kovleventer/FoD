@@ -20,6 +20,7 @@ public:
 	
 	~Army();
 	
+	//Textures
 	SDL_Texture* bgTexture;
 	SDL_Texture* defaultUnitTexture;
 	SDL_Texture* selectedUnitTexture;
@@ -49,6 +50,8 @@ public:
 	
 	void setUnit(int x, int y, Unit* unitToSet);
 	void setUnit(Point p, Unit* unitToSet);
+	//On save and load
+	void setUnit(int index, Unit* untiToSet);
 	
 	//Does not return the removed unit
 	void removeUnit(int x, int y);

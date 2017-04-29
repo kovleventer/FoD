@@ -3,13 +3,22 @@
 #include "global.h"
 #include "pathfinding.h"
 
-Player::Player() : MapEntity(Point(0, 0)) {
-	init();
+Player::Player(std::string text, int x, int y) : Player(text, Point(x, y)) {}
+
+Player::Player(std::string text, Point pos) : MapEntity(pos) {
+	hasPlannedPath = false;
+	state = PlayerState::STANDING;
+	texture = Global::resourceHandler->npcTextures[text];
+	speed = 0.1 / Global::fps * 60;
+	tileProgress = 0;
+	follow = NULL;
+	inventory = NULL;
+	army = NULL;
+	name = "";
+	atBackground = false;
 }
 
-Player::Player(Point pos) : MapEntity(pos) {
-	init();
-}
+Player::~Player() {}
 
 void Player::updatePlayerPosition() {
 	Global::camera->setPosition(PointD(PointD(position) + progressVector) * Global::tileSize - PointD(Global::screenWidth / 2, Global::screenHeight / 2));
@@ -21,9 +30,6 @@ void Player::updatePlayerPosition() {
 		tileProgress = 0;
 		
 		//TODO clean up this mess
-		//if (position.distanceToChebyshev(follow->getPosition()) <= 1) {
-		
-		//std::cout << (((PointD)position * Global::tileSize) + progressVector * Global::tileSize).distanceTo(((PointD)follow->getPosition() * Global::tileSize) + follow->getProgressVector() * Global::tileSize) << std::endl;
 		
 		if ((((PointD)position * Global::tileSize) + progressVector * Global::tileSize).distanceTo(((PointD)follow->getPosition() * Global::tileSize) + follow->getProgressVector() * Global::tileSize) <= Global::tileSize * 2 / 3) {
 			follow->activate();
@@ -84,6 +90,10 @@ Army* Player::getArmy() {
 	return army;
 }
 
+std::string Player::getName() {
+	return name;
+}
+
 void Player::setProgressVector(PointD newProgressVector) {
 	progressVector = newProgressVector;
 }
@@ -120,20 +130,12 @@ void Player::setArmy(Army* newArmy) {
 	army = newArmy;
 }
 
+void Player::setName(std::string newName) {
+	name = newName;
+}
+
 void Player::clearPath() {
 	follow = NULL;
 	hasPlannedPath = false;
 	path.clear();
-}
-
-void Player::init() {
-	hasPlannedPath = false;
-	state = PlayerState::STANDING;
-	texture = Global::resourceHandler->playerTexture;
-	//NOTE temporary workaround
-	speed = 0.1 / Global::fps * 60;
-	tileProgress = 0;
-	follow = NULL;
-	inventory = NULL;
-	army = NULL;
 }

@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include <cmath>
+#include <string>
 
 #include "point.h"
 #include "mapentity.h"
@@ -18,8 +19,9 @@ enum class PlayerState {
 
 class Player : public MapEntity {
 public:
-	Player();
-	Player(Point pos);
+	Player(std::string text, int x, int y);
+	Player(std::string text, Point pos);
+	~Player();
 	
 	void updatePlayerPosition();
 	
@@ -33,6 +35,7 @@ public:
 	NPC* getFollow();
 	Inventory* getInventory();
 	Army* getArmy();
+	std::string getName();
 	
 	//Setters
 	void setProgressVector(PointD newProgressVector);
@@ -44,11 +47,10 @@ public:
 	void setFollow(NPC* toFollow);
 	void setInventory(Inventory* newInventory);
 	void setArmy(Army* newArmy);
+	void setName(std::string newName);
 	
 	void clearPath();
 private:
-	void init();
-	
 	//When we are rendering, we are using position+progressVector to get the actual position of the player
 	PointD progressVector;
 	
@@ -69,4 +71,6 @@ private:
 	//Inventory and army set by permagui
 	Inventory* inventory;
 	Army* army;
+	
+	std::string name;
 };

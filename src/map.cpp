@@ -9,24 +9,20 @@ Map::Map(int w, int h) {
 	size = w * h;
 	
 	tileMapPath = "data/map/tilemap.data";
-	terrainMapPath = "data/map/objects.data";
-	interactivePath = "data/map/interactive.data";
-	npcPath = "data/map/npcs.data";
 	
 	loadTileMap();
-	loadMapEntities();
-	createPassabilityMap();
+	
+	//NOTE ugly solution but i could not come up with a better idea
+	getTile(Global::player->getPosition())->entities.push_back(Global::player);
+	
+	allowDebug = false;
 }
 
 Map::~Map() {
-	for (unsigned int i = 0; i < mapEntities.size(); i++) {
-		delete mapEntities[i];
-	}
-	mapEntities.clear();
-	
 	//delete tilemap
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
+			//TODO delete all entities on tile
 			delete tiles[i][j];
 		}
 	}
@@ -75,13 +71,8 @@ void Map::render() {
 		renderPath();
 	}
 	
-	//TODO better debug handling
-	//renderPassabilityDebugInfo();
-}
-
-void Map::updateNPCsPosition() {
-	for (unsigned int i = 0; i < npcs.size(); i++) {
-		npcs[i]->updateNPCPosition();
+	if (allowDebug) {
+		renderPassabilityDebugInfo();
 	}
 }
 
@@ -97,6 +88,10 @@ Point Map::getTileFromCursorPosition(Point cursorPosition) {
 	Point positionOnFullPixmap = Global::camera->getPosition() + cursorPosition;
 	
 	return positionOnFullPixmap / Global::tileSize;
+}
+
+NPC* Map::getNPCOnTile(int x, int y) {
+	return getNPCOnTile(Point(x, y));
 }
 
 NPC* Map::getNPCOnTile(Point tilePos) {
@@ -117,8 +112,12 @@ NPC* Map::getNPCOnTile(Tile* tile) {
 	return NULL;
 }
 
-NPC* Map::getNPC(int index) {
-	return npcs[index];
+bool Map::getAllowDebug() {
+	return allowDebug;
+}
+
+void Map::setAllowDebug(bool newAllowDebug) {
+	allowDebug = newAllowDebug;
 }
 
 void Map::renderTileMap() {
@@ -150,68 +149,112 @@ void Map::renderMapEntities() {
 	Point startTileCoordinates = Point(Global::camera->getPosition().getX() / Global::tileSize, Global::camera->getPosition().getY() / Global::tileSize);
 	Point endTileCoordinates = Point((Global::camera->getPosition().getX() + Global::screenWidth) / Global::tileSize + 1, (Global::camera->getPosition().getY() + Global::screenHeight) / Global::tileSize + 1);
 	
-	for (int i = startTileCoordinates.getY(); i <= endTileCoordinates.getY(); i++) {
-		for (int j = startTileCoordinates.getX(); j <= endTileCoordinates.getX(); j++) {
-			Tile* current = getTile(j, i);
-			
-			//If Tile does not exist, we do not render it
-			//NOTE this should be unnecessary later since we will fix the camera position
-			if (current == NULL) {
-				continue;
-			}
-			
-			for (unsigned int k = 0; k < current->entities.size(); k++) {
-				//currEnt get it?:D
-				MapEntity* currEnt = current->entities[k];
+	for (int stage = 2; stage <= 3; stage++) {
+		for (int i = startTileCoordinates.getY(); i <= endTileCoordinates.getY(); i++) {
+			for (int j = startTileCoordinates.getX(); j <= endTileCoordinates.getX(); j++) {
+				Tile* current = getTile(j, i);
 				
-				//NULL-checking
-				if (currEnt == NULL) {
+				//If Tile does not exist, we do not render it
+				//NOTE this should be unnecessary later since we will fix the camera position
+				if (current == NULL) {
 					continue;
 				}
-				
-				//Built in SDL function, to get the width and the height of the texture
-				//Params: texture, format, access, w, h
-				int w, h;
-				SDL_QueryTexture(currEnt->texture, NULL, NULL, &w, &h);
-				
-				//Setting rectangle
-				SDL_Rect destinationRect;
-				
-				//We are setting the width and the hight first
-				destinationRect.w = w / 64 * Global::tileSize;
-				destinationRect.h = h / 64 * Global::tileSize;
-				
-				//Every rectangle looks like this:
-				// 123
-				// 4 5
-				// 678
-				//By default wer are fixing the '7' points (down-center)
-				//So the texture's down-center point will be at the same position as its tile's
-				
-				//The top-left corner of its tile
-				destinationRect.x = currEnt->getPosition().getX() * Global::tileSize - Global::camera->getPosition().getX();
-				destinationRect.y = currEnt->getPosition().getY() * Global::tileSize - Global::camera->getPosition().getY();
-				
-				//We need to move this point with a vector
-				destinationRect.x -= (destinationRect.w - Global::tileSize) / 2;
-				destinationRect.y -= destinationRect.h - Global::tileSize;
-				
-				//If the entity is an npc or a player, we add the progressvector
-				if (currEnt == Global::player) {
-					destinationRect.x += Global::player->getProgressVector().getX() * Global::tileSize;
-					destinationRect.y += Global::player->getProgressVector().getY() * Global::tileSize;
+				if (stage == 2) {
+					for (unsigned int k = 0; k < current->backgroundEntities.size(); k++) {
+						//currEnt get it?:D
+						MapEntity* currEnt = current->backgroundEntities[k];
+						
+						//NULL-checking
+						if (currEnt == NULL) {
+							continue;
+						}
+						
+						//Built in SDL function, to get the width and the height of the texture
+						//Params: texture, format, access, w, h
+						int w, h;
+						SDL_QueryTexture(currEnt->texture, NULL, NULL, &w, &h);
+						
+						//Setting rectangle
+						SDL_Rect destinationRect;
+						
+						//We are setting the width and the height first
+						//Ugly casting becasue scale is a double member
+						destinationRect.w = (int)(((double)w * Global::tileSize / 64) * currEnt->getScale());
+						destinationRect.h = (int)(((double)h * Global::tileSize / 64) * currEnt->getScale());
+						
+						//Every rectangle looks like this:
+						// 123
+						// 4 5
+						// 678
+						//By default we are fixing the '7' points (down-center)
+						//So the texture's down-center point will be at the same position as its tile's
+						
+						//The top-left corner of its tile
+						destinationRect.x = currEnt->getPosition().getX() * Global::tileSize - Global::camera->getPosition().getX();
+						destinationRect.y = currEnt->getPosition().getY() * Global::tileSize - Global::camera->getPosition().getY();
+						
+						//We need to move this point with a vector
+						destinationRect.x -= (destinationRect.w - Global::tileSize) / 2;
+						destinationRect.y -= destinationRect.h - Global::tileSize;
+						
+						SDL_RenderCopy(Global::renderer, currEnt->texture, NULL, &destinationRect);
+					}
+				} else {
+					for (unsigned int k = 0; k < current->entities.size(); k++) {
+						//currEnt get it?:D
+						MapEntity* currEnt = current->entities[k];
+						
+						//NULL-checking
+						if (currEnt == NULL) {
+							continue;
+						}
+						
+						//Built in SDL function, to get the width and the height of the texture
+						//Params: texture, format, access, w, h
+						int w, h;
+						SDL_QueryTexture(currEnt->texture, NULL, NULL, &w, &h);
+						
+						//Setting rectangle
+						SDL_Rect destinationRect;
+						
+						//We are setting the width and the height first
+						//Ugly casting becasue scale is a double member
+						destinationRect.w = (int)(((double)w * Global::tileSize / 64) * currEnt->getScale());
+						destinationRect.h = (int)(((double)h * Global::tileSize / 64) * currEnt->getScale());
+						
+						//Every rectangle looks like this:
+						// 123
+						// 4 5
+						// 678
+						//By default we are fixing the '7' points (down-center)
+						//So the texture's down-center point will be at the same position as its tile's
+						
+						//The top-left corner of its tile
+						destinationRect.x = currEnt->getPosition().getX() * Global::tileSize - Global::camera->getPosition().getX();
+						destinationRect.y = currEnt->getPosition().getY() * Global::tileSize - Global::camera->getPosition().getY();
+						
+						//We need to move this point with a vector
+						destinationRect.x -= (destinationRect.w - Global::tileSize) / 2;
+						destinationRect.y -= destinationRect.h - Global::tileSize;
+						
+						//If the entity is an npc or a player, we add the progressvector
+						if (currEnt == Global::player) {
+							destinationRect.x += Global::player->getProgressVector().getX() * Global::tileSize;
+							destinationRect.y += Global::player->getProgressVector().getY() * Global::tileSize;
+						}
+						NPC* possibleNPC = dynamic_cast<NPC*>(currEnt);
+						if (possibleNPC != NULL && !possibleNPC->getStanding()) {
+							PointD corrigation = (possibleNPC->getPath()->current() - possibleNPC->getPosition()) * Global::tileSize;
+							
+							destinationRect.x += possibleNPC->getProgressVector().getX() * Global::tileSize;
+							destinationRect.x += corrigation.getX();
+							destinationRect.y += possibleNPC->getProgressVector().getY() * Global::tileSize;
+							destinationRect.y += corrigation.getY();
+						}
+						
+						SDL_RenderCopy(Global::renderer, currEnt->texture, NULL, &destinationRect);
+					}
 				}
-				NPC* possibleNPC = dynamic_cast<NPC*>(currEnt);
-				if (possibleNPC != NULL) {
-					PointD corrigation = (possibleNPC->getPath()->current() - possibleNPC->getPosition()) * Global::tileSize;
-					
-					destinationRect.x += possibleNPC->getProgressVector().getX() * Global::tileSize;
-					destinationRect.x += corrigation.getX();
-					destinationRect.y += possibleNPC->getProgressVector().getY() * Global::tileSize;
-					destinationRect.y += corrigation.getY();
-				}
-				
-				SDL_RenderCopy(Global::renderer, currEnt->texture, NULL, &destinationRect);
 			}
 		}
 	}
@@ -221,7 +264,8 @@ void Map::renderPath() {
 	SDL_Rect destinationRect;
 	destinationRect.w = Global::tileSize;
 	destinationRect.h = Global::tileSize;
-	for (unsigned int i = Global::player->getTileProgress() == 0 ? 1 : Global::player->getTileProgress(); i < Global::player->getPath().size()-1; i++) {
+	//We render only the remaining part of the path
+	for (unsigned int i = Global::player->getTileProgress() == 0 ? 1 : Global::player->getTileProgress() + 1; i < Global::player->getPath().size()-1; i++) {
 		
 		Point thisPoint = Global::player->getPath()[i];
 		Point nextPoint = Global::player->getPath()[i + 1];
@@ -295,156 +339,31 @@ void Map::loadTileMap() {
 	file.close();
 }
 
-void Map::loadMapEntities() {
-	//ALERT unsafe, might cause an infinite loop
-	std::fstream file;
-	
-	
-	//Terrain
-	file.open(terrainMapPath, std::ios::in);
-	//texture file pattern:
-	//a b c d ['e f' d times]
-	//a: the ID of the texture (see reshandler)
-	//b: the x coordinate of its tile
-	//c: the y coordinate of its tile
-	//d: the number of the impassable tiles
-	//e: one impassable tile's x coordinate
-	//f: one impassable tile's y coordinate
-	while (true) {
-		
-		int textID, tileX, tileY, impLen;
-		file >> textID;
-		file >> tileX;
-		file >> tileY;
-		file >> impLen;
-		std::vector<Point> impassableTiles;
-		
-		//NOTE this is ugly as fuck, but somehow it works this way
-		if (file.eof()) break;
-		
-		
-		for (int i = 0; i < impLen; i++) {
-			int x, y;
-			file >> x;
-			file >> y;
-			impassableTiles.push_back(Point(x, y));
-		}
-		MapEntity* loaded = new WorldObject(textID, Point(tileX, tileY), impassableTiles);
-		mapEntities.push_back(loaded);
-		tiles[tileX][tileY]->entities.push_back(loaded);
-	}
-	file.close();
-	
-	
-	//Interactives
-	file.open(interactivePath, std::ios::in);
-	//texture file pattern:
-	//a b c d ['e f' d times]
-	//a: the ID of the texture (see reshandler)
-	//b: the x coordinate of its tile
-	//c: the y coordinate of its tile
-	//d: the number of the interactive tiles
-	//e: one impassable tile's x coordinate
-	//f: one impassable tile's y coordinate
-	while (true) {
-		
-		int textID, tileX, tileY, interLen;
-		file >> textID;
-		file >> tileX;
-		file >> tileY;
-		file >> interLen;
-		std::vector<Point> interactiveTiles;
-		
-		//NOTE this is ugly as fuck, but somehow it works this way
-		if (file.eof()) break;
-		
-		
-		for (int i = 0; i < interLen; i++) {
-			int x, y;
-			file >> x;
-			file >> y;
-			interactiveTiles.push_back(Point(x, y));
-		}
-		MapEntity* loaded = new InteractiveWorldObject(textID, Point(tileX, tileY), interactiveTiles);
-		mapEntities.push_back(loaded);
-		tiles[tileX][tileY]->entities.push_back(loaded);
-	}
-	file.close();
-	
-	
-	//NPCs
-	file.open(npcPath, std::ios::in);
-	//npc file pattern:
-	//a b ['c d' b times]
-	//a: the ID of the texture (see reshandler)
-	//b: the number of the notable parts of the map
-	//c: the y coordinate of its tile
-	while (true) {
-		int textID, pathLen;
-		file >> textID;
-		file >> pathLen;
-		std::vector<Point> pathPieces;
-		
-		//NOTE this is ugly as fuck, but somehow it works this way
-		if (file.eof()) break;
-		
-		for (int i = 0; i < pathLen; i++) {
-			int x, y;
-			file >> x;
-			file >> y;
-			pathPieces.push_back(Point(x, y));
-		}
-		
-		//NOTE a little bit of redundancy here
-		//MapEntity* loaded;
-		NPC* loaded;
-		if (pathPieces.size() == 1) {
-			loaded = new NPC(textID, pathPieces[0]);
-			tiles[pathPieces[0].getX()][pathPieces[0].getY()]->entities.push_back(loaded);
-		} else if (pathPieces.size() == 0) {
-			loaded = new NPC(textID, Point(0, 0));
-			tiles[0][0]->entities.push_back(loaded);
-		} else {
-			loaded = new NPC(textID, pathPieces);
-			tiles[pathPieces[0].getX()][pathPieces[0].getY()]->entities.push_back(loaded);
-		}
-		
-		mapEntities.push_back(loaded);
-		npcs.push_back(loaded);
-	}
-	file.close();
-	
-	
-	//Player
-	tiles[Global::player->getPosition().getX()][Global::player->getPosition().getY()]->entities.push_back(Global::player);
-}
-
 void Map::createPassabilityMap() {
-	for (unsigned int i = 0; i < mapEntities.size(); i++) {
-		WorldObject* tempWorldObject = dynamic_cast<WorldObject*>(mapEntities[i]);
-		if (tempWorldObject != NULL) {
-			for (unsigned int j = 0; j < tempWorldObject->getImpassableTiles().size(); j++) {
-				int newX = tempWorldObject->getImpassableTiles()[j].getX() + tempWorldObject->getPosition().getX();
-				int newY = tempWorldObject->getImpassableTiles()[j].getY() + tempWorldObject->getPosition().getY();
-				
-				//in case the object extends beyond the borders of the map
-				if (getTile(newX, newY) == NULL) continue;
-				
-				getTile(newX, newY)->setTileInfo(TileInfo::IMPASSABLE);
-			}
-		} else {
-			InteractiveWorldObject* tempInteractiveObject = dynamic_cast<InteractiveWorldObject*>(mapEntities[i]);
-			if (tempInteractiveObject != NULL) {
-				for (unsigned int j = 0; j < tempInteractiveObject->getInteractiveTiles().size(); j++) {
-					int newX = tempInteractiveObject->getInteractiveTiles()[j].getX() + tempInteractiveObject->getPosition().getX();
-					int newY = tempInteractiveObject->getInteractiveTiles()[j].getY() + tempInteractiveObject->getPosition().getY();
-					
-					//in case the object extends beyond the borders of the map
-					if (getTile(newX, newY) == NULL) continue;
-					
-					getTile(newX, newY)->setTileInfo(TileInfo::FRIENDLY);
-				}
-			}
+	
+	//Setting impassables
+	for (unsigned int i = 0; i < Global::worldObjectHandler->impassables.size(); i++) {
+		ImpassableWorldObject* tempImpassableObject = Global::worldObjectHandler->impassables[i];
+		for (unsigned int j = 0; j < tempImpassableObject->getImpassableTiles().size(); j++) {
+			Point absolute = tempImpassableObject->getImpassableTiles()[j] + tempImpassableObject->getPosition();
+			
+			//in case the object extends beyond the borders of the map
+			if (getTile(absolute) == NULL) continue;
+			
+			getTile(absolute)->setTileInfo(TileInfo::IMPASSABLE);
+		}
+	}
+	
+	//Setting interactives
+	for (unsigned int i = 0; i < Global::worldObjectHandler->interactives.size(); i++) {
+		InteractiveWorldObject* tempInteractiveObject = Global::worldObjectHandler->interactives[i];
+		for (unsigned int j = 0; j < tempInteractiveObject->getInteractiveTiles().size(); j++) {
+			Point absolute = tempInteractiveObject->getInteractiveTiles()[j] + tempInteractiveObject->getPosition();
+			
+			//in case the object extends beyond the borders of the map
+			if (getTile(absolute) == NULL) continue;
+			
+			getTile(absolute)->setTileInfo(TileInfo::FRIENDLY);
 		}
 	}
 	
@@ -455,15 +374,6 @@ void Map::createPassabilityMap() {
 			if (std::find(baseImpassable.begin(), baseImpassable.end(), getTile(i, j)->getType()) != baseImpassable.end()) {
 				getTile(i, j)->setTileInfo(TileInfo::IMPASSABLE);
 			}
-		}
-	}
-}
-
-void Map::createNPCPath() {
-	for (unsigned int i = 0; i < npcs.size(); i++) {
-		NPC* npc = npcs[i];
-		if (!npc->getStanding()) {
-			npc->setPath(new CircularPath(npc->getTempCont()));
 		}
 	}
 }

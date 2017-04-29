@@ -84,3 +84,11 @@ public:
 private:
 	static std::string errorMessage;
 };
+
+class FilesystemError : public std::runtime_error {
+public:
+	FilesystemError();
+	const char* what() const throw();
+private:
+	static std::string errorMessage;
+};

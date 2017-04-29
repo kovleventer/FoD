@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include "text.h"
+#include "filesystemhandler.h"
 
 class ResourceHandler {
 public:
@@ -24,20 +25,12 @@ public:
 	std::map<int, std::string> tileTextureIDs;
 	
 	std::map<std::string, SDL_Texture*> worldObjectTextures;
-	std::map<int, std::string> worldObjectTextureIDs;
-	
-	std::map<std::string, SDL_Texture*> interactiveWorldObjectTextures;
-	std::map<int, std::string> interactiveWorldObjectTextureIDs;
 	
 	std::map<std::string, SDL_Texture*> cursorTextures;
-	
-	//NOTE we might need more textures for animations
-	SDL_Texture* playerTexture;
 	
 	std::map<std::string, SDL_Texture*> pathTextures;
 	
 	std::map<std::string, SDL_Texture*> npcTextures;
-	std::map<int, std::string> npcTextureIDs;
 	
 	std::map<std::string, SDL_Texture*> guiTextures;
 	
@@ -50,6 +43,8 @@ public:
 	
 	SDL_Texture* getTextTexture(std::string text, SDL_Color color);
 	SDL_Texture* getTextTexture(Text text);
+	//Clears all rendered text textures thus clearing memory
+	void clearTextTextures();
 	
 	
 	//Stores the colors that can be later referenced
@@ -64,7 +59,6 @@ private:
 	void loadWorldObjectImages();
 	void loadInteractiveWorldObjectImages();
 	void loadCursorImages();
-	void loadPlayerImages();
 	void loadPathImages();
 	void loadNPCImages();
 	void loadGUIImages();
@@ -91,9 +85,7 @@ private:
 	
 	std::string terrainImagePath;
 	std::string worldObjectImagePath;
-	std::string interactiveWorldObjectImagePath;
 	std::string cursorImagePath;
-	std::string playerImagePath;
 	std::string pathImagePath;
 	std::string npcImagePath;
 	std::string guiImagePath;

@@ -59,3 +59,9 @@ SettingsLoadError::SettingsLoadError() : std::runtime_error::runtime_error(error
 const char* SettingsLoadError::what() const throw() {
 	return errorMessage.c_str();
 }
+
+std::string FilesystemError::errorMessage = "Directory reading failed";
+FilesystemError::FilesystemError() : std::runtime_error::runtime_error(errorMessage) {}
+const char* FilesystemError::what() const throw() {
+	return errorMessage.c_str();
+}

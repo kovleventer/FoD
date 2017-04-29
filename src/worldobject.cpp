@@ -2,11 +2,9 @@
 
 #include "global.h"
 
-WorldObject::WorldObject(int textID, Point pos, std::vector<Point> imp) : MapEntity(pos) {
-	texture = Global::resourceHandler->worldObjectTextures[Global::resourceHandler->worldObjectTextureIDs[textID]];
-	impassableTiles = imp;
-}
+WorldObject::WorldObject(std::string text, int x, int y) : WorldObject(text, Point(x, y)) {}
 
-std::vector<Point> WorldObject::getImpassableTiles() {
-	return impassableTiles;
+WorldObject::WorldObject(std::string text, Point pos) : MapEntity(pos) {
+	texture = Global::resourceHandler->worldObjectTextures[text];
+	atBackground = true;
 }

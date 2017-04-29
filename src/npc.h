@@ -2,6 +2,7 @@
 
 #include <SDL2/SDL.h>
 #include <vector>
+#include <string>
 
 #include "point.h"
 #include "mapentity.h"
@@ -10,9 +11,9 @@
 
 class NPC : public MapEntity {
 public:
-	NPC();
-	NPC(int textID, Point pos);
-	NPC(int textID, std::vector<Point> pathPoints);
+	NPC(std::string text, int x, int y);
+	NPC(std::string text, Point pos);
+	NPC(std::string text, std::vector<Point> pathPoints);
 	
 	//deletes path
 	~NPC();
@@ -33,11 +34,15 @@ public:
 	std::vector<Point> getTempCont();
 	CircularPath* getPath();
 	Army* getArmy();
+	std::string getName();
+	bool isEnemy();
 	
 	//Setters
 	void setProgressVector(PointD newProgressVector);
 	void setSpeed(double newSpeed);
 	void setPath(CircularPath* newPath);
+	void setName(std::string newName);
+	void setIsEnemy(bool newIsEnemy);
 private:
 	void init();
 	
@@ -55,4 +60,8 @@ private:
 	
 	//NPC's army
 	Army* army;
+	
+	std::string name;
+	//TODO factions
+	bool enemy;
 };

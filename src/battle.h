@@ -25,6 +25,10 @@ public:
 	
 	//Continues the battle by attacking a unit or just simply preforms the attack
 	void attack(Unit* unitToAttack, bool isContinuation);
+	
+	//Getters (probably not used very much)
+	int getMaxTurns();
+	int getCurrentTurn();
 private:
 	WholeScreenGUI* gui;
 	
@@ -34,7 +38,9 @@ private:
 	int playerUnitCount, enemyUnitCount;
 	
 	//If the battle is between two npcs
-	NPC* npc1, npc2;
+	//A valuable lesson was learned here
+	NPC* npc1;
+	NPC* npc2;
 	
 	//Turn counters
 	int maxTurns, currentTurn;

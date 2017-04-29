@@ -9,6 +9,7 @@
 #include "iteminfo.h"
 #include "unitinfo.h"
 #include "army.h"
+#include "minimap.h"
 
 enum class ClickedEntry {
 	NONE,

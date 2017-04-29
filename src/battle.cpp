@@ -24,7 +24,7 @@ Battle::~Battle() {
 
 void Battle::start() {
 	//Intializing the battle
-	//NOTE gui is never deleted and its unsafe to delete this
+	//FIXME gui is never deleted and its unsafe to delete this
 	gui = new WholeScreenGUI(Global::permaGUI->getDim());
 	gui->addPart(player->getArmy());
 	gui->addPart(enemy->getArmy());
@@ -84,7 +84,7 @@ void Battle::continueBattle() {
 		if (enemyUnitCount == 0) {
 			Global::guiHandler->clear();
 			//FIXME implementing npchandling is urgent
-			//delete enemy;
+			delete enemy;
 			enemy = NULL;
 			delete this;
 			return;
@@ -178,4 +178,12 @@ void Battle::attack(Unit* unitToAttack, bool isContinuation) {
 	if (isContinuation) {
 		continueBattle();
 	}
+}
+
+int Battle::getMaxTurns() {
+	return maxTurns;
+}
+
+int Battle::getCurrentTurn() {
+	return currentTurn;
 }

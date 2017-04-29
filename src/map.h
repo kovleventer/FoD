@@ -11,6 +11,7 @@
 #include "tile.h"
 #include "point.h"
 #include "worldobject.h"
+#include "impassableworldobject.h"
 #include "interactiveworldobject.h"
 #include "player.h"
 #include "npc.h"
@@ -20,10 +21,6 @@ class Map {
 public:
 	Map(int w, int h);
 	~Map();
-	
-	//NOTE init stuff that must run after th constructor has finished its job
-	//generates the npc's paths
-	void createNPCPath();
 	
 	//Getters
 	int getWidth();
@@ -35,17 +32,21 @@ public:
 	
 	void render();
 	
-	void updateNPCsPosition();
+	//sets the passablitity of the tiles
+	void createPassabilityMap();
 	
 	//Converts screen coordinates to tile coordinates
 	Point getTileFromCursorPosition(Point cursorPosition);
 	
 	//Gets an NPC
 	//Returns NULL, when there aren't any npcs standing on the tile
+	NPC* getNPCOnTile(int x, int y);
 	NPC* getNPCOnTile(Point tilePos);
 	NPC* getNPCOnTile(Tile* tile);
 	
-	NPC* getNPC(int index);
+	//DEBUG
+	bool getAllowDebug();
+	void setAllowDebug(bool newAllowDebug);
 private:
 	int width;
 	int height;
@@ -55,35 +56,22 @@ private:
 	//This is a two-dimensional array of Tile pointers
 	Tile*** tiles;
 	
-	//We are storing the map objects in vectors
-	std::vector<MapEntity*> mapEntities;
-	
-	//We need to store the NPC's in its own vector too, since we are going to traverse through them frequently
-	std::vector<NPC*> npcs;
-	
 	//Rendering
 	void renderTileMap();
 	void renderMapEntities();
-	void renderPlayer();
 	void renderPath();
 	
 	//Loading
 	//Uses file IO
 	void loadTileMap();
-	void loadMapEntities();
-	//sets the passablitity of the tiles
-	void createPassabilityMap();
 	
 	std::string tileMapPath;
-	std::string terrainMapPath;
-	std::string interactivePath;
-	std::string npcPath;
 	
 	//Utility functions
 	bool isTileVisible(int x, int y);
 	bool isTileVisible(Point tPos);
 	
 	//DEBUG
-	//TODO add transparency
 	void renderPassabilityDebugInfo();
+	bool allowDebug;
 };

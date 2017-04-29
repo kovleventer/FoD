@@ -18,10 +18,15 @@ public:
 	Tile(std::string tileType);
 	Tile(int tileType);
 	
+	//For tilemap (First stage) rendering
 	SDL_Texture* texture;
 	
+	//Second rendering stage objects
+	std::vector<MapEntity*> backgroundEntities;
+	//Third rendering stage objects
 	std::vector<MapEntity*> entities;
 	
+	//The default tile type
 	static const std::string DEFAULT_TYPE;
 	
 	//Getters and setters

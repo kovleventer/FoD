@@ -1,13 +1,11 @@
 #include "interactiveworldobject.h"
 
-#include "global.h"
+InteractiveWorldObject::InteractiveWorldObject(std::string text, int x, int y, std::vector<Point> intTiles) : InteractiveWorldObject(text, Point(x, y), intTiles) {}
 
-InteractiveWorldObject::InteractiveWorldObject(int textID, Point pos, std::vector<Point> inter) : MapEntity(pos) {
-	texture = Global::resourceHandler->interactiveWorldObjectTextures[Global::resourceHandler->interactiveWorldObjectTextureIDs[textID]];
-	interactiveTiles = inter;
+InteractiveWorldObject::InteractiveWorldObject(std::string text, Point pos, std::vector<Point> intTiles) : WorldObject(text, pos) {
+	interactiveTiles = intTiles;
+	atBackground = false;
 }
-
-InteractiveWorldObject::~InteractiveWorldObject() {}
 
 std::vector<Point> InteractiveWorldObject::getInteractiveTiles() {
 	return interactiveTiles;

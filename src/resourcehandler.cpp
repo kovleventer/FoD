@@ -6,10 +6,8 @@
 ResourceHandler::ResourceHandler() {
 	terrainImagePath = "data/img/terrain/";
 	worldObjectImagePath = "data/img/worldobject/";
-	interactiveWorldObjectImagePath = "data/img/interactive/";
 	cursorImagePath = "data/img/cursor/";
-	playerImagePath = "data/img/player/";
-	pathImagePath = "data/img/player/path/";
+	pathImagePath = "data/img/path/";
 	npcImagePath = "data/img/npc/";
 	guiImagePath = "data/img/gui/";
 	itemImagePath = "data/img/items/";
@@ -25,45 +23,45 @@ ResourceHandler::~ResourceHandler() {
 	//Free all the textures
 	for(std::map<std::string, SDL_Texture*>::const_iterator it = tileTextures.begin(); it != tileTextures.end(); ++it) {
 		SDL_DestroyTexture(it->second);
+		tileTextures.erase(it);
 	}
 	
 	for(std::map<std::string, SDL_Texture*>::const_iterator it = worldObjectTextures.begin(); it != worldObjectTextures.end(); ++it) {
 		SDL_DestroyTexture(it->second);
-	}
-	
-	for(std::map<std::string, SDL_Texture*>::const_iterator it = interactiveWorldObjectTextures.begin(); it != interactiveWorldObjectTextures.end(); ++it) {
-		SDL_DestroyTexture(it->second);
+		worldObjectTextures.erase(it);
 	}
 	
 	for(std::map<std::string, SDL_Texture*>::const_iterator it = cursorTextures.begin(); it != cursorTextures.end(); ++it) {
 		SDL_DestroyTexture(it->second);
+		cursorTextures.erase(it);
 	}
 	
 	for(std::map<std::string, SDL_Texture*>::const_iterator it = pathTextures.begin(); it != pathTextures.end(); ++it) {
 		SDL_DestroyTexture(it->second);
+		pathTextures.erase(it);
 	}
 	
 	for(std::map<std::string, SDL_Texture*>::const_iterator it = npcTextures.begin(); it != npcTextures.end(); ++it) {
 		SDL_DestroyTexture(it->second);
+		npcTextures.erase(it);
 	}
 	
 	for(std::map<std::string, SDL_Texture*>::const_iterator it = guiTextures.begin(); it != guiTextures.end(); ++it) {
 		SDL_DestroyTexture(it->second);
-	}
-	
-	for(std::map<Text, SDL_Texture*>::const_iterator it = renderedTexts.begin(); it != renderedTexts.end(); ++it) {
-		SDL_DestroyTexture(it->second);
+		guiTextures.erase(it);
 	}
 	
 	for(std::map<std::string, SDL_Texture*>::const_iterator it = itemTextures.begin(); it != itemTextures.end(); ++it) {
 		SDL_DestroyTexture(it->second);
+		itemTextures.erase(it);
 	}
 	
 	for(std::map<std::string, SDL_Texture*>::const_iterator it = itemRarityIndicatorTextures.begin(); it != itemRarityIndicatorTextures.end(); ++it) {
 		SDL_DestroyTexture(it->second);
+		itemRarityIndicatorTextures.erase(it);
 	}
 	
-	SDL_DestroyTexture(playerTexture);
+	clearTextTextures();
 	
 	TTF_CloseFont(font);
 	
@@ -98,12 +96,18 @@ SDL_Texture* ResourceHandler::getTextTexture(Text text) {
 	}
 }
 
+void ResourceHandler::clearTextTextures() {
+	for(std::map<Text, SDL_Texture*>::const_iterator it = renderedTexts.begin(); it != renderedTexts.end(); ++it) {
+		SDL_DestroyTexture(it->second);
+		renderedTexts.erase(it);
+	}
+}
+
 void ResourceHandler::loadImages() {
 	loadTerrainImages();
 	loadWorldObjectImages();
-	loadInteractiveWorldObjectImages();
+	//loadInteractiveWorldObjectImages();
 	loadCursorImages();
-	loadPlayerImages();
 	loadPathImages();
 	loadNPCImages();
 	loadGUIImages();
@@ -122,35 +126,19 @@ void ResourceHandler::loadTerrainImages() {
 }
 
 void ResourceHandler::loadWorldObjectImages() {
-	std::vector<std::string> textureNames = {"mountain"};
+	std::vector<std::string> textureNames = FilesystemHandler::getFilesInDir(worldObjectImagePath);
 	
 	for (unsigned int i = 0; i < textureNames.size(); i++) {
-		worldObjectTextures[textureNames[i]] = loadTexture(worldObjectImagePath + textureNames[i] + ".png");
-		worldObjectTextureIDs[i] = textureNames[i];
-	}
-}
-
-void ResourceHandler::loadInteractiveWorldObjectImages() {
-	std::vector<std::string> textureNames = {"castle"};
-	
-	for (unsigned int i = 0; i < textureNames.size(); i++) {
-		interactiveWorldObjectTextures[textureNames[i]] = loadTexture(interactiveWorldObjectImagePath + textureNames[i] + ".png");
-		interactiveWorldObjectTextureIDs[i] = textureNames[i];
+		worldObjectTextures[FilesystemHandler::removeExtension(textureNames[i])] = loadTexture(worldObjectImagePath + textureNames[i]);
 	}
 }
 
 void ResourceHandler::loadCursorImages() {
-	std::vector<std::string> textureNames = {"impassable", "move", "friendly", "npc", "gui"};
+	std::vector<std::string> textureNames = FilesystemHandler::getFilesInDir(cursorImagePath);
 	
 	for (unsigned int i = 0; i < textureNames.size(); i++) {
-		cursorTextures[textureNames[i]] = loadTexture(cursorImagePath + textureNames[i] + ".png");
+		cursorTextures[FilesystemHandler::removeExtension(textureNames[i])] = loadTexture(cursorImagePath + textureNames[i]);
 	}
-}
-
-void ResourceHandler::loadPlayerImages() {
-	std::string textureName = "player";
-	
-	playerTexture = loadTexture(playerImagePath + textureName + ".png");
 }
 
 void ResourceHandler::loadPathImages() {
@@ -162,30 +150,26 @@ void ResourceHandler::loadPathImages() {
 }
 
 void ResourceHandler::loadNPCImages() {
-	std::vector<std::string> textureNames = {"friend"};
+	std::vector<std::string> textureNames = FilesystemHandler::getFilesInDir(npcImagePath);
 	
 	for (unsigned int i = 0; i < textureNames.size(); i++) {
-		npcTextures[textureNames[i]] = loadTexture(npcImagePath + textureNames[i] + ".png");
-		npcTextureIDs[i] = textureNames[i];
+		npcTextures[FilesystemHandler::removeExtension(textureNames[i])] = loadTexture(npcImagePath + textureNames[i]);
 	}
 }
 
 void ResourceHandler::loadGUIImages() {
-	std::vector<std::string> textureNames = {"permabg", "button", "guiheader", "inventoryslot", "iteminfobg", "unitinfobg", "armybg", "armyinvbg", "armyslotbg", "selectedunit",
-		"hoveredunit", "popupback", "popupfore"};
+	std::vector<std::string> textureNames = FilesystemHandler::getFilesInDir(guiImagePath);
 	
 	for (unsigned int i = 0; i < textureNames.size(); i++) {
-		guiTextures[textureNames[i]] = loadTexture(guiImagePath + textureNames[i] + ".png");
+		guiTextures[FilesystemHandler::removeExtension(textureNames[i])] = loadTexture(guiImagePath + textureNames[i]);
 	}
 }
 
 void ResourceHandler::loadItemImages() {
-	std::vector<std::string> textureNames = {"sword", "shield", "amulet", "helmet", "ring", "staff", "roundshield", "poisonarrow", "frostcloak", "crossbow", "sickle", "boots",
-		"bow", "ironarrow", "wand", "oldcloak", "mshield1", "mshield2", "bread"
-	};
+	std::vector<std::string> textureNames = FilesystemHandler::getFilesInDir(itemImagePath);
 	
 	for (unsigned int i = 0; i < textureNames.size(); i++) {
-		itemTextures[textureNames[i]] = loadTexture(itemImagePath + textureNames[i] + ".png");
+		itemTextures[FilesystemHandler::removeExtension(textureNames[i])] = loadTexture(itemImagePath + textureNames[i]);
 	}
 }
 
@@ -199,11 +183,10 @@ void ResourceHandler::loadItemRarityIndicatorImages() {
 }
 
 void ResourceHandler::loadUnitImages() {
-	std::vector<std::string> textureNames = {"Axeman", "Dog", "Bowman", "Gray Mage", "_Dead"};
+	std::vector<std::string> textureNames = FilesystemHandler::getFilesInDir(unitImagePath);
 	
 	for (unsigned int i = 0; i < textureNames.size(); i++) {
-		//NOTE the filenames start with an '_' character
-		unitTextures[textureNames[i]] = loadTexture(unitImagePath + textureNames[i] + ".png");
+		unitTextures[FilesystemHandler::removeExtension(textureNames[i])] = loadTexture(unitImagePath + textureNames[i]);
 	}
 }
 

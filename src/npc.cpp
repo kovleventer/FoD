@@ -4,23 +4,18 @@
 #include "global.h"
 #include "battle.h"
 
-NPC::NPC() : MapEntity(Point(0, 0)) {
+NPC::NPC(std::string text, int x, int y) : NPC(text, Point(x, y)) {}
+
+NPC::NPC(std::string text, Point pos) : MapEntity(pos) {
+	texture = Global::resourceHandler->npcTextures[text];
 	isStanding = true;
 	path = NULL;
 	init();
 }
 
-NPC::NPC(int textID, Point pos) : MapEntity(pos) {
-	texture = Global::resourceHandler->npcTextures[Global::resourceHandler->npcTextureIDs[textID]];
-	isStanding = true;
-	path = NULL;
-	init();
-}
-
-NPC::NPC(int textID, std::vector<Point> pathPoints) : MapEntity(pathPoints[0]) {
-	texture = Global::resourceHandler->npcTextures[Global::resourceHandler->npcTextureIDs[textID]];
+NPC::NPC(std::string text, std::vector<Point> pathPoints) : MapEntity(pathPoints[0]) {
+	texture = Global::resourceHandler->npcTextures[text];
 	isStanding = false;
-	//NOTE temporary workaround
 	speed = 0.07 / Global::fps * 60;
 	temporaryContainer = pathPoints;
 	init();
@@ -30,6 +25,8 @@ NPC::~NPC() {
 	//Check is NOT done by the delete operation
 	if (path != NULL)
 		delete path;
+	
+	Global::npcHandler->npcs.erase(std::remove(Global::npcHandler->npcs.begin(), Global::npcHandler->npcs.end(), this));
 }
 
 void NPC::updateNPCPosition() {
@@ -50,9 +47,11 @@ void NPC::updateNPCPosition() {
 }
 
 void NPC::activate() {
-	Battle* battle = new Battle(this);
+	if (enemy) {
+		Battle* battle = new Battle(this);
 	
-	battle->start();
+		battle->start();
+	}
 }
 
 PointD NPC::getProgressVector() {
@@ -79,6 +78,14 @@ Army* NPC::getArmy() {
 	return army;
 }
 
+std::string NPC::getName() {
+	return name;
+}
+
+bool NPC::isEnemy() {
+	return enemy;
+}
+
 void NPC::setProgressVector(PointD newProgressVector) {
 	progressVector = newProgressVector;
 }
@@ -91,10 +98,20 @@ void NPC::setPath(CircularPath* newPath) {
 	path = newPath;
 }
 
+void NPC::setName(std::string newName) {
+	name = newName;
+}
+
+void NPC::setIsEnemy(bool newIsEnemy) {
+	enemy = newIsEnemy;
+}
+
 void NPC::init() {
 	army = new Army(Global::permaGUI->getDim().x + Global::permaGUI->getDim().w / 5,
 					Global::permaGUI->getDim().y,
 					Global::permaGUI->getDim().w * 4 / 5,
 					Global::permaGUI->getDim().h / 2,
 					5, 2, true);
+	enemy = true;
+	atBackground = false;
 }

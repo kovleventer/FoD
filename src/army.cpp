@@ -187,6 +187,10 @@ void Army::setUnit(Point p, Unit* unitToSet) {
 	setUnit(p.getX(), p.getY(), unitToSet);
 }
 
+void Army::setUnit(int index, Unit* unitToSet) {
+	setUnit(index % iWidth, index / iWidth, unitToSet);
+}
+
 void Army::setSelectedUnitPos(Point newSelectedUnitPos) {
 	selectedUnitPos = newSelectedUnitPos;
 }

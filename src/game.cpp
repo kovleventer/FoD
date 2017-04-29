@@ -8,6 +8,9 @@
 #include "exceptions.h"
 #include "userinputhandler.h"
 #include "camera.h"
+#include "npchandler.h"
+#include "filesystemhandler.h"
+#include "worldobjecthandler.h"
 
 #include "popup.h"
 
@@ -36,17 +39,29 @@ Game::Game(std::string aName, Version version) {
 		
 		Global::unitHandler = new UnitHandler();
 		
-		Global::player = new Player(Point(5, 5));
+		Global::player = new Player("player", 0, 0);
 		
 		Global::permaGUI = new PermanentGUI();
+		//Global::permaGUI->initAfterMap();
 		Global::guiHandler = new GUIHandler();
 		
 		//Generate map stuff
 		//NOTE this must run after the media has been loaded
 		Global::map = new Map(Global::gameBoardWidth, Global::gameBoardHeight);
-		Global::map->createNPCPath();
+		Global::minimap->regenerateMinimap();
+		
+		Global::worldObjectHandler = new WorldObjectHandler();
+		Global::worldObjectHandler->loadAll();
+		
+		//This must run after we loaded the world objects but before we loaded the npcs
+		Global::map->createPassabilityMap();
+		
+		Global::npcHandler = new NPCHandler();
+		Global::npcHandler->loadAll();
+		
 		
 		Global::cursor = new Cursor("impassable");
+		
 		
 		//60 fps (or not)
 		id = SDL_AddTimer(1000 / Global::fps, timer, NULL);
@@ -55,7 +70,7 @@ Game::Game(std::string aName, Version version) {
 		return;
 	}
 	
-	//TODO better initialization system for player and npc inventory/army
+	//TODO better initialization system for player and npc inventory
 	Global::player->getInventory()->addItem(Global::itemHandler->items["sword"]);
 	Global::player->getInventory()->addItem(Global::itemHandler->items["shield"]);
 	Global::player->getInventory()->addItem(Global::itemHandler->items["amulet"]);
@@ -75,25 +90,6 @@ Game::Game(std::string aName, Version version) {
 	Global::player->getInventory()->addItem(Global::itemHandler->items["mshield1"]);
 	Global::player->getInventory()->addItem(Global::itemHandler->items["mshield2"]);
 	Global::player->getInventory()->addItem(Global::itemHandler->items["bread"]);
-	
-	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 10), UnitAddingPreference::FRONTROWFIRST);
-	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 2), UnitAddingPreference::FRONTROWFIRST);
-	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 3), UnitAddingPreference::FRONTROWFIRST);
-	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 4), UnitAddingPreference::FRONTROWFIRST);
-	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Dog", 1), UnitAddingPreference::SUPPORTFIRST);
-	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Dog", 2), UnitAddingPreference::SUPPORTFIRST);
-	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Dog", 3), UnitAddingPreference::SUPPORTFIRST);
-	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Bowman", 1), UnitAddingPreference::BACKROWFIRST);
-	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Bowman", 2), UnitAddingPreference::BACKROWFIRST);
-	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Gray Mage", 1), UnitAddingPreference::BACKROWFIRST);
-	
-	Global::map->getNPC(0)->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 10), UnitAddingPreference::BACKROWFIRST);
-	Global::map->getNPC(0)->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 10), UnitAddingPreference::BACKROWFIRST);
-	Global::map->getNPC(0)->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 10), UnitAddingPreference::BACKROWFIRST);
-	Global::map->getNPC(0)->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 10), UnitAddingPreference::BACKROWFIRST);
-	
-	//Global::guiHandler->setGUI(new Popup(400, 400, PopupType::POPUP_YESNO));
-	
 	
 	//Contains a while loop
 	mainLoop();
@@ -219,12 +215,12 @@ void Game::mainLoop() {
 				quit = true;
 				break;
 			case SDL_KEYDOWN:
-				//handleKeyboardEvents(e);
+				UserInputHandler::handleKeyPressEvent(e);
 				break;
 			case SDL_USEREVENT:
 				if (Global::player->getState() == PlayerState::MOVING) {
 					Global::player->updatePlayerPosition();
-					Global::map->updateNPCsPosition();
+					Global::npcHandler->updateNPCsPosition();
 				}
 				UserInputHandler::handleKeyDownEvent(keyboardState);
 				Global::cursor->update();
@@ -260,15 +256,29 @@ void Game::renderGame() {
 void Game::cleanup() {
 	std::cout << "Closing...";
 	//Deletes global variables
+	//Setting these pointers to NULL might be pointless but it would cause problems otherwise
 	delete Global::guiHandler;
+	Global::guiHandler = NULL;
 	delete Global::permaGUI;
+	Global::permaGUI = NULL;
 	delete Global::cursor;
+	Global::cursor = NULL;
+	delete Global::npcHandler;
+	Global::npcHandler = NULL;
+	delete Global::worldObjectHandler;
+	Global::worldObjectHandler = NULL;
 	delete Global::map;
+	Global::map = NULL;
 	delete Global::unitHandler;
+	Global::unitHandler = NULL;
 	delete Global::itemHandler;
+	Global::itemHandler = NULL;
 	delete Global::resourceHandler;
+	Global::resourceHandler = NULL;
 	delete Global::camera;
+	Global::camera = NULL;
 	delete Global::player;
+	Global::player = NULL;
 	
 	//Destroys core SDL objects
 	SDL_DestroyRenderer(Global::renderer);

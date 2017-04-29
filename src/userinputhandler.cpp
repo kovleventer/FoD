@@ -7,16 +7,25 @@
 #include "game.h"
 
 void UserInputHandler::handleKeyPressEvent(SDL_Event e) {
-	
+	//Useful:
+	//https://wiki.libsdl.org/SDL_Keycode
+	switch (e.key.keysym.sym) {
+		case SDLK_F6:
+			//Press F6 for debug info
+			Global::map->setAllowDebug(!Global::map->getAllowDebug());
+			break;
+		case SDLK_F7:
+			//Press F7 for freeing some memory
+			Global::resourceHandler->clearTextTextures();
+			break;
+		case SDLK_ESCAPE:
+			//If the user presses escape we quit
+			Game::quit();
+			break;
+	}
 }
 
 void UserInputHandler::handleKeyDownEvent(const Uint8* keyboardState) {
-	//If the user presses escape we quit
-	if (keyboardState[SDL_SCANCODE_ESCAPE]) {
-		Game::quit();
-		return;
-	}
-	
 	if (Global::guiHandler->isLocked()) {
 		return;
 	}
@@ -173,9 +182,14 @@ void UserInputHandler::handleMouseWheelEvent(bool up) {
 		return;
 	}
 	
+	//Immersive zooming
 	if (up) {
-		Global::tileSize *= 2;
+		if (Global::tileSize <= 1024) {
+			Global::tileSize *= 2;
+		}
 	} else {
-		Global::tileSize /= 2;
+		if (Global::tileSize >= 4) {
+			Global::tileSize /= 2;
+		}
 	}
 }
