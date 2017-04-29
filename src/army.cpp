@@ -27,6 +27,10 @@ Army::Army(int xp, int yp, int wp, int hp, int width, int height, bool isInv) : 
 	
 	selectedUnitPos = Point(-1, -1);
 	hoveredUnitPos = Point(-1, -1);
+	
+	if (isInverted) {
+		setUnitInfo(Global::player->getArmy()->getUnitInfo());
+	}
 }
 
 Army::~Army() {
@@ -61,6 +65,18 @@ void Army::render() {
 			}
 		}
 	}
+}
+
+int Army::getWidth() {
+	return iWidth;
+}
+
+int Army::getHeight() {
+	return iHeight;
+}
+
+unsigned int Army::getSize() {
+	return iSize;
 }
 
 int Army::getUnitSize() {
@@ -160,7 +176,7 @@ void Army::removeUnit(Point p) {
 void Army::handleMousePressEvent(int xp, int yp) {
 	Point clickPos = getUnitOnCursor(xp, yp);
 	if (clickPos != Point(-1, -1)) {
-		if (isInverted) {
+		if (Global::guiHandler->isHardlocked()) {
 			//If enemy units are clicked
 			
 		} else {

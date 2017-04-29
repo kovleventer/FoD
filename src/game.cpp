@@ -85,6 +85,8 @@ Game::Game(std::string aName, Version version) {
 	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Bowman", 2), UnitAddingPreference::BACKROWFIRST);
 	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Gray Mage", 1), UnitAddingPreference::BACKROWFIRST);
 	
+	Global::map->getNPC(0)->getArmy()->addUnit(Global::unitHandler->getUnit("Gray Mage", 20), UnitAddingPreference::BACKROWFIRST);
+	
 	
 	//Contains a while loop
 	mainLoop();

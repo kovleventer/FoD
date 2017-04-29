@@ -28,6 +28,9 @@ public:
 	void render();
 	
 	//Getters
+	int getWidth();
+	int getHeight();
+	unsigned int getSize();
 	int getUnitSize();
 	int getPaddingV();
 	int getPaddingH();

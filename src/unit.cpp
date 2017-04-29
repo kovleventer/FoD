@@ -71,7 +71,14 @@ void Unit::recalculateInventory() {
 		if (tempItem != NULL) {
 			for(std::map<std::string, int>::const_iterator it = tempItem->stats.begin(); it != tempItem->stats.end(); ++it) {
 				statsWithItems[it->first] += it->second;
+				if (it->first == "life") {
+					statsWithItems["currentLife"] += it->second;
+				}
 			}
 		}
 	}
+}
+
+bool UnitSpeedComparator::operator()(Unit* a, Unit* b) {
+	return (a->statsWithItems["speed"] < b->statsWithItems["speed"]);
 }

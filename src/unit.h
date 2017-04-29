@@ -45,3 +45,9 @@ private:
 	
 	Item** items;
 };
+
+//Compares two units by their speed stats (used in battle)
+class UnitSpeedComparator {
+public:
+	bool operator()(Unit* a, Unit* b);
+};

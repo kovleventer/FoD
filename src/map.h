@@ -44,6 +44,8 @@ public:
 	//Returns NULL, when there aren't any npcs standing on the tile
 	NPC* getNPCOnTile(Point tilePos);
 	NPC* getNPCOnTile(Tile* tile);
+	
+	NPC* getNPC(int index);
 private:
 	int width;
 	int height;

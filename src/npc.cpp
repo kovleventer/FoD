@@ -51,7 +51,7 @@ void NPC::updateNPCPosition() {
 
 void NPC::activate() {
 	Battle* battle = new Battle(this);
-	delete battle;
+	//delete battle;
 }
 
 PointD NPC::getProgressVector() {

@@ -16,7 +16,7 @@ ItemHandler::~ItemHandler() {
 }
 
 void ItemHandler::loadAll() {
-	std::vector<std::string> itemList = {"sword", "shield", "amulet", "helmet", "ring", "staff", "roundshield", "poisonarrow", "frostcloak", "crossbow", "sickle", "boots"
+	std::vector<std::string> itemList = {"sword", "shield", "amulet", "helmet", "ring", "staff", "roundshield", "poisonarrow", "frostcloak", "crossbow", "sickle", "boots",
 		"bow", "ironarrow", "wand", "oldcloak", "mshield1", "mshield2", "bread"
 	};
 	

@@ -117,6 +117,10 @@ NPC* Map::getNPCOnTile(Tile* tile) {
 	return NULL;
 }
 
+NPC* Map::getNPC(int index) {
+	return npcs[index];
+}
+
 void Map::renderTileMap() {
 	//We only render visible tiles
 	Point startTileCoordinates = Point(Global::camera->getPosition().getX() / Global::tileSize, Global::camera->getPosition().getY() / Global::tileSize);

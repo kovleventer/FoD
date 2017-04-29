@@ -1,5 +1,7 @@
 #pragma once
 
+#include <queue>
+
 #include "npc.h"
 #include "wholescreengui.h"
 
