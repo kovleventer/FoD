@@ -3,10 +3,20 @@
 #include <SDL2/SDL.h>
 #include <string>
 
-#include "point.h"
+#include "util/point.h"
 #include "item.h"
 #include "animatabletexture.h"
 
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class Cursor has a position and a texture
+ * We do not use the os's default cursor
+ * The cursor can store an item sometimes
+ */
 class Cursor {
 public:
 	//Init

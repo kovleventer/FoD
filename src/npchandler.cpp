@@ -2,6 +2,10 @@
 
 #include "global.h"
 
+/*!
+ * @author kovlev
+ */
+
 NPCHandler::NPCHandler() {
 	basePath = "data/map/npc/";
 }
@@ -28,6 +32,8 @@ void NPCHandler::loadAll() {
 		//Armys unit unit levels
 		//Armys unit hps lost
 		//Armys unit xp gained
+		//Number of items (items listed with "")
+		//Gold
 		// a [b c (a times)]
 		// a: number of points in path
 		// b: the x coordinate of the current tile
@@ -91,6 +97,9 @@ void NPCHandler::loadAll() {
 			inventory.push_back(itemName);
 		}
 		
+		int gold = 0;
+		file >> gold;
+		
 		int pathLen = 0;
 		file >> pathLen;
 		
@@ -147,6 +156,8 @@ void NPCHandler::loadAll() {
 				Global::player->getInventory()->addItem(Global::itemHandler->getItem(inventory[i]));
 			}
 			
+			Global::player->giveGold(gold);
+			
 			Global::camera->setPosition(pathPieces[0]);
 		} else {
 			//Initializing NPC
@@ -191,6 +202,8 @@ void NPCHandler::loadAll() {
 				loaded->getInventory()->addItem(Global::itemHandler->getItem(inventory[i]));
 			}
 			
+			loaded->giveGold(gold);
+			
 			//Setting path
 			if (!loaded->getStanding()) {
 				loaded->setPath(new CircularPath(loaded->getTempCont()));
@@ -205,4 +218,17 @@ void NPCHandler::updateNPCsPosition() {
 	for (unsigned int i = 0; i < npcs.size(); i++) {
 		npcs[i]->updateNPCPosition();
 	}
+}
+
+Character* NPCHandler::getCharacterByName(std::string characterName) {
+	//Sum python like player-checking
+	if (characterName == "__player__") {
+		return Global::player;
+	}
+	for (unsigned int i = 0; i < npcs.size(); i++) {
+		if (npcs[i]->getName() == characterName) {
+			return npcs[i];
+		}
+	}
+	return NULL;
 }

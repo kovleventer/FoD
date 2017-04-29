@@ -2,6 +2,10 @@
 
 #include "global.h"
 
+/*!
+ * @author kovlev
+ */
+
 ItemHandler::ItemHandler() {
 	basePath = "data/item/";
 	

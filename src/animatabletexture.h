@@ -4,14 +4,30 @@
 #include <vector>
 #include <utility>
 
-#include "point.h"
+#include "util/point.h"
 
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @enum TextureType which type is the texture
+ * 	STATIC for simple textures which can be represented by one SDL_Texture
+ * 	ANIMATED textures change over time
+ * 	ROTATING textures are used on character, whose movement may change their textures
+ */
 enum class TextureType {
 	STATIC,
 	ANIMATED,
 	ROTATING
 };
 
+
+/*!
+ * @enum RotationType used for easier translation of things
+ * It does not make any sense by itself, but it works
+ */
 enum class RotationType {
 	DOWN = 0,
 	DOWNLEFT = 1,
@@ -23,6 +39,11 @@ enum class RotationType {
 	DOWNRIGHT = 7
 };
 
+
+/*!
+ * @class ATexture is a renderable texture
+ * It is like SDL_Texture but it has extended functionality and more convinient usage
+ */
 class ATexture {
 public:
 	//For static textures

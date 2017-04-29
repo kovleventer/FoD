@@ -1,7 +1,11 @@
 #include "resourcehandler.h"
 
 #include "global.h"
-#include "exceptions.h"
+#include "util/exceptions.h"
+
+/*!
+ * @author kovlev
+ */
 
 ResourceHandler::ResourceHandler() {
 	terrainImagePath = "data/img/terrain/";
@@ -313,6 +317,7 @@ void ResourceHandler::loadColors() {
 	colors["button-text"] = {210, 220, 190};
 	colors["popup-text"] = {210, 220, 190};
 	colors["debug-coord"] = {0, 255, 255};
+	colors["gold"] = {220, 220, 14};
 }
 
 void ResourceHandler::loadAudio() {

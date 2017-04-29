@@ -1,5 +1,9 @@
 #include "global.h"
 
+/*!
+ * @author kovlev
+ */
+
 //Redundant stuff
 int Global::screenWidth = 0;
 int Global::screenHeight = 0; 

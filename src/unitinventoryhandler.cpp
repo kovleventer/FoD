@@ -1,5 +1,9 @@
 #include "unitinventoryhandler.h"
 
+/*!
+ * @author kovlev
+ */
+
 bool UnitInventoryHandler::matches(UnitType unitType, ItemType itemType) {
 	switch (unitType) {
 		case UnitType::FIGHTER:

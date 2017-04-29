@@ -2,13 +2,24 @@
 
 #include <SDL2/SDL.h>
 
-#include "guipart.h"
+#include "gui/basicgui.h"
 #include "item.h"
-#include "point.h"
+#include "util/point.h"
 #include "iteminfo.h"
 #include "animatabletexture.h"
 
-class Inventory : public GUIPart {
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class Inventory
+ * Contains items
+ * Has a gui, so it is renderable
+ * Handles events, so the items are movable in player's inventory
+ */
+class Inventory : public BasicGUI {
 public:
 	//Player init
 	Inventory(int xp, int yp, int wp, int hp, int width, int height);

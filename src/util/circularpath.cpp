@@ -1,6 +1,10 @@
 #include "circularpath.h"
 
-#include "pathfinding.h"
+#include "../pathfinding.h"
+
+/*!
+ * @author kovlev
+ */
 
 CircularPath::CircularPath(std::vector<Point> points) {
 	//Init

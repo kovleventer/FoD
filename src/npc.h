@@ -5,13 +5,23 @@
 #include <string>
 #include <thread>
 
-#include "point.h"
-#include "mapentity.h"
-#include "circularpath.h"
+#include "util/point.h"
+#include "util/circularpath.h"
 #include "army.h"
 #include "inventory.h"
+#include "character.h"
 
-class NPC : public MapEntity {
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class NPC non-player character, non-person character or non-playable character as wikipedia states
+ * Controlled by AI
+ * Sometimes moves
+ */
+class NPC : public Character {
 public:
 	NPC(std::string text, int x, int y);
 	NPC(std::string text, Point pos);
@@ -30,30 +40,18 @@ public:
 	void activate();
 	
 	//Getters
-	PointD getProgressVector();
 	double getSpeed();
 	bool getStanding();
 	std::vector<Point> getTempCont();
 	CircularPath* getPath();
-	Army* getArmy();
-	Inventory* getInventory();
-	std::string getName();
 	bool isEnemy();
 	
 	//Setters
-	void setProgressVector(PointD newProgressVector);
 	void setSpeed(double newSpeed);
 	void setPath(CircularPath* newPath);
-	void setName(std::string newName);
 	void setIsEnemy(bool newIsEnemy);
 private:
 	void init();
-	
-	//The position used for rendering is calculated
-	PointD progressVector;
-	
-	//NPC's speed
-	double speed;
 	
 	CircularPath* path;
 	std::vector<Point> temporaryContainer;
@@ -61,14 +59,6 @@ private:
 	//Is NPC standing
 	bool isStanding;
 	
-	//NPC's army and inventory
-	Army* army;
-	Inventory* inventory;
-	
-	
-	std::string name;
 	//TODO factions
 	bool enemy;
-	
-	void calcRotation(Point pRot);
 };

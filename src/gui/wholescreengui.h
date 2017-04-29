@@ -4,11 +4,21 @@
 #include <vector>
 #include <string>
 
-#include "transientgui.h"
-#include "guipart.h"
-#include "animatabletexture.h"
+#include "basicgui.h"
+#include "../animatabletexture.h"
 
-class WholeScreenGUI : public TransientGUI {
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class WholeScreenGUI A type of gui, which have several parts and a header
+ * A header contains the title of the gui
+ * Simple parts are added to the gui and are not destroyed on WholeScreenGUI deletion
+ * Temporary parts are destroyed
+ */
+class WholeScreenGUI : public BasicGUI {
 public:
 	WholeScreenGUI(int xp, int yp, int wp, int hp);
 	WholeScreenGUI(SDL_Rect dimensionRect);
@@ -18,10 +28,10 @@ public:
 	void render();
 	
 	//Adds a part to the gui
-	void addPart(GUIPart* part);
+	void addPart(BasicGUI* part);
 	
 	//Adds a temporary part to the gui
-	void addTempPart(GUIPart* part);
+	void addTempPart(BasicGUI* part);
 	
 	//Getters
 	std::string getHeaderText();
@@ -30,16 +40,16 @@ public:
 	//Setters
 	void setHeaderText(std::string newHeaderText);
 	
-	//The coordinates are based on the GUI's position
-	//0, 0 is at the top legt corner of our GUI
+	//The coordinates are NOT based on the GUI's position
+	//0, 0 is at the top left corner of THE SCREEN
 	void handleMousePressEvent(int xp, int yp);
 	void handleMouseMotionEvent(int xp, int yp);
 	void handleMouseWheelEvent(bool up);
 private:
-	std::vector<GUIPart*> parts;
+	std::vector<BasicGUI*> parts;
 	
 	//Temporary parts are deleted on gui deletion
-	std::vector<GUIPart*> tempParts;
+	std::vector<BasicGUI*> tempParts;
 	
 	//Th height of the top part of the gui
 	int headerSize;

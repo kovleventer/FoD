@@ -8,6 +8,14 @@ class AbstractUnit;
 #include "unithandler.h"
 #include "unit.h"
 
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class AbstractUnit a default unit template with basic, unmodified, level 1 stats
+ */
 class AbstractUnit {
 	friend class UnitHandler;
 public:

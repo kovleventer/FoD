@@ -2,6 +2,10 @@
 
 #include "global.h"
 
+/*!
+ * @author kovlev
+ */
+
 WorldObjectHandler::WorldObjectHandler() {
 	worldObjectBasePath = "data/map/wo/";
 	impassableBasePath = "data/map/imp/";
@@ -29,6 +33,12 @@ void WorldObjectHandler::loadAll() {
 	loadWorldObjects();
 	loadImpassableWorldObjects();
 	loadInteractiveWorldObjects();
+}
+
+void WorldObjectHandler::setOwnershipRelations() {
+	for (unsigned int i = 0; i < interactives.size(); i++) {
+		interactives[i]->setOwner(Global::npcHandler->getCharacterByName(interactives[i]->tempOwnerHolder));
+	}
 }
 
 void WorldObjectHandler::loadWorldObjects() {
@@ -113,15 +123,23 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 	for (unsigned int i = 0; i < interactiveNames.size(); i++) {
 		file.open(interactiveBasePath + interactiveNames[i], std::ios::in);
 		//File pattern:
+		//Name
 		//Texture name
+		//Owner name
 		//Position point
 		// a [b c (a times)]
 		// a: number of interactive tiles
 		// b: the x coordinate of current interactive tile (relative, so (0,0) means the position tile itself)
 		// c: the x coordinate of current interactive tile (relative, so (0,0) means the position tile itself)
 		//Scale
+		std::string name;
+		std::getline(file, name);
+		
 		std::string textureName;
-		file >> textureName;
+		std::getline(file, textureName);
+		
+		std::string ownerName;
+		std::getline(file, ownerName);
 		
 		int posX, posY;
 		file >> posX;
@@ -140,7 +158,16 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 		double scale;
 		file >> scale;
 		
-		InteractiveWorldObject* loaded = new InteractiveWorldObject(textureName, posX, posY, interactiveTiles);
+		InteractiveWorldObject* loaded = new InteractiveWorldObject(textureName, posX, posY, interactiveTiles, false);
+		loaded->setName(name);
+		
+		loaded->tempOwnerHolder = ownerName;
+		
+		//Setting interactive properties
+		loaded->getGUI()->addPart({"TEST", new TestGUIPart(loaded->getGUI())});
+		loaded->getGUI()->addPart({"TEST2", new TestGUIPart(loaded->getGUI())});
+		loaded->getGUI()->addPart({"TEST3", new TestGUIPart(loaded->getGUI())});
+		
 		loaded->setScale(scale);
 		Global::map->getTile(posX, posY)->entities.push_back(loaded);
 		interactives.push_back(loaded);

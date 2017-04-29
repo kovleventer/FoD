@@ -1,6 +1,10 @@
 #include "permanentgui.h"
 
-#include "global.h"
+#include "../global.h"
+
+/*!
+ * @author kovlev
+ */
 
 PermanentGUI::PermanentGUI() {
 	upperHeight = 30;
@@ -43,6 +47,24 @@ void PermanentGUI::render() {
 	for (unsigned int i = 0; i < buttons.size(); i++) {
 		buttons[i]->render();
 	}
+	
+	//gold indicator for player
+	ATexture* goldText = Global::resourceHandler->getTextTexture(Text(std::to_string(Global::player->getGold()), Global::resourceHandler->colors["gold"]));
+	Dimension d = goldText->getDimensions();
+	d *= upperHeight;
+	d /= Global::defaultFontSize;
+	destinationRect.x = Global::screenWidth / 2 - (d.W() / 2 + upperHeight / 2) + upperHeight;
+	//Small corrigation
+	destinationRect.y = -upperHeight / 5;
+	destinationRect.w = d.W();
+	destinationRect.h = d.H();
+	goldText->render(destinationRect);
+	
+	destinationRect.x = Global::screenWidth / 2 - (d.W() / 2 + upperHeight / 2);
+	destinationRect.y = 0;
+	destinationRect.w = upperHeight;
+	destinationRect.h = upperHeight;
+	goldTexture->render(destinationRect);
 }
 
 int PermanentGUI::getUpperHeight() {
@@ -80,6 +102,7 @@ void PermanentGUI::setLowerHeight(int newLH) {
 void PermanentGUI::init() {
 	heightLeftForMap = Global::screenHeight - upperHeight - lowerHeight;
 	texture = Global::resourceHandler->getATexture(TT::GUI, "permabg");
+	goldTexture = Global::resourceHandler->getATexture(TT::GUI, "gold");
 	
 	int tempX, tempY, tempW, tempH;
 	if (heightLeftForMap > Global::screenWidth) {

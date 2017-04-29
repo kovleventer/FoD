@@ -3,7 +3,11 @@
 #include "global.h"
 #include "battle.h"
 
-Army::Army(int xp, int yp, int wp, int hp, int width, int height, bool isInv) : GUIPart(xp, yp, wp, hp) {
+/*!
+ * @author kovlev
+ */
+
+Army::Army(int xp, int yp, int wp, int hp, int width, int height, bool isInv) : BasicGUI(xp, yp, wp, hp) {
 	units = new Unit*[width * height];
 	//Setting size attributes
 	iWidth = width;

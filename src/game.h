@@ -13,9 +13,20 @@
 #include <iomanip>
 #include <thread>
 
-#include "point.h"
-#include "version.h"
+#include "util/point.h"
+#include "util/version.h"
 
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class Game the base game
+ * Calls all initialization functions
+ * Runs the mainloop that deals with timing events and rendering
+ * Cleans up the game by freeing all memory and deleting variables
+ */
 class Game {
 public:
 	Game(std::string aName, Version version);
@@ -48,8 +59,4 @@ private:
 	std::ofstream log;
 	
 	bool generateDefaultSettings;
-	
-	//Threading magic
-	std::thread t0;
-	std::thread t1;
 };

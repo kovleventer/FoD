@@ -6,13 +6,27 @@
 
 #include "mapentity.h"
 #include "animatabletexture.h"
+#include "interactiveworldobject.h"
 
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @enum TileInfo helps determinating the cursor texture when hovered over this tile
+ */
 enum class TileInfo {
 	FREE,
 	IMPASSABLE,
-	FRIENDLY
+	INTERACTIVE
 };
 
+
+/*!
+ * @class Tile the most basic layer of the map
+ * We have a lot of them so they should be lightweight
+ */
 class Tile {
 public:
 	Tile(std::string tileType);
@@ -28,12 +42,19 @@ public:
 	//Getters
 	std::string getType();
 	TileInfo getTileInfo();
+	InteractiveWorldObject* getInterOnTile();
 	
 	//Setters
 	void setTileInfo(TileInfo newTileInfo);
+	void setInterOnTile(InteractiveWorldObject* newInterOnTile);
 private:
+	//The tile's type
 	std::string type;
 	
 	//Is it passable or impassable? Does it have a building on it?
 	TileInfo tileInfo;
+	
+	//This is needed since the interactives may have more activatable tiles
+	//And we only want to store them in the entities list once
+	InteractiveWorldObject* interOnTile;
 };

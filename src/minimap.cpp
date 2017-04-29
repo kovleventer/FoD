@@ -2,7 +2,11 @@
 
 #include "global.h"
 
-Minimap::Minimap(int xp, int yp, int wp, int hp) : GUIPart(xp, yp, wp, hp) {
+/*!
+ * @author kovlev
+ */
+
+Minimap::Minimap(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp, wp, hp) {
 	//https://wiki.libsdl.org/SDL_CreateRGBSurface
 	minimapSurface = SDL_CreateRGBSurface(SDL_SWSURFACE, w, h, 32, 0, 0, 0, 0);
 	generatedTexture = NULL;

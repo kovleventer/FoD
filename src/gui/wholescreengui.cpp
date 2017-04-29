@@ -1,8 +1,12 @@
 #include "wholescreengui.h"
 
-#include "global.h"
+#include "../global.h"
 
-WholeScreenGUI::WholeScreenGUI(int xp, int yp, int wp, int hp) : TransientGUI(xp, yp, wp, hp) {
+/*!
+ * @author kovlev
+ */
+
+WholeScreenGUI::WholeScreenGUI(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp, wp, hp) {
 	headerSize = h / 10;
 	headerT = Global::resourceHandler->getATexture(TT::GUI, "guiheader");
 	headerText = "";
@@ -50,11 +54,11 @@ void WholeScreenGUI::render() {
 	}
 }
 
-void WholeScreenGUI::addPart(GUIPart* part) {
+void WholeScreenGUI::addPart(BasicGUI* part) {
 	parts.push_back(part);
 }
 
-void WholeScreenGUI::addTempPart(GUIPart* part) {
+void WholeScreenGUI::addTempPart(BasicGUI* part) {
 	tempParts.push_back(part);
 }
 
@@ -79,6 +83,12 @@ void WholeScreenGUI::handleMousePressEvent(int xp, int yp) {
 			break;
 		}
 	}
+	for (unsigned int i = 0; i < tempParts.size(); i++) {
+		if (tempParts[i]->contains(xp, yp)) {
+			tempParts[i]->handleMousePressEvent(xp, yp);
+			break;
+		}
+	}
 }
 
 void WholeScreenGUI::handleMouseMotionEvent(int xp, int yp) {
@@ -89,6 +99,12 @@ void WholeScreenGUI::handleMouseMotionEvent(int xp, int yp) {
 			break;
 		}
 	}
+	for (unsigned int i = 0; i < tempParts.size(); i++) {
+		if (tempParts[i]->contains(xp, yp)) {
+			tempParts[i]->handleMouseMotionEvent(xp, yp);
+			break;
+		}
+	}
 }
 
 void WholeScreenGUI::handleMouseWheelEvent(bool up) {
@@ -96,6 +112,12 @@ void WholeScreenGUI::handleMouseWheelEvent(bool up) {
 	for (unsigned int i = 0; i < parts.size(); i++) {
 		if (parts[i]->contains(Global::cursor->getPosition())) {
 			parts[i]->handleMouseWheelEvent(up);
+			break;
+		}
+	}
+	for (unsigned int i = 0; i < tempParts.size(); i++) {
+		if (tempParts[i]->contains(Global::cursor->getPosition())) {
+			tempParts[i]->handleMouseWheelEvent(up);
 			break;
 		}
 	}

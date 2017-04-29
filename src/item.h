@@ -8,7 +8,16 @@
 
 #include "animatabletexture.h"
 
-//NOTE update itemhandler/translater when change these
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @enum ItemRarity how rare is the item
+ * The small colorful triangle displayed in th top left corner of the item indicates this
+ * NOTE update itemhandler/translater when change these
+ */
 enum class ItemRarity {
 	COMMON,
 	RARE,
@@ -16,9 +25,12 @@ enum class ItemRarity {
 	UTIL
 };
 
-//Used by wielding filter
-//Not every unit can wield every item
-//A unit can only wield one item per type
+
+/*!
+ * @enum ItemType Used by wielding filter
+ * Not every unit can wield every item
+ * A unit can only wield one item per type
+ */
 enum class ItemType {
 	MELEE,
 	BOW,
@@ -32,6 +44,13 @@ enum class ItemType {
 	UTIL
 };
 
+
+/*!
+ * @class Item represents an item
+ * It has stats and stuff
+ * Items are not changeable therefore not instantiatable
+ * You should not delete items except on cleanup
+ */
 class Item {
 public:
 	Item(std::string n, ItemRarity r, ItemType t);

@@ -2,8 +2,18 @@
 
 #include <SDL2/SDL.h>
 
-#include "point.h"
+#include "util/point.h"
 
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class UserInputHandler contains static methods which are used in eventhandling
+ * Handles map events right here
+ * Passes events to the current gui when possible
+ */
 class UserInputHandler {
 public:
 	//The exact moment when the user pushes the key down

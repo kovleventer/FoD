@@ -7,8 +7,17 @@
 #include <iostream>
 #include <utility>
 
-#include "exceptions.h"
+#include "util/exceptions.h"
 
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class FilesystemHandler contains helper functions on listing all files and directories in a folder
+ * Also can be used for dealing with extensions
+ */
 class FilesystemHandler {
 public:
 	//Filesystem traversing methods

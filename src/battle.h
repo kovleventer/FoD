@@ -3,11 +3,21 @@
 #include <queue>
 
 #include "npc.h"
-#include "wholescreengui.h"
+#include "gui/wholescreengui.h"
 #include "player.h"
-#include "popup.h"
+#include "gui/popup.h"
 #include "animatabletexture.h"
 
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class Battle a battle is between two characters
+ * On an npc-player duel, the battle is visible, animated and controllable
+ * npc-npc duel is not yet implemented
+ */
 class Battle {
 public:
 	//Quick Battle

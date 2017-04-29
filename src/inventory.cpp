@@ -2,7 +2,11 @@
 
 #include "global.h"
 
-Inventory::Inventory(int xp, int yp, int wp, int hp, int width, int height) : GUIPart(xp, yp, wp, hp) {
+/*!
+ * @author kovlev
+ */
+
+Inventory::Inventory(int xp, int yp, int wp, int hp, int width, int height) : BasicGUI(xp, yp, wp, hp) {
 	items = new Item*[width * height];
 	//Setting size attributes
 	iWidth = width;
@@ -16,7 +20,7 @@ Inventory::Inventory(int xp, int yp, int wp, int hp, int width, int height) : GU
 	slotTexture = Global::resourceHandler->getATexture(TT::GUI, "inventoryslot");
 }
 
-Inventory::Inventory(int size) : GUIPart(0, 0, 0, 0) {
+Inventory::Inventory(int size) : BasicGUI(0, 0, 0, 0) {
 	items = new Item*[size];
 	iSize = size;
 	
@@ -33,7 +37,8 @@ void Inventory::render() {
 	destinationRect.w = slotSize;
 	destinationRect.h = slotSize;
 	
-	for (int j = 0; j < iHeight; j++) {
+	//Inventory is always displayed as a square
+	for (int j = 0; j < iWidth; j++) {
 		for (int i = 0; i < iWidth; i++) {
 			//Setting rectangle
 			destinationRect.x = x + i * slotSize;

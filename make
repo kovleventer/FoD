@@ -6,13 +6,13 @@ EXECUTABLE_DEBUG="FoD_DEBUG"
 SOURCES=(
 	"game.cpp"
 	"main.cpp"
-	"point.cpp"
+	"util/point.cpp"
 	"tile.cpp"
 	"map.cpp"
 	"resourcehandler.cpp"
 	"worldobject.cpp"
 	"global.cpp"
-	"exceptions.cpp"
+	"util/exceptions.cpp"
 	"cursor.cpp"
 	"userinputhandler.cpp"
 	"camera.cpp"
@@ -21,15 +21,13 @@ SOURCES=(
 	"interactiveworldobject.cpp"
 	"npc.cpp"
 	"mapentity.cpp"
-	"circularpath.cpp"
-	"permanentgui.cpp"
-	"button.cpp"
-	"guihandler.cpp"
-	"guipart.cpp"
-	"transientgui.cpp"
-	"wholescreengui.cpp"
-	"popup.cpp"
-	"text.cpp"
+	"util/circularpath.cpp"
+	"gui/permanentgui.cpp"
+	"gui/button.cpp"
+	"gui/guihandler.cpp"
+	"gui/wholescreengui.cpp"
+	"gui/popup.cpp"
+	"util/text.cpp"
 	"inventory.cpp"
 	"item.cpp"
 	"itemhandler.cpp"
@@ -40,7 +38,7 @@ SOURCES=(
 	"unitinfo.cpp"
 	"abstractunit.cpp"
 	"battle.cpp"
-	"version.cpp"
+	"util/version.cpp"
 	"unitinventoryhandler.cpp"
 	"minimap.cpp"
 	"npchandler.cpp"
@@ -49,6 +47,9 @@ SOURCES=(
 	"impassableworldobject.cpp"
 	"animationhandler.cpp"
 	"animatabletexture.cpp"
+	"character.cpp"
+	"gui/interactivegui.cpp"
+	"gui/basicgui.cpp"
 )
 
 LINKER=(
@@ -61,7 +62,7 @@ LINKER=(
 
 FLAGS="-O3 -Wall -std=c++14 -c"
 DEBUGFLAGS="-O0 -g -Wall -std=c++14 -c"
- 
+
 if [[ $1 == "R" || $1 == "r" ]]; then
 	if [ -a $EXECUTABLE ]; then
 		echo "Running executable..."
@@ -74,6 +75,7 @@ elif [[ $1 == "D" || $1 == "d" ]]; then
 	echo "Fully Compiling Debug Version..."
 	mkdir -p o
 	for i in ${SOURCES[@]}; do
+		mkdir -p "o/$(dirname "${i}")"
 		g++ $DEBUGFLAGS "src/"$i -o "o/${i%%.*}d.o"
 		echo " $i"
 	done
@@ -95,6 +97,7 @@ elif [[ $1 == "F" || $1 == "f" ]]; then
 	echo "Fully Compiling..."
 	mkdir -p o
 	for i in ${SOURCES[@]}; do
+		mkdir -p "o/$(dirname "${i}")"
 		g++ $FLAGS "src/"$i -o "o/${i%%.*}.o"
 		echo " $i"
 	done
@@ -121,18 +124,21 @@ elif [[ $1 == "M" || $1 == "m" ]]; then
 	MODIFIED=false
 	for i in ${SOURCES[@]}; do
 		if [ ! -f "o/${i%%.*}.o" ]; then
+			mkdir -p "o/$(dirname "${i}")"
 			g++ $FLAGS "src/"$i -o "o/${i%%.*}.o"
 			echo " $i"
 			MODIFIED=true
 		fi
 		
 		if [[ "src/"$i -nt "o/${i%%.*}.o" ]]; then
+			mkdir -p "o/$(dirname "${i}")"
 			g++ $FLAGS "src/"$i -o "o/${i%%.*}.o"
 			echo " $i"
 			MODIFIED=true
 		else
 			if [ -f "src/${i%%.*}.h" ]; then
 				if [[ "src/${i%%.*}.h" -nt "o/${i%%.*}.o" ]]; then
+					mkdir -p "o/$(dirname "${i}")"
 					g++ $FLAGS "src/"$i -o "o/${i%%.*}.o"
 					echo " $i"
 					MODIFIED=true

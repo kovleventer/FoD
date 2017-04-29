@@ -1,7 +1,11 @@
 #include "map.h"
 
 #include "global.h"
-#include "circularpath.h"
+#include "util/circularpath.h"
+
+/*!
+ * @author kovlev
+ */
 
 Map::Map() {
 	tileMapPath = "data/map/tilemap.data";
@@ -113,6 +117,21 @@ NPC* Map::getNPCOnTile(Tile* tile) {
 		}
 	}
 	return NULL;
+}
+
+InteractiveWorldObject* Map::getInteractiveOnTile(int x, int y) {
+	return getInteractiveOnTile(Point(x, y));
+}
+
+InteractiveWorldObject* Map::getInteractiveOnTile(Point tilePos) {
+	if (getTile(tilePos) != NULL) {
+		return getInteractiveOnTile(getTile(tilePos));
+	}
+	return NULL;
+}
+
+InteractiveWorldObject* Map::getInteractiveOnTile(Tile* tile) {
+	return tile->getInterOnTile();
 }
 
 bool Map::getAllowDebug() {
@@ -399,11 +418,13 @@ void Map::createPassabilityMap() {
 			//in case the object extends beyond the borders of the map
 			if (getTile(absolute) == NULL) continue;
 			
-			getTile(absolute)->setTileInfo(TileInfo::FRIENDLY);
+			getTile(absolute)->setTileInfo(TileInfo::INTERACTIVE);
+			getTile(absolute)->setInterOnTile(tempInteractiveObject);
 		}
 	}
 	
 	//Some tiles are impassable eventough we do not place terrain objects on the top of them
+	//TODO move them to file
 	std::vector<std::string> baseImpassable = {"water"};
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {

@@ -3,6 +3,12 @@
 #include <stdexcept>
 #include <string>
 
+/*!
+ * @author kovlev
+ * All classes are inherited from exceptions
+ * Their names are self-explanatory hopefully
+ */
+
 //My exceptions for further use
 class SDLInitError : public std::runtime_error {
 public:

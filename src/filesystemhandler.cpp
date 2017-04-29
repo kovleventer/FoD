@@ -1,5 +1,9 @@
 #include "filesystemhandler.h"
 
+/*!
+ * @author kovlev
+ */
+
 std::vector<std::string> FilesystemHandler::getFilesInDir(std::string path) {
 	//The list which we are going to return
 	std::vector<std::string> fileList;

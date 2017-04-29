@@ -2,6 +2,10 @@
 
 #include "global.h"
 
+/*!
+ * @author kovlev
+ */
+
 WorldObject::WorldObject(std::string text, int x, int y) : WorldObject(text, Point(x, y)) {}
 
 WorldObject::WorldObject(std::string text, Point pos) : MapEntity(pos) {

@@ -5,8 +5,17 @@
 #include <map>
 #include <algorithm>
 
-#include "point.h"
+#include "util/point.h"
 
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class Pathfinding basically a one method class
+ * Uses a highy unoptimezed algorithm (BFS) and an unsafe implementation
+ */
 class Pathfinding {
 public:
 	//Pathfinding uses the data from the tilemap

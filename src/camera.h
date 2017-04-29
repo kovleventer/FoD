@@ -1,7 +1,15 @@
 #pragma once
 
-#include "point.h"
+#include "util/point.h"
 
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class Camera determinates what to render on the map
+ */
 class Camera {
 public:
 	//Initializes the camera

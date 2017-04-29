@@ -3,6 +3,10 @@
 #include "global.h"
 #include "game.h"
 
+/*!
+ * @author kovlev
+ */
+
 Battle::Battle(NPC* npc1, NPC* npc2) {
 	//TODO implementation of battle between two npcs
 	gui = NULL;
@@ -54,9 +58,9 @@ void Battle::start() {
 	currentTurn = 0;
 	
 	//Displayes the current turn
-	class TurnCounter : public GUIPart {
+	class TurnCounter : public BasicGUI {
 	public:
-		TurnCounter(int xp, int yp, int wp, int hp, int& tC) : GUIPart(xp, yp, wp, hp), turnCounter(tC) {}
+		TurnCounter(int xp, int yp, int wp, int hp, int& tC) : BasicGUI(xp, yp, wp, hp), turnCounter(tC) {}
 		
 		void render() {
 			SDL_Rect destinationRect = {x, y, w, h};
@@ -177,6 +181,8 @@ void Battle::continueBattle() {
 			for (int i = 0; i < acquiredItems; i++) {
 				player->getInventory()->addItem(popup->getItem(i));
 			}
+			
+			player->giveGold(enemy->getGold());
 			
 			
 			Global::guiHandler->clear();

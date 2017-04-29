@@ -2,11 +2,20 @@
 
 #include <SDL2/SDL.h>
 
-#include "guipart.h"
+#include "gui/basicgui.h"
 #include "item.h"
 #include "animatabletexture.h"
 
-class ItemInfo : public GUIPart {
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class BasicGUI a gui element which displays information of a given item
+ * List all the items' stats
+ */
+class ItemInfo : public BasicGUI {
 public:
 	ItemInfo(int xp, int yp, int wp, int hp);
 	

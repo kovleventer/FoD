@@ -4,16 +4,20 @@
 #include "global.h"
 #include "battle.h"
 
+/*!
+ * @author kovlev
+ */
+
 NPC::NPC(std::string text, int x, int y) : NPC(text, Point(x, y)) {}
 
-NPC::NPC(std::string text, Point pos) : MapEntity(pos) {
+NPC::NPC(std::string text, Point pos) : Character(pos) {
 	texture = Global::resourceHandler->getATexture(TT::NPC, text);
 	isStanding = true;
 	path = NULL;
 	init();
 }
 
-NPC::NPC(std::string text, std::vector<Point> pathPoints) : MapEntity(pathPoints[0]) {
+NPC::NPC(std::string text, std::vector<Point> pathPoints) : Character(pathPoints[0]) {
 	texture = Global::resourceHandler->getATexture(TT::NPC, text);
 	isStanding = false;
 	speed = 0.07 / Global::fps * 60;
@@ -63,14 +67,6 @@ void NPC::activate() {
 	}
 }
 
-PointD NPC::getProgressVector() {
-	return progressVector;
-}
-
-double NPC::getSpeed() {
-	return speed;
-}
-
 bool NPC::getStanding() {
 	return isStanding;
 }
@@ -83,36 +79,12 @@ CircularPath* NPC::getPath() {
 	return path;
 }
 
-Army* NPC::getArmy() {
-	return army;
-}
-
-Inventory* NPC::getInventory() {
-	return inventory;
-}
-
-std::string NPC::getName() {
-	return name;
-}
-
 bool NPC::isEnemy() {
 	return enemy;
 }
 
-void NPC::setProgressVector(PointD newProgressVector) {
-	progressVector = newProgressVector;
-}
-
-void NPC::setSpeed(double newSpeed) {
-	speed = newSpeed;
-}
-
 void NPC::setPath(CircularPath* newPath) {
 	path = newPath;
-}
-
-void NPC::setName(std::string newName) {
-	name = newName;
 }
 
 void NPC::setIsEnemy(bool newIsEnemy) {
@@ -128,36 +100,4 @@ void NPC::init() {
 	enemy = true;
 	atBackground = false;
 	inventory = new Inventory(20);
-}
-
-void NPC::calcRotation(Point pRot) {
-	//NOTE you can the find the same exact code at player
-	//So its code duplication
-	if (pRot == Point(1, -1)) {
-		//Up right
-		texture->setRotation(RotationType::UPRIGHT);
-	} else if (pRot == Point(1, 0)) {
-		//Right
-		texture->setRotation(RotationType::RIGHT);
-	} else if (pRot == Point(1, 1)) {
-		//Down right
-		texture->setRotation(RotationType::DOWNRIGHT);
-	} else if (pRot == Point(0, 1)) {
-		//Down
-		texture->setRotation(RotationType::DOWN);
-	} else if (pRot == Point(-1, 1)) {
-		//Down left
-		texture->setRotation(RotationType::DOWNLEFT);
-	} else if (pRot == Point(-1, 0)) {
-		//Left
-		texture->setRotation(RotationType::LEFT);
-	} else if (pRot == Point(-1, -1)) {
-		//Up left
-		texture->setRotation(RotationType::UPLEFT);
-	} else if (pRot == Point(0, -1)) {
-		//Up
-		texture->setRotation(RotationType::UP);
-	} else {
-		std::clog << "Warning: Rotation calculating bug" << std::endl;
-	}
 }

@@ -6,6 +6,10 @@
 #include "tile.h"
 #include "game.h"
 
+/*!
+ * @author kovlev
+ */
+
 void UserInputHandler::handleKeyPressEvent(SDL_Event e) {
 	//Useful:
 	//https://wiki.libsdl.org/SDL_Keycode
@@ -63,7 +67,7 @@ void UserInputHandler::handleMousePressEvent(SDL_Event e) {
 			if (!Global::guiHandler->isHardlocked()) {
 				if (Global::cursor->getItem() == NULL) {
 					for (unsigned int i = 0; i < Global::permaGUI->getButtons().size(); i++) {
-						if (Global::permaGUI->getButtons()[i]->isClicked(Global::cursor->getPosition())) {
+						if (Global::permaGUI->getButtons()[i]->contains(Global::cursor->getPosition())) {
 							Global::permaGUI->getButtons()[i]->click();
 						}
 					}
@@ -73,26 +77,7 @@ void UserInputHandler::handleMousePressEvent(SDL_Event e) {
 		}
 		
 		if (Global::guiHandler->isLocked()) {
-			WholeScreenGUI* possibleGUI = dynamic_cast<WholeScreenGUI*>(Global::guiHandler->getGUI());
-			if (possibleGUI == NULL) {
-				Popup* popup = (Popup*)Global::guiHandler->getGUI();
-				if (popup->getPopupType() == PopupType::POPUP_OK) {
-					if (popup->buttonOK->isClicked(Global::cursor->getPosition())) {
-						popup->buttonOK->click();
-						Global::guiHandler->clear();
-						delete popup;
-					}
-				} else if (popup->getPopupType() == PopupType::POPUP_YESNO) {
-					if (popup->buttonYES->isClicked(Global::cursor->getPosition())) {
-						popup->buttonYES->click();
-					}
-					if (popup->buttonNO->isClicked(Global::cursor->getPosition())) {
-						popup->buttonNO->click();
-					}
-				}
-			} else {
-				possibleGUI->handleMousePressEvent(Global::cursor->getPosition().getX(), Global::cursor->getPosition().getY());
-			}
+			Global::guiHandler->getGUI()->handleMousePressEvent(Global::cursor->getPosition().getX(), Global::cursor->getPosition().getY());
 			return;
 		}
 		
@@ -147,13 +132,8 @@ void UserInputHandler::handleMouseReleaseEvent(SDL_Event e) {
 
 void UserInputHandler::handleMouseMotionEvent(int x, int y) {
 	if (Global::guiHandler->isLocked()) {
-		WholeScreenGUI* possibleGUI = dynamic_cast<WholeScreenGUI*>(Global::guiHandler->getGUI());
-		if (possibleGUI == NULL) {
-			//TODO Popup stuff
-		} else {
-			Global::player->getArmy()->clearHovering();
-			possibleGUI->handleMouseMotionEvent(x, y);
-		}
+		
+		Global::guiHandler->getGUI()->handleMouseMotionEvent(Global::cursor->getPosition().getX(), Global::cursor->getPosition().getY());
 		
 		return;
 	}
@@ -182,12 +162,9 @@ void UserInputHandler::handleMouseMotionEvent(int x, int y) {
 
 void UserInputHandler::handleMouseWheelEvent(bool up) {
 	if (Global::guiHandler->isLocked()) {
-		WholeScreenGUI* possibleGUI = dynamic_cast<WholeScreenGUI*>(Global::guiHandler->getGUI());
-		if (possibleGUI == NULL) {
-			//TODO Popup stuff
-		} else {
-			possibleGUI->handleMouseWheelEvent(up);
-		}
+		
+		Global::guiHandler->getGUI()->handleMouseWheelEvent(up);
+		
 		return;
 	}
 	

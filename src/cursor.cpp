@@ -4,6 +4,10 @@
 #include "tile.h"
 #include "userinputhandler.h"
 
+/*!
+ * @author kovlev
+ */
+
 Cursor::Cursor(std::string text) {
 	//To make sure that the texture is never NULL
 	texture = Global::resourceHandler->getATexture(TT::CURSOR, text);

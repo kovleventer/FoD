@@ -1,5 +1,9 @@
 #include "version.h"
 
+/*!
+ * @author kovlev, sourcey.com (template)
+ */
+
 Version::Version(std::string version) {
 	std::sscanf(version.c_str(), "%d.%d.%d.%d", &major, &minor, &revision, &build);
 	if (major < 0) major = 0;

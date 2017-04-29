@@ -3,9 +3,13 @@
 #include "global.h"
 #include "pathfinding.h"
 
+/*!
+ * @author kovlev
+ */
+
 Player::Player(std::string text, int x, int y) : Player(text, Point(x, y)) {}
 
-Player::Player(std::string text, Point pos) : MapEntity(pos) {
+Player::Player(std::string text, Point pos) : Character(pos) {
 	hasPlannedPath = false;
 	state = PlayerState::STANDING;
 	texture = Global::resourceHandler->getATexture(TT::NPC, text);
@@ -38,7 +42,6 @@ void Player::updatePlayerPosition() {
 		
 		if ((((PointD)position * Global::tileSize) + progressVector * Global::tileSize).distanceTo(((PointD)follow->getPosition() * Global::tileSize) + follow->getProgressVector() * Global::tileSize) <= Global::tileSize * 2 / 3) {
 			follow->activate();
-			state = PlayerState::STANDING;
 			clearPath();
 		}
 	}
@@ -55,15 +58,15 @@ void Player::updatePlayerPosition() {
 		tileProgress++;
 		progressVector = PointD();
 		if (position == path[path.size()-1]) {
-			state = PlayerState::STANDING;
-			tileProgress = 0;
+			//Interactive activation if needed
+			InteractiveWorldObject* currentInteractive = Global::map->getInteractiveOnTile(position);
+			if (currentInteractive != NULL) {
+				currentInteractive->activate();
+			}
+			
 			clearPath();
 		}
 	}
-}
-
-PointD Player::getProgressVector() {
-	return progressVector;
 }
 
 bool Player::getHasPlannedPath() {
@@ -82,28 +85,8 @@ int Player::getTileProgress() {
 	return tileProgress;
 }
 
-double Player::getSpeed() {
-	return speed;
-}
-
 NPC* Player::getFollow() {
 	return follow;
-}
-
-Inventory* Player::getInventory() {
-	return inventory;
-}
-
-Army* Player::getArmy() {
-	return army;
-}
-
-std::string Player::getName() {
-	return name;
-}
-
-void Player::setProgressVector(PointD newProgressVector) {
-	progressVector = newProgressVector;
 }
 
 void Player::setHasPlannedPath(bool newHasPlannedPath) {
@@ -122,10 +105,6 @@ void Player::setTileProgress(int newTileProgress) {
 	tileProgress = newTileProgress;
 }
 
-void Player::setSpeed(double newSpeed) {
-	speed = newSpeed;
-}
-
 void Player::setFollow(NPC* toFollow) {
 	follow = toFollow;
 }
@@ -138,44 +117,10 @@ void Player::setArmy(Army* newArmy) {
 	army = newArmy;
 }
 
-void Player::setName(std::string newName) {
-	name = newName;
-}
-
 void Player::clearPath() {
+	state = PlayerState::STANDING;
 	follow = NULL;
 	hasPlannedPath = false;
 	path.clear();
-}
-
-void Player::calcRotation(Point pRot) {
-	//NOTE you can the find the same exact code at npc
-	//So its code duplication
-	if (pRot == Point(1, -1)) {
-		//Up right
-		texture->setRotation(RotationType::UPRIGHT);
-	} else if (pRot == Point(1, 0)) {
-		//Right
-		texture->setRotation(RotationType::RIGHT);
-	} else if (pRot == Point(1, 1)) {
-		//Down right
-		texture->setRotation(RotationType::DOWNRIGHT);
-	} else if (pRot == Point(0, 1)) {
-		//Down
-		texture->setRotation(RotationType::DOWN);
-	} else if (pRot == Point(-1, 1)) {
-		//Down left
-		texture->setRotation(RotationType::DOWNLEFT);
-	} else if (pRot == Point(-1, 0)) {
-		//Left
-		texture->setRotation(RotationType::LEFT);
-	} else if (pRot == Point(-1, -1)) {
-		//Up left
-		texture->setRotation(RotationType::UPLEFT);
-	} else if (pRot == Point(0, -1)) {
-		//Up
-		texture->setRotation(RotationType::UP);
-	} else {
-		std::clog << "Warning: Rotation calculating bug" << std::endl;
-	}
+	tileProgress = 0;
 }

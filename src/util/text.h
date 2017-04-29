@@ -3,6 +3,17 @@
 #include <SDL2/SDL.h>
 #include <string>
 
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class Text a pair of color and text
+ * Used on text rendering
+ * Fontsize is not specified, since it is not easily configurable
+ * Has a custom hashing system
+ */
 class Text {
 public:
 	Text(std::string t, SDL_Color col);

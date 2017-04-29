@@ -2,6 +2,10 @@
 
 #include "global.h"
 
+/*!
+ * @author kovlev
+ */
+
 ATexture::ATexture(SDL_Texture* staticTexture) {
 	currentTexture = staticTexture;
 	textureType = TextureType::STATIC;

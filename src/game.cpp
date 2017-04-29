@@ -5,14 +5,18 @@
 #include "itemhandler.h"
 #include "unithandler.h"
 #include "global.h"
-#include "exceptions.h"
+#include "util/exceptions.h"
 #include "userinputhandler.h"
 #include "camera.h"
 #include "npchandler.h"
 #include "filesystemhandler.h"
 #include "worldobjecthandler.h"
 #include "player.h"
-#include "popup.h"
+#include "gui/popup.h"
+
+/*!
+ * @author kovlev
+ */
 
 Game::Game(std::string aName, Version version) {
 	generateDefaultSettings = false;
@@ -33,7 +37,6 @@ Game::Game(std::string aName, Version version) {
 	struct tm* now = localtime(&t);
 	std::stringstream logFileName;
 	logFileName << "log/";
-	//TODO make this work on Windows
 	logFileName << std::put_time(now, "%Y-%m-%d-%H-%M-%S");
 	logFileName << ".log";
 	log.open(logFileName.str());
@@ -75,6 +78,8 @@ Game::Game(std::string aName, Version version) {
 		
 		Global::npcHandler = new NPCHandler();
 		Global::npcHandler->loadAll();
+		
+		Global::worldObjectHandler->setOwnershipRelations();
 		
 		Global::cursor = new Cursor("impassable");
 		
@@ -255,25 +260,18 @@ void Game::mainLoop() {
 				if (e.user.code == 1) {
 					//Runs every frame
 					if (Global::player->getState() == PlayerState::MOVING) {
-						
-						//t0 = std::thread([] {
-							Global::player->updatePlayerPosition();
-							Global::npcHandler->updateNPCsPosition();
-						//});
-						//t0.detach();
+						Global::player->updatePlayerPosition();
+						Global::npcHandler->updateNPCsPosition();
 					}
 					UserInputHandler::handleKeyDownEvent(keyboardState);
 					Global::cursor->update();
 					renderGame();
 				} else if (e.user.code == 2) {
-					Global::animationHandler->nextTick();
+					Global::animationHandler->nextTick(Global::player->getState() == PlayerState::MOVING);
 				}
 				break;
 			case SDL_MOUSEBUTTONDOWN:
-				//t1 = std::thread([e] {
-					UserInputHandler::handleMousePressEvent(e);
-				//});
-				//t1.detach();
+				UserInputHandler::handleMousePressEvent(e);
 				break;
 			case SDL_MOUSEWHEEL:
 				//https://wiki.libsdl.org/SDL_MouseWheelEvent
@@ -320,10 +318,10 @@ void Game::cleanup() {
 	Global::unitHandler = NULL;
 	delete Global::itemHandler;
 	Global::itemHandler = NULL;
-	delete Global::animationHandler;
-	Global::animationHandler = NULL;
 	delete Global::resourceHandler;
 	Global::resourceHandler = NULL;
+	delete Global::animationHandler;
+	Global::animationHandler = NULL;
 	delete Global::camera;
 	Global::camera = NULL;
 	delete Global::player;

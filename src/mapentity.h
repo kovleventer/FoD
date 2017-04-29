@@ -3,9 +3,17 @@
 #include <SDL2/SDL.h>
 #include <algorithm>
 
-#include "point.h"
+#include "util/point.h"
 #include "animatabletexture.h"
 
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class MapEntity the base class for all things in the map (except tiles)
+ */
 class MapEntity {
 public:
 	MapEntity(int x, int y);

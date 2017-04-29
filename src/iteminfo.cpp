@@ -2,7 +2,11 @@
 
 #include "global.h"
 
-ItemInfo::ItemInfo(int xp, int yp, int wp, int hp) : GUIPart(xp, yp, wp, hp) {
+/*!
+ * @author kovlev
+ */
+
+ItemInfo::ItemInfo(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp, wp, hp) {
 	selectedItem = NULL;
 	bgTexture = Global::resourceHandler->getATexture(TT::GUI, "iteminfobg");
 	descriptionSize = 24;

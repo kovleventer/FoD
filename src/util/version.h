@@ -5,6 +5,15 @@
 #include <iostream>
 #include <sstream>
 
+/*!
+ * @author kovlev, sourcey.com (template)
+ */
+
+
+/*!
+ * @struct Version
+ * Handles version numbers and comparation
+ */
 struct Version {
 	int major, minor, revision, build;
 

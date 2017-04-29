@@ -2,7 +2,11 @@
 
 #include "global.h"
 
-UnitInfo::UnitInfo(int xp, int yp, int wp, int hp) : GUIPart(xp, yp, wp, hp) {
+/*!
+ * @author kovlev
+ */
+
+UnitInfo::UnitInfo(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp, wp, hp) {
 	selectedUnit = NULL;
 	bgTexture = Global::resourceHandler->getATexture(TT::GUI, "unitinfobg");
 	nameSize = 36;

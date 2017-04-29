@@ -1,5 +1,9 @@
 #include "point.h"
 
+/*!
+ * @author kovlev
+ */
+
 //Point stuff
 
 Point::Point() {
@@ -149,6 +153,11 @@ Dimension Dimension::operator*=(const int& mul) {
 Dimension Dimension::operator/=(const int& div) {
 	*this = *this / div;
 	return *this;
+}
+
+std::ostream& operator<<(std::ostream& out, Dimension const& dimension) {
+	out << "W: " << dimension.w << ", H: " << dimension.h;
+	return out;
 }
 
 Dimension Dimension::operator*(const int& mul) const {

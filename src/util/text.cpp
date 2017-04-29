@@ -1,5 +1,9 @@
 #include "text.h"
 
+/*!
+ * @author kovlev
+ */
+
 Text::Text(std::string t, SDL_Color col) {
 	text = t;
 	color = col;

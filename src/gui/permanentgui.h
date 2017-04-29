@@ -5,13 +5,17 @@
 
 #include "button.h"
 #include "wholescreengui.h"
-#include "inventory.h"
-#include "iteminfo.h"
-#include "unitinfo.h"
-#include "army.h"
-#include "minimap.h"
-#include "animatabletexture.h"
+#include "../inventory.h"
+#include "../iteminfo.h"
+#include "../unitinfo.h"
+#include "../army.h"
+#include "../minimap.h"
+#include "../animatabletexture.h"
 
+
+/*!
+ * @enum ClickedEntry Which of the three entries are clicked on the permanent gui
+ */
 enum class ClickedEntry {
 	NONE,
 	QUESTS,
@@ -19,6 +23,13 @@ enum class ClickedEntry {
 	MINIMAP
 };
 
+
+/*!
+ * @class PermanentGUI this class represents the alaways visible parts of the gui
+ * The brown stripes at the top and bottom of the screen are supposed to be this
+ * Has buttons, and player info is available by these
+ * Displays current gold
+ */
 class PermanentGUI {
 public:
 	PermanentGUI();
@@ -28,6 +39,8 @@ public:
 	~PermanentGUI();
 	
 	ATexture* texture;
+	
+	ATexture* goldTexture;
 	
 	//Renders the permagui
 	void render();

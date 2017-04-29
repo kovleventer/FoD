@@ -5,9 +5,17 @@
 #include <map>
 
 #include "item.h"
-#include "point.h"
+#include "util/point.h"
 #include "animatabletexture.h"
 
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @enum UnitType the unit's type (self-explanatory, I think)
+ */
 enum class UnitType {
 	FIGHTER,
 	ARCHER,
@@ -15,6 +23,11 @@ enum class UnitType {
 	OTHER
 };
 
+
+/*!
+ * @class Unit represents a unit
+ * Uses maps with string keys and int values for storing stats
+ */
 class Unit {
 public:
 	Unit(std::string n, UnitType uT);
@@ -93,7 +106,10 @@ private:
 	int temporaryExperienceHolder;
 };
 
-//Compares two units by their speed stats (used in battle)
+
+/*!
+ * @class UnitSpeedComparator Compares two units by their speed stats (used in battle)
+ */
 class UnitSpeedComparator {
 public:
 	bool operator()(Unit* a, Unit* b);

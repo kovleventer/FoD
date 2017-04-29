@@ -3,6 +3,10 @@
 #include "tile.h"
 #include "global.h"
 
+/*!
+ * @author kovlev
+ */
+
 //Default scale is 1
 MapEntity::MapEntity(int x, int y) : MapEntity(Point(x, y), 1) {}
 

@@ -1,5 +1,9 @@
 #include "abstractunit.h"
 
+/*!
+ * @author kovlev
+ */
+
 AbstractUnit::AbstractUnit() {}
 
 std::string AbstractUnit::getName() {

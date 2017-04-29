@@ -3,6 +3,10 @@
 #include "global.h"
 #include "unitinventoryhandler.h"
 
+/*!
+ * @author kovlev
+ */
+
 Unit::Unit(std::string n, UnitType uT) {
 	name = n;
 	unitType = uT;

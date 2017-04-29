@@ -2,16 +2,17 @@
 #include <string>
 
 #include "game.h"
-#include "version.h"
+#include "util/version.h"
 
-//2016-11-28
-//Created by Kovlev
+/*!
+ * @author kovlev
+ * @date 2016-11-28
+ */
 
 const std::string APPNAME = "Fall of Dyrangor";
-const Version VERSION = Version("1.0.1.5");
+const Version VERSION = Version("1.0.1.6");
 
 int main (int argc, char* args[]) {
-	//Game is not extern anymore
 	Game* game;
 	
 	//Init

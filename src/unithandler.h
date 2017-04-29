@@ -9,6 +9,16 @@
 #include "abstractunit.h"
 #include "filesystemhandler.h"
 
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class UnitHandler loads all unit templates
+ * When getUnit is used it generates a new unit based on level
+ * Therefore you should handle deletion yourself
+ */
 class UnitHandler {
 public:
 	UnitHandler();

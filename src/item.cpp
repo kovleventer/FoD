@@ -2,6 +2,10 @@
 
 #include "global.h"
 
+/*!
+ * @author kovlev
+ */
+
 Item::Item(std::string n, ItemRarity r, ItemType t) {
 	name = n;
 	itemRarity = r;

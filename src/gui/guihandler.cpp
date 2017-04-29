@@ -1,6 +1,10 @@
 #include "guihandler.h"
 
-#include "global.h"
+#include "../global.h"
+
+/*!
+ * @author kovlev
+ */
 
 GUIHandler::GUIHandler() {
 	clear();
@@ -14,7 +18,7 @@ bool GUIHandler::isHardlocked() {
 	return hardlocked;
 }
 
-TransientGUI* GUIHandler::getGUI() {
+BasicGUI* GUIHandler::getGUI() {
 	return currentGUI;
 }
 
@@ -22,9 +26,13 @@ Battle* GUIHandler::getBattle() {
 	return currentBattle;
 }
 
-void GUIHandler::setGUI(TransientGUI* newGUI) {
+void GUIHandler::setGUI(BasicGUI* newGUI) {
 	currentGUI = newGUI;
 	hasGUI = (currentGUI != NULL);
+	//Stopping player movement if neccesary
+	if (hasGUI && Global::player->getState() == PlayerState::MOVING) {
+		Global::player->clearPath();
+	}
 	
 	//We allow hardlocking on popup
 	Popup* possiblePopup = dynamic_cast<Popup*>(newGUI);

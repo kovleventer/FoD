@@ -3,18 +3,33 @@
 #include <SDL2/SDL.h>
 #include <string>
 
-#include "transientgui.h"
+#include "basicgui.h"
 #include "button.h"
-#include "point.h"
-#include "item.h"
-#include "animatabletexture.h"
+#include "../util/point.h"
+#include "../item.h"
+#include "../animatabletexture.h"
 
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @enum PopupType offers two opion on popup types
+ * One has only one button while the other has two
+ * The yes-no popup offers no special functionality, so it is never used yet
+ */
 enum class PopupType {
 	POPUP_OK,
 	POPUP_YESNO
 };
 
-class Popup : public TransientGUI {
+
+/*!
+ * @class Popup displays a popup which is closed by clicking the OK button
+ * Supports displaying text and item textures
+ */
+class Popup : public BasicGUI {
 public:
 	//Custom position popups
 	Popup(int xp, int yp, int wp, int hp, PopupType type);
@@ -44,6 +59,9 @@ public:
 	Button* buttonOK;
 	Button* buttonYES;
 	Button* buttonNO;
+	
+	//Event handling
+	void handleMousePressEvent(int xp, int yp);
 private:
 	//The width and the height of the used buttons
 	Point buttonDimensions;

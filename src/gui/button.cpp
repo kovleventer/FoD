@@ -1,12 +1,12 @@
 #include "button.h"
 
-#include "global.h"
+#include "../global.h"
 
-Button::Button(int xp, int yp, int wp, int hp) {
-	x = xp;
-	y = yp;
-	w = wp;
-	h = hp;
+/*!
+ * @author kovlev
+ */
+
+Button::Button(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp, wp, hp) {
 	texture = Global::resourceHandler->getATexture(TT::GUI, "button");
 	functionPointer = NULL;
 	text = "";
@@ -33,49 +33,12 @@ void Button::render() {
 	}
 }
 
-int Button::getX() {
-	return x;
-}
-
-int Button::getY() {
-	return y;
-}
-
-int Button::getW() {
-	return w;
-}
-
-int Button::getH() {
-	return h;
-}
-
 std::string Button::getText() {
 	return text;
 }
 
-void Button::setX(int newX) {
-	x = newX;
-}
-
-void Button::setY(int newY) {
-	y = newY;
-}
-
-void Button::setW(int newW) {
-	w = newW;
-}
-
-void Button::setH(int newH) {
-	h = newH;
-}
-
 void Button::setText(std::string newText) {
 	text = newText;
-}
-
-bool Button::isClicked(Point cursorPosition) {
-	//Simple is-in-rectangle check
-	return cursorPosition.getX() >= x && cursorPosition.getX() <= x + w && cursorPosition.getY() >= y && cursorPosition.getY() <= y + h;
 }
 
 void Button::click() {

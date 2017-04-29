@@ -2,26 +2,45 @@
 
 #include <SDL2/SDL.h>
 
-#include "guipart.h"
+#include "gui/basicgui.h"
 #include "unit.h"
 #include "unitinfo.h"
-#include "point.h"
+#include "util/point.h"
 #include "animatabletexture.h"
 
+/*!
+ * @author kovlev
+ */
+
+/*!
+ * @enum UnitAddingPreference to which place should we try to add the unit
+ * If the unit can not be added to a position we try another
+ */
 enum class UnitAddingPreference {
 	FRONTROWFIRST,
 	BACKROWFIRST,
 	SUPPORTFIRST
 };
 
-//This is not the unit's property
+
+/*!
+ * @enum UnitPosition where is the unit
+ * This is not the unit's property
+ */
 enum class UnitPosition {
 	FRONTROW,
 	BACKROW,
 	SUPPORT
 };
 
-class Army : public GUIPart {
+
+/*!
+ * @class Army represents an army
+ * Has a gui, so it is renderable
+ * Holds a specified amount of units
+ * Interactable by mouse events
+ */
+class Army : public BasicGUI {
 public:
 	//Player init
 	Army(int xp, int yp, int wp, int hp, int width, int height, bool isInv);

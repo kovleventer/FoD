@@ -2,6 +2,10 @@
 
 #include "global.h"
 
+/*!
+ * @author kovlev
+ */
+
 Camera::Camera() {
 	//Top left corner of the map
 	position = Point(0, 0);

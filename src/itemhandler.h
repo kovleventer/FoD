@@ -8,6 +8,14 @@
 #include "item.h"
 #include "filesystemhandler.h"
 
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class ItemHandler loads all items which can be reachable later using the getItem method
+ */
 class ItemHandler {
 public:
 	ItemHandler();

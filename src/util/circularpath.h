@@ -4,6 +4,15 @@
 
 #include "point.h"
 
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class CircularPath A wrapper for a list of points
+ * The first point comes after the last one, therefore it makes a circle
+ */
 class CircularPath {
 public:
 	//We pass a list of points representing the npc's destinations

@@ -4,14 +4,14 @@
 #include <string>
 #include <map>
 
-#include "point.h"
+#include "util/point.h"
 #include "resourcehandler.h"
 #include "map.h"
 #include "cursor.h"
 #include "camera.h"
 #include "player.h"
-#include "permanentgui.h"
-#include "guihandler.h"
+#include "gui/permanentgui.h"
+#include "gui/guihandler.h"
 #include "itemhandler.h"
 #include "unithandler.h"
 #include "minimap.h"
@@ -19,8 +19,16 @@
 #include "worldobjecthandler.h"
 #include "animationhandler.h"
 
-//NOTE a better way would be using namespaces
-//https://stackoverflow.com/questions/2483978/best-way-to-implement-globally-scoped-data
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class Global stores values that are reachable everywhere
+ * NOTE a better way would be using namespaces
+ * https://stackoverflow.com/questions/2483978/best-way-to-implement-globally-scoped-data
+ */
 class Global {
 public:
 	//NOTE we are not using private variables with getters/setters

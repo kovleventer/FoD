@@ -11,11 +11,19 @@
 #include <iostream>
 #include <utility>
 
-#include "text.h"
+#include "util/text.h"
 #include "filesystemhandler.h"
 #include "animatabletexture.h"
 
-//Stands for texturetype
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @enum TT Stands for texturetype
+ * Used on texture-getting
+ */
 enum class TT {
 	TILE,
 	WORLDOBJECT,
@@ -68,21 +76,13 @@ private:
 	
 	//Every texture is loaded once
 	std::map<std::string, ATexture*> tileTextures;
-	
 	std::map<std::string, ATexture*> worldObjectTextures;
-	
 	std::map<std::string, ATexture*> cursorTextures;
-	
 	std::map<std::string, ATexture*> pathTextures;
-	
 	std::map<std::string, ATexture*> npcTextures;
-	
 	std::map<std::string, ATexture*> guiTextures;
-	
 	std::map<std::string, ATexture*> itemTextures;
-	
 	std::map<std::string, ATexture*> itemRarityIndicatorTextures;
-	
 	std::map<std::string, ATexture*> unitTextures;
 	
 	

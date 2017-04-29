@@ -1,5 +1,9 @@
 #include "exceptions.h"
 
+/*!
+ * @author kovlev
+ */
+
 std::string SDLInitError::errorMessage = "SDL initialization failed";
 SDLInitError::SDLInitError() : std::runtime_error::runtime_error(errorMessage) {}
 const char* SDLInitError::what() const throw() {

@@ -3,11 +3,20 @@
 #include <SDL2/SDL.h>
 #include <sstream>
 
-#include "guipart.h"
+#include "gui/basicgui.h"
 #include "unit.h"
 #include "animatabletexture.h"
 
-class UnitInfo : public GUIPart {
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class UnitInfo contains and displays information of a specific unit
+ * Lists all its statistics
+ */
+class UnitInfo : public BasicGUI {
 public:
 	UnitInfo(int xp, int yp, int wp, int hp);
 	

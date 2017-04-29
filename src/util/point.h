@@ -3,11 +3,18 @@
 #include <iostream>
 #include <cmath>
 
-//Needed becouse cross initialization
+/*!
+ * @author kovlev
+ */
+
+//Needed because cross initialization
 //Point(PointD p) and PointD(Point p)
 class PointD;
 
-//Represents a 2 dimensional point with integer coordinates
+/*!
+ * @class Point Represents a 2 dimensional point with integer coordinates
+ * Has printing, hashing and operator overloading functionality
+ */
 class Point {
 public:
 	Point();
@@ -27,8 +34,6 @@ public:
 	double vectorLength();
 	double distanceTo(Point other);
 	int distanceToManhattan(Point other);
-	//Yes, this function is actually used
-	//No, its not anymore
 	int distanceToChebyshev(Point other);
 	
 	//Operator overloadnig in order to print out the point
@@ -64,7 +69,10 @@ private:
 	int y;
 };
 
-//Same as point but the variable names make more sense
+
+/*!
+ * @class Dimension Same as Point but the variable names make more sense
+ */
 class Dimension {
 public:
 	Dimension(int wp, int hp);
@@ -75,6 +83,9 @@ public:
 	
 	Dimension operator*=(const int& mul);
 	Dimension operator/=(const int& div);
+	
+	//Operator overloadnig in order to print out the dimension
+	friend std::ostream& operator<<(std::ostream& out, Dimension const& dimension);
 private:
 	Dimension operator*(const int& mul) const;
 	Dimension operator/(const int& div) const;
@@ -82,7 +93,11 @@ private:
 	int w, h;
 };
 
-//Represents a 2 dimensional point with double precision coordinates
+
+/*!
+ * @class PointD Represents a 2 dimensional point with double precision coordinates
+ * Has printing, hashing and operator overloading functionality
+ */
 class PointD {
 public:
 	PointD();

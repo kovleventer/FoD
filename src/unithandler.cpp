@@ -2,6 +2,10 @@
 
 #include "unit.h"
 
+/*!
+ * @author kovlev
+ */
+
 UnitHandler::UnitHandler() {
 	basePath = "data/unit/";
 	levelMultipliers = 1.1;

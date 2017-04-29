@@ -9,7 +9,7 @@
 #include <typeinfo>
 
 #include "tile.h"
-#include "point.h"
+#include "util/point.h"
 #include "worldobject.h"
 #include "impassableworldobject.h"
 #include "interactiveworldobject.h"
@@ -17,6 +17,15 @@
 #include "npc.h"
 #include "mapentity.h"
 
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class Map the tilemap itself
+ * It can render it and do other cool things
+ */
 class Map {
 public:
 	Map();
@@ -43,6 +52,11 @@ public:
 	NPC* getNPCOnTile(int x, int y);
 	NPC* getNPCOnTile(Point tilePos);
 	NPC* getNPCOnTile(Tile* tile);
+	
+	//Same as NPC, but with interactives
+	InteractiveWorldObject* getInteractiveOnTile(int x, int y);
+	InteractiveWorldObject* getInteractiveOnTile(Point tilePos);
+	InteractiveWorldObject* getInteractiveOnTile(Tile* tile);
 	
 	//DEBUG
 	bool getAllowDebug();

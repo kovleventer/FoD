@@ -3,7 +3,17 @@
 #include "unit.h"
 #include "item.h"
 
-//Handles unit type and item type relations
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @class UnitInventoryHandler
+ * Handles unit type and item type relations
+ * Related to both unit and items
+ * @note should not have its own class
+ */
 class UnitInventoryHandler {
 public:
 	//If a specific type of item can added to a specific type of unit

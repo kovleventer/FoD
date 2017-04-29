@@ -3,6 +3,10 @@
 #include "global.h"
 #include "tile.h"
 
+/*!
+ * @author kovlev
+ */
+
 std::vector<Point> Pathfinding::findPath(Point start, Point destination) {
 	//See for resources:
 	//http://www.redblobgames.com/pathfinding/a-star/introduction.html

@@ -5,12 +5,22 @@
 #include <cmath>
 #include <string>
 
-#include "point.h"
-#include "mapentity.h"
+#include "util/point.h"
 #include "npc.h"
 #include "inventory.h"
 #include "army.h"
+#include "character.h"
 
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @enum PlayerState represents the different player states
+ * The game flow will be different on these cases
+ * The game ticks only increment when the player is moving
+ */
 enum class PlayerState {
 	STANDING,
 	HAS_WAY,
@@ -18,7 +28,12 @@ enum class PlayerState {
 	BATTLING
 };
 
-class Player : public MapEntity {
+
+/*!
+ * @class Player the character which is controlled by us
+ * Has everything that a regular NPC also has
+ */
+class Player : public Character {
 public:
 	Player(std::string text, int x, int y);
 	Player(std::string text, Point pos);
@@ -27,34 +42,24 @@ public:
 	void updatePlayerPosition();
 	
 	//Getters
-	PointD getProgressVector();
 	bool getHasPlannedPath();
 	PlayerState getState();
 	std::vector<Point> getPath();
 	int getTileProgress();
-	double getSpeed();
 	NPC* getFollow();
-	Inventory* getInventory();
-	Army* getArmy();
-	std::string getName();
 	
 	//Setters
-	void setProgressVector(PointD newProgressVector);
 	void setHasPlannedPath(bool newHasPlannedPath);
 	void setState(PlayerState newState);
 	void setPath(std::vector<Point> newPath);
 	void setTileProgress(int newTileProgress);
-	void setSpeed(double newSpeed);
 	void setFollow(NPC* toFollow);
 	void setInventory(Inventory* newInventory);
 	void setArmy(Army* newArmy);
-	void setName(std::string newName);
 	
+	//Clears player path
 	void clearPath();
 private:
-	//When we are rendering, we are using position+progressVector to get the actual position of the player
-	PointD progressVector;
-	
 	//If the player has a planned way
 	bool hasPlannedPath;
 	
@@ -64,16 +69,7 @@ private:
 	std::vector<Point> path;
 	
 	int tileProgress;
-	double speed;
 	
 	//Pointer to the NPC, that the player follows
 	NPC* follow;
-	
-	//Inventory and army set by permagui
-	Inventory* inventory;
-	Army* army;
-	
-	std::string name;
-	
-	void calcRotation(Point pRot);
 };

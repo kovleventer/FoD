@@ -1,8 +1,12 @@
 #include "popup.h"
 
-#include "global.h"
+#include "../global.h"
 
-Popup::Popup(int xp, int yp, int wp, int hp, PopupType type) : TransientGUI(xp, yp, wp, hp) {
+/*!
+ * @author kovlev
+ */
+
+Popup::Popup(int xp, int yp, int wp, int hp, PopupType type) : BasicGUI(xp, yp, wp, hp) {
 	popupType = type;
 	
 	padding = 5;
@@ -127,4 +131,23 @@ void Popup::setText(std::string newText) {
 
 void Popup::addItem(Item* itemToAdd) {
 	items.push_back(itemToAdd);
+}
+
+void Popup::handleMousePressEvent(int xp, int yp) {
+	if (popupType == PopupType::POPUP_OK) {
+		if (buttonOK->contains(xp, yp)) {
+			buttonOK->click();
+			Global::guiHandler->clear();
+			delete this;
+		}
+	} else if (popupType == PopupType::POPUP_YESNO) {
+		if (buttonYES->contains(xp, yp)) {
+			buttonYES->click();
+			//delete this;
+		}
+		if (buttonNO->contains(xp, yp)) {
+			buttonNO->click();
+			//sdelete this;
+		}
+	}
 }
