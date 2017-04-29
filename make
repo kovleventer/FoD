@@ -40,6 +40,7 @@ SOURCES=(
 	"abstractunit.cpp"
 	"battle.cpp"
 	"version.cpp"
+	"unitinventoryhandler.cpp"
 )
 
 LINKER=(

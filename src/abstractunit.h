@@ -6,6 +6,7 @@
 class AbstractUnit;
 
 #include "unithandler.h"
+#include "unit.h"
 
 class AbstractUnit {
 	friend class UnitHandler;
@@ -14,6 +15,7 @@ public:
 	
 	//Getters
 	std::string getName();
+	UnitType getUnitType();
 	int getLife();
 	int getMeleeDamage();
 	int getShootingDamage();
@@ -26,6 +28,7 @@ public:
 	//No setters, stats are setted via friend classes
 private:
 	std::string name;
+	UnitType unitType;
 	int life;
 	int meleeDamage;
 	int shootingDamage;

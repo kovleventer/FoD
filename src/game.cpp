@@ -55,14 +55,35 @@ Game::Game(std::string aName, Version version) {
 	
 	//TODO better initialization system for player and npc inventory/army
 	Global::player->getInventory()->addItem(Global::itemHandler->items["sword"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["sword"]);
 	Global::player->getInventory()->addItem(Global::itemHandler->items["shield"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["shield"]);
+	Global::player->getInventory()->addItem(Global::itemHandler->items["amulet"]);
+	Global::player->getInventory()->addItem(Global::itemHandler->items["helmet"]);
+	Global::player->getInventory()->addItem(Global::itemHandler->items["ring"]);
+	Global::player->getInventory()->addItem(Global::itemHandler->items["staff"]);
+	Global::player->getInventory()->addItem(Global::itemHandler->items["roundshield"]);
+	Global::player->getInventory()->addItem(Global::itemHandler->items["poisonarrow"]);
+	Global::player->getInventory()->addItem(Global::itemHandler->items["frostcloak"]);
+	Global::player->getInventory()->addItem(Global::itemHandler->items["crossbow"]);
+	Global::player->getInventory()->addItem(Global::itemHandler->items["sickle"]);
+	Global::player->getInventory()->addItem(Global::itemHandler->items["boots"]);
+	Global::player->getInventory()->addItem(Global::itemHandler->items["bow"]);
+	Global::player->getInventory()->addItem(Global::itemHandler->items["ironarrow"]);
+	Global::player->getInventory()->addItem(Global::itemHandler->items["wand"]);
+	Global::player->getInventory()->addItem(Global::itemHandler->items["oldcloak"]);
+	Global::player->getInventory()->addItem(Global::itemHandler->items["mshield1"]);
+	Global::player->getInventory()->addItem(Global::itemHandler->items["mshield2"]);
+	Global::player->getInventory()->addItem(Global::itemHandler->items["bread"]);
 	
 	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 1), UnitAddingPreference::FRONTROWFIRST);
 	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 2), UnitAddingPreference::FRONTROWFIRST);
 	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 3), UnitAddingPreference::FRONTROWFIRST);
 	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 4), UnitAddingPreference::FRONTROWFIRST);
+	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Dog", 1), UnitAddingPreference::SUPPORTFIRST);
+	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Dog", 2), UnitAddingPreference::SUPPORTFIRST);
+	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Dog", 3), UnitAddingPreference::SUPPORTFIRST);
+	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Bowman", 1), UnitAddingPreference::BACKROWFIRST);
+	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Bowman", 2), UnitAddingPreference::BACKROWFIRST);
+	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Gray Mage", 1), UnitAddingPreference::BACKROWFIRST);
 	
 	
 	//Contains a while loop

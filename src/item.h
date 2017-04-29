@@ -26,7 +26,8 @@ enum class ItemType {
 	CLOAK,
 	JEWELLERY,
 	ARROW,
-	MAGICSHIELD
+	MAGICSHIELD,
+	UTIL
 };
 
 class Item {
@@ -38,6 +39,8 @@ public:
 	//Getters
 	std::string getName();
 	std::vector<std::string> getDescription();
+	ItemRarity getItemRarity();
+	ItemType getItemType();
 	
 	SDL_Texture* texture;
 	

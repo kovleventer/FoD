@@ -171,7 +171,9 @@ void ResourceHandler::loadGUIImages() {
 }
 
 void ResourceHandler::loadItemImages() {
-	std::vector<std::string> textureNames = {"sword", "shield"};
+	std::vector<std::string> textureNames = {"sword", "shield", "amulet", "helmet", "ring", "staff", "roundshield", "poisonarrow", "frostcloak", "crossbow", "sickle", "boots",
+		"bow", "ironarrow", "wand", "oldcloak", "mshield1", "mshield2", "bread"
+	};
 	
 	for (unsigned int i = 0; i < textureNames.size(); i++) {
 		itemTextures[textureNames[i]] = loadTexture(itemImagePath + textureNames[i] + ".png");
@@ -188,7 +190,7 @@ void ResourceHandler::loadItemRarityIndicatorImages() {
 }
 
 void ResourceHandler::loadUnitImages() {
-	std::vector<std::string> textureNames = {"Axeman", "doggo"};
+	std::vector<std::string> textureNames = {"Axeman", "Dog", "Bowman", "Gray Mage"};
 	
 	for (unsigned int i = 0; i < textureNames.size(); i++) {
 		//NOTE the filenames start with an '_' character

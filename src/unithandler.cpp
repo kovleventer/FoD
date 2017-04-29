@@ -1,11 +1,14 @@
 #include "unithandler.h"
 
+#include "unit.h"
+
 UnitHandler::UnitHandler() {
 	basePath = "data/unit/";
 	levelMultipliers = 1.1;
 	levelMultipliersForEXP = 1.2;
 	levelMultipliersForNOA = 1.01;
 	
+	translaterInit();
 	loadUnitData();
 }
 
@@ -18,12 +21,11 @@ UnitHandler::~UnitHandler() {
 Unit* UnitHandler::getUnit(std::string name, int level) {
 	
 	if (baseUnits.find(name) == baseUnits.end()) {
-		std::cout << baseUnits["axeguy"] << std::endl;
 		return NULL;
 	} else {
 		//NOTE ugly
 		AbstractUnit* unitTemplate = baseUnits[name];
-		Unit* newUnit = new Unit(unitTemplate->getName());
+		Unit* newUnit = new Unit(unitTemplate->getName(), unitTemplate->getUnitType());
 		newUnit->stats["life"] = (int)((double)unitTemplate->getLife() * pow(levelMultipliers, level - 1));
 		newUnit->stats["currentLife"] = newUnit->stats["life"];
 		newUnit->stats["meleeDamage"] = (int)((double)unitTemplate->getMeleeDamage() * pow(levelMultipliers, level - 1));
@@ -45,14 +47,23 @@ Unit* UnitHandler::getUnit(std::string name, int level) {
 	}
 }
 
+UnitType UnitHandler::translateT(std::string unitTypeString) {
+	return translaterSIT[unitTypeString];
+}
+
+std::string UnitHandler::translateT(UnitType unitType) {
+	return translaterITS[unitType];
+}
+
 void UnitHandler::loadUnitData() {
-	std::vector<std::string> unitList = {"axeguy"};
+	std::vector<std::string> unitList = {"Axeman", "Dog", "Bowman", "Gray Mage"};
 	
 	//NOTE uses file IO
 	std::fstream file;
 	
 	//File pattern:
 	//Name
+	//TYPE
 	//life;
 	//meleeDamage;
 	//shootingDamage;
@@ -67,9 +78,18 @@ void UnitHandler::loadUnitData() {
 		file.open(basePath + unitList[i] + ".data", std::ios::in);
 		
 		AbstractUnit* currentUnit = new AbstractUnit();
+		
 		std::string name;
-		file >> name;
+		//file >> name;
+		std::getline(file, name);
 		currentUnit->name = name;
+		
+		UnitType unitType;
+		std::string unitTypeString;
+		file >> unitTypeString;
+		unitType = translateT(unitTypeString);
+		currentUnit->unitType = unitType;
+		
 		//Can be easily done due to friend relations
 		file >> currentUnit->life;
 		file >> currentUnit->meleeDamage;
@@ -86,4 +106,17 @@ void UnitHandler::loadUnitData() {
 		file.close();
 	}
 	
+}
+
+void UnitHandler::translaterInit() {
+	//NOTE not compatible with each other
+	translaterSIT["FIGHTER"] = UnitType::FIGHTER;
+	translaterSIT["ARCHER"] = UnitType::ARCHER;
+	translaterSIT["MAGE"] = UnitType::MAGE;
+	translaterSIT["OTHER"] = UnitType::OTHER;
+	
+	translaterITS[UnitType::FIGHTER] = "Fighter";
+	translaterITS[UnitType::ARCHER] = "Archer";
+	translaterITS[UnitType::MAGE] = "Mage";
+	translaterITS[UnitType::OTHER] = "Other";
 }

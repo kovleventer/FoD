@@ -6,9 +6,16 @@
 
 #include "item.h"
 
+enum class UnitType {
+	FIGHTER,
+	ARCHER,
+	MAGE,
+	OTHER
+};
+
 class Unit {
 public:
-	Unit(std::string n);
+	Unit(std::string n, UnitType uT);
 	~Unit();
 	
 	SDL_Texture* texture;
@@ -33,6 +40,8 @@ public:
 private:
 	std::string name;
 	int unitInventorySize;
+	
+	UnitType unitType;
 	
 	Item** items;
 };

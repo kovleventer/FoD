@@ -96,7 +96,7 @@ Point Map::getTileFromCursorPosition(Point cursorPosition) {
 	
 	Point positionOnFullPixmap = Global::camera->getPosition() + cursorPosition;
 	
-	return Point(positionOnFullPixmap.getX() / Global::tileSize, positionOnFullPixmap.getY() / Global::tileSize);
+	return positionOnFullPixmap / Global::tileSize;
 }
 
 NPC* Map::getNPCOnTile(Point tilePos) {
@@ -407,7 +407,7 @@ void Map::loadMapEntities() {
 	
 	
 	//Player
-	tiles[Global::player->getPosition().getX()][Global::player->getPosition().getX()]->entities.push_back(Global::player);
+	tiles[Global::player->getPosition().getX()][Global::player->getPosition().getY()]->entities.push_back(Global::player);
 }
 
 void Map::createPassabilityMap() {
@@ -492,7 +492,7 @@ void Map::renderPassabilityDebugInfo() {
 			destinationRect.w = Global::tileSize;
 			destinationRect.h = Global::tileSize;
 			
-			//sets the coor of the rect
+			//sets the color of the rect
 			if (getTile(i, j)->getTileInfo() == TileInfo::FREE) {
 				//Green
 				SDL_SetRenderDrawColor(Global::renderer, 0x00, 0xDD, 0x00, 0x00);

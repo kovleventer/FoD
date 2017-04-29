@@ -1,9 +1,11 @@
 #include "unit.h"
 
 #include "global.h"
+#include "unitinventoryhandler.h"
 
-Unit::Unit(std::string n) {
+Unit::Unit(std::string n, UnitType uT) {
 	name = n;
+	unitType = uT;
 	texture = Global::resourceHandler->unitTextures[name];
 	
 	unitInventorySize = 4;
@@ -28,7 +30,7 @@ void Unit::render(SDL_Rect destinationRect) {
 	SDL_RenderCopy(Global::renderer, texture, NULL, &destinationRect);
 	//Unit wounded inicator as red rectangle
 	SDL_SetRenderDrawColor(Global::renderer, 0x74, 0x00, 0x00, 0xAF);
-	destinationRect.h = (int)((double)(stats["life"] - stats["currentLife"]) / stats["life"] * destinationRect.h);
+	destinationRect.h = (int)((double)(statsWithItems["life"] - statsWithItems["currentLife"]) / statsWithItems["life"] * destinationRect.h);
 	SDL_RenderFillRect(Global::renderer, &destinationRect);
 }
 
@@ -41,10 +43,12 @@ int Unit::getUnitInventorySize() {
 }
 
 bool Unit::addItem(Item* itemToAdd) {
-	for (int i = 0; i < unitInventorySize; i++) {
-		if (items[i] == NULL) {
-			items[i] = itemToAdd;
-			return true;
+	if (UnitInventoryHandler::matches(unitType, itemToAdd->getItemType()) && !UnitInventoryHandler::hasType(this, itemToAdd->getItemType())) {
+		for (int i = 0; i < unitInventorySize; i++) {
+			if (items[i] == NULL) {
+				items[i] = itemToAdd;
+				return true;
+			}
 		}
 	}
 	return false;

@@ -1,4 +1,5 @@
 Shiny shield
 RARE
 SHIELD
-physicalDefense 3
+physicalDefense 6
+speed -1

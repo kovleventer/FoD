@@ -7,7 +7,7 @@
 //2016-11-28
 
 const std::string APPNAME = "Fall of Dyrangor";
-const Version VERSION = Version("1.0.0.1");
+const Version VERSION = Version("1.0.1.0");
 
 int main ( int argc, char* args[] ){
 	//Game is not extern anymore

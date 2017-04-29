@@ -35,6 +35,14 @@ std::vector<std::string> Item::getDescription() {
 	return description;
 }
 
+ItemRarity Item::getItemRarity() {
+	return itemRarity;
+}
+
+ItemType Item::getItemType() {
+	return itemType;
+}
+
 void Item::render(int x, int y, int w, int h, bool withIndicator) {
 	SDL_Rect destinationRect = {x, y, w, h};
 	render(destinationRect, withIndicator);

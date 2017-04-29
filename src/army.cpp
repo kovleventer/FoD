@@ -248,16 +248,16 @@ bool Army::addUnitToSupport(Unit* unitToAdd) {
 		setUnit(0, 0, unitToAdd);
 		return true;
 	}
-	if (getUnit(1, 0) == NULL) {
-		setUnit(1, 0, unitToAdd);
+	if (getUnit(0, 1) == NULL) {
+		setUnit(0, 1, unitToAdd);
 		return true;
 	}
-	if (getUnit(0, iWidth - 1) == NULL) {
-		setUnit(0, iWidth - 1, unitToAdd);
+	if (getUnit(iWidth - 1, 0) == NULL) {
+		setUnit(iWidth - 1, 0, unitToAdd);
 		return true;
 	}
-	if (getUnit(1, iWidth - 1) == NULL) {
-		setUnit(1, iWidth - 1, unitToAdd);
+	if (getUnit(iWidth - 1, 1) == NULL) {
+		setUnit(iWidth - 1, 1, unitToAdd);
 		return true;
 	}
 	return false;

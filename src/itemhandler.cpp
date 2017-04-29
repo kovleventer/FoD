@@ -16,7 +16,9 @@ ItemHandler::~ItemHandler() {
 }
 
 void ItemHandler::loadAll() {
-	std::vector<std::string> itemList = {"sword", "shield"};
+	std::vector<std::string> itemList = {"sword", "shield", "amulet", "helmet", "ring", "staff", "roundshield", "poisonarrow", "frostcloak", "crossbow", "sickle", "boots"
+		"bow", "ironarrow", "wand", "oldcloak", "mshield1", "mshield2", "bread"
+	};
 	
 	//NOTE uses file IO
 	std::fstream file;
@@ -97,6 +99,7 @@ void ItemHandler::translaterInit() {
 	translaterSIT["JEWELLERY"] = ItemType::JEWELLERY;
 	translaterSIT["ARROW"] = ItemType::ARROW;
 	translaterSIT["MAGICSHIELD"] = ItemType::MAGICSHIELD;
+	translaterSIT["UTIL"] = ItemType::UTIL;
 	
 	translaterITS[ItemType::MELEE] = "Melee";
 	translaterITS[ItemType::BOW] = "Bow";
@@ -107,4 +110,5 @@ void ItemHandler::translaterInit() {
 	translaterITS[ItemType::JEWELLERY] = "Jewellery";
 	translaterITS[ItemType::ARROW] = "Arrow";
 	translaterITS[ItemType::MAGICSHIELD] = "Magicshield";
+	translaterITS[ItemType::UTIL] = "Util";
 }

@@ -6,6 +6,10 @@ std::string AbstractUnit::getName() {
 	return name;
 }
 
+UnitType AbstractUnit::getUnitType() {
+	return unitType;
+}
+
 int AbstractUnit::getLife() {
 	return life;
 }
