@@ -6,6 +6,7 @@
 
 #include "transientgui.h"
 #include "guipart.h"
+#include "animatabletexture.h"
 
 class WholeScreenGUI : public TransientGUI {
 public:
@@ -19,8 +20,12 @@ public:
 	//Adds a part to the gui
 	void addPart(GUIPart* part);
 	
+	//Adds a temporary part to the gui
+	void addTempPart(GUIPart* part);
+	
 	//Getters
 	std::string getHeaderText();
+	int getHeaderSize();
 	
 	//Setters
 	void setHeaderText(std::string newHeaderText);
@@ -33,11 +38,14 @@ public:
 private:
 	std::vector<GUIPart*> parts;
 	
+	//Temporary parts are deleted on gui deletion
+	std::vector<GUIPart*> tempParts;
+	
 	//Th height of the top part of the gui
 	int headerSize;
 	
 	//Base GUI textures
-	SDL_Texture* headerT;
+	ATexture* headerT;
 	
 	//Name
 	std::string headerText;

@@ -32,12 +32,12 @@ void PermanentGUI::render() {
 	destinationRect.y = 0;
 	destinationRect.w = Global::screenWidth;
 	destinationRect.h = upperHeight;
-	SDL_RenderCopy(Global::renderer, texture, NULL, &destinationRect);
+	texture->render(destinationRect);
 	
 	//upper
 	destinationRect.y = Global::screenHeight - lowerHeight;
 	destinationRect.h = lowerHeight;
-	SDL_RenderCopy(Global::renderer, texture, NULL, &destinationRect);
+	texture->render(destinationRect);
 	
 	//buttons
 	for (unsigned int i = 0; i < buttons.size(); i++) {
@@ -79,7 +79,7 @@ void PermanentGUI::setLowerHeight(int newLH) {
 
 void PermanentGUI::init() {
 	heightLeftForMap = Global::screenHeight - upperHeight - lowerHeight;
-	texture = Global::resourceHandler->guiTextures["permabg"];
+	texture = Global::resourceHandler->getATexture(TT::GUI, "permabg");
 	
 	int tempX, tempY, tempW, tempH;
 	if (heightLeftForMap > Global::screenWidth) {

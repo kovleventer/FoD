@@ -5,12 +5,13 @@
 
 #include "guipart.h"
 #include "unit.h"
+#include "animatabletexture.h"
 
 class UnitInfo : public GUIPart {
 public:
 	UnitInfo(int xp, int yp, int wp, int hp);
 	
-	SDL_Texture* bgTexture;
+	ATexture* bgTexture;
 	
 	void render();
 	

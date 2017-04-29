@@ -13,7 +13,7 @@ Inventory::Inventory(int xp, int yp, int wp, int hp, int width, int height) : GU
 	slotSize = w / iWidth;
 	
 	initArray();
-	slotTexture = Global::resourceHandler->guiTextures["inventoryslot"];
+	slotTexture = Global::resourceHandler->getATexture(TT::GUI, "inventoryslot");
 }
 
 Inventory::Inventory(int size) : GUIPart(0, 0, 0, 0) {
@@ -38,10 +38,7 @@ void Inventory::render() {
 			//Setting rectangle
 			destinationRect.x = x + i * slotSize;
 			destinationRect.y = y + j * slotSize;
-			SDL_RenderCopy(Global::renderer, slotTexture, NULL, &destinationRect);
-			/*if (items[(j + currentHeightPosition) * iWidth + i] != NULL) {
-				items[(j + currentHeightPosition) * iWidth + i]->render(destinationRect, true);
-			}*/
+			slotTexture->render(destinationRect);
 			Item* itemToRender = getItem(i, j + currentHeightPosition);
 			if (itemToRender != NULL) {
 				itemToRender->render(destinationRect, true);

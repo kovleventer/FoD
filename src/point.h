@@ -64,6 +64,24 @@ private:
 	int y;
 };
 
+//Same as point but the variable names make more sense
+class Dimension {
+public:
+	Dimension(int wp, int hp);
+	
+	//Getters
+	int W();
+	int H();
+	
+	Dimension operator*=(const int& mul);
+	Dimension operator/=(const int& div);
+private:
+	Dimension operator*(const int& mul) const;
+	Dimension operator/(const int& div) const;
+	
+	int w, h;
+};
+
 //Represents a 2 dimensional point with double precision coordinates
 class PointD {
 public:

@@ -23,17 +23,17 @@ Army::Army(int xp, int yp, int wp, int hp, int width, int height, bool isInv) : 
 	
 	//Setting textures
 	if (isInverted) {
-		bgTexture = Global::resourceHandler->guiTextures["armyinvbg"];
+		bgTexture = Global::resourceHandler->getATexture(TT::GUI, "armyinvbg");
 	} else {
-		bgTexture = Global::resourceHandler->guiTextures["armybg"];
+		bgTexture = Global::resourceHandler->getATexture(TT::GUI, "armybg");
 	}
-	defaultUnitTextureFront = Global::resourceHandler->guiTextures["armyslotbg_front"];
-	defaultUnitTextureBack = Global::resourceHandler->guiTextures["armyslotbg_back"];
-	defaultUnitTextureSupport = Global::resourceHandler->guiTextures["armyslotbg_support"];
-	selectedUnitTexture = Global::resourceHandler->guiTextures["selectedunit"];
-	hoveredUnitTexture = Global::resourceHandler->guiTextures["hoveredunit"];
-	attackableUnitTexture = Global::resourceHandler->guiTextures["attackableunit"];
-	notAttackableUnitTexture = Global::resourceHandler->guiTextures["notattackableunit"];
+	defaultUnitTextureFront = Global::resourceHandler->getATexture(TT::GUI, "armyslotbg_front");
+	defaultUnitTextureBack = Global::resourceHandler->getATexture(TT::GUI, "armyslotbg_back");
+	defaultUnitTextureSupport = Global::resourceHandler->getATexture(TT::GUI, "armyslotbg_support");
+	selectedUnitTexture = Global::resourceHandler->getATexture(TT::GUI, "selectedunit");
+	hoveredUnitTexture = Global::resourceHandler->getATexture(TT::GUI, "hoveredunit");
+	attackableUnitTexture = Global::resourceHandler->getATexture(TT::GUI, "attackableunit");
+	notAttackableUnitTexture = Global::resourceHandler->getATexture(TT::GUI, "notattackableunit");
 	
 	selectedUnitPos = Point(-1, -1);
 	hoveredUnitPos = Point(-1, -1);
@@ -58,7 +58,7 @@ Army::~Army() {
 
 void Army::render() {
 	SDL_Rect destinationRect = {x, y, w, h};
-	SDL_RenderCopy(Global::renderer, bgTexture, NULL, &destinationRect);
+	bgTexture->render(destinationRect);
 	
 	destinationRect.w = unitSize;
 	destinationRect.h = unitSize;
@@ -80,13 +80,13 @@ void Army::render() {
 				
 				switch (getUPFromPos(Point(i, j))) {
 					case UnitPosition::FRONTROW:
-						SDL_RenderCopy(Global::renderer, defaultUnitTextureFront, NULL, &destinationRect);
+						defaultUnitTextureFront->render(destinationRect);
 						break;
 					case UnitPosition::BACKROW:
-						SDL_RenderCopy(Global::renderer, defaultUnitTextureBack, NULL, &destinationRect);
+						defaultUnitTextureBack->render(destinationRect);
 						break;
 					case UnitPosition::SUPPORT:
-						SDL_RenderCopy(Global::renderer, defaultUnitTextureSupport, NULL, &destinationRect);
+						defaultUnitTextureSupport->render(destinationRect);
 						break;
 				}
 				
@@ -94,11 +94,11 @@ void Army::render() {
 				//Rendering of unit selection / hovering indicator
 				units[j * iWidth + i]->render(destinationRect);
 				if (selectedUnitPos == Point(i, j)) {
-					SDL_RenderCopy(Global::renderer, selectedUnitTexture, NULL, &destinationRect);
+					selectedUnitTexture->render(destinationRect);
 				} else if (hoveredUnitPos == Point(i, j)) {
 					if (isInverted) {
 						//If enemy we render an attack indicator texture
-						if (isEnemyAttackable) {
+						if (isEnemyAttackable && allowAttack) {
 							
 							//Rendering damage indicator rectangle
 							SDL_SetRenderDrawColor(Global::renderer, 0xAF, 0x33, 0x33, 0xAF);
@@ -110,12 +110,12 @@ void Army::render() {
 							SDL_RenderFillRect(Global::renderer, &damageIndicatorDestinationRect);
 							
 							
-							SDL_RenderCopy(Global::renderer, attackableUnitTexture, NULL, &destinationRect);
+							attackableUnitTexture->render(destinationRect);
 						} else {
-							SDL_RenderCopy(Global::renderer, notAttackableUnitTexture, NULL, &destinationRect);
+							notAttackableUnitTexture->render(destinationRect);
 						}
 					} else {
-						SDL_RenderCopy(Global::renderer, hoveredUnitTexture, NULL, &destinationRect);
+						hoveredUnitTexture->render(destinationRect);
 					}
 				}
 			}
@@ -283,7 +283,11 @@ void Army::handleMousePressEvent(int xp, int yp) {
 					//isEnemyAttackable is set on mousemotionevent handling
 					if (isEnemyAttackable) {
 						if (getUnit(clickPos) != NULL && !getUnit(clickPos)->isDead()) {
-							Global::guiHandler->getBattle()->dealDamage(getUnit(clickPos), enemyDamageIndicator, true);
+							allowAttack = false;
+							std::thread t([clickPos, this] {
+								Global::guiHandler->getBattle()->dealDamage(getUnit(clickPos), enemyDamageIndicator, true);
+							});
+							t.detach();
 						}
 					}
 				} else {
@@ -295,7 +299,11 @@ void Army::handleMousePressEvent(int xp, int yp) {
 						selectedUnitPos = Point(-1, -1);
 						unitInfo->setUnit(NULL);
 					}
-					Global::guiHandler->getBattle()->continueBattle();
+					allowAttack = false;
+					std::thread t([] {
+						Global::guiHandler->getBattle()->continueBattle();
+					});
+					t.detach();
 				}
 			}
 		} else {

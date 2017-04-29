@@ -9,8 +9,8 @@ Popup::Popup(int xp, int yp, int wp, int hp, PopupType type) : TransientGUI(xp, 
 	buttonDimensions = Point(150, 50);
 	
 	//Setting textures
-	backgroundT = Global::resourceHandler->guiTextures["popupback"];
-	foregroundT = Global::resourceHandler->guiTextures["popupfore"];
+	backgroundT = Global::resourceHandler->getATexture(TT::GUI, "popupback");
+	foregroundT = Global::resourceHandler->getATexture(TT::GUI, "popupfore");
 	
 	text = "";
 	
@@ -66,12 +66,12 @@ Popup::~Popup() {
 void Popup::render() {
 	//Setting rectangle
 	SDL_Rect destinationRect = {x, y, w, h};
-	SDL_RenderCopy(Global::renderer, backgroundT, NULL, &destinationRect);
+	backgroundT->render(destinationRect);
 	destinationRect.x += padding;
 	destinationRect.y += padding;
 	destinationRect.w -= padding * 2;
 	destinationRect.h -= padding * 3 + buttonDimensions.getY();
-	SDL_RenderCopy(Global::renderer, foregroundT, NULL, &destinationRect);
+	foregroundT->render(destinationRect);
 	
 	if (popupType == PopupType::POPUP_OK) {
 		buttonOK->render();
@@ -81,23 +81,22 @@ void Popup::render() {
 	}
 	
 	if (text != "") {
-		SDL_Texture* textTexture = Global::resourceHandler->getTextTexture(Text(text, Global::resourceHandler->colors["popup-text"]));
-		int tw, th;
-		SDL_QueryTexture(textTexture, NULL, NULL, &tw, &th);
+		ATexture* textTexture = Global::resourceHandler->getTextTexture(Text(text, Global::resourceHandler->colors["popup-text"]));
+		Dimension d = textTexture->getDimensions();
 		//TODO change this
 		int textSize = 36;
-		tw = tw / Global::defaultFontSize * textSize;
-		th = th / Global::defaultFontSize * textSize;
+		d *= textSize;
+		d /= Global::defaultFontSize;
 		//Setting rectangle
-		destinationRect.x = x + w / 2 - tw / 2;
-		destinationRect.y = y + h / 2 - th / 2;
-		destinationRect.w = tw;
-		destinationRect.h = th;
-		SDL_RenderCopy(Global::renderer, textTexture, NULL, &destinationRect);
+		destinationRect.x = x + w / 2 - d.W() / 2;
+		destinationRect.y = y + h / 2 - d.H() / 2;
+		destinationRect.w = d.W();
+		destinationRect.h = d.H();
+		textTexture->render(destinationRect);
 	} else if (items.size() != 0) {
 		for (unsigned int i = 0; i < items.size(); i++) {
 			//TODO packing, or better management
-			destinationRect.x = x + /*w / 2 +*/ i * Global::player->getInventory()->getSlotSize();
+			destinationRect.x = x + i * Global::player->getInventory()->getSlotSize();
 			destinationRect.y = y + h / 2 - Global::player->getInventory()->getSlotSize() / 2;
 			destinationRect.w = Global::player->getInventory()->getSlotSize();
 			destinationRect.h = Global::player->getInventory()->getSlotSize();

@@ -7,7 +7,7 @@ Button::Button(int xp, int yp, int wp, int hp) {
 	y = yp;
 	w = wp;
 	h = hp;
-	texture = Global::resourceHandler->guiTextures["button"];
+	texture = Global::resourceHandler->getATexture(TT::GUI, "button");
 	functionPointer = NULL;
 	text = "";
 }
@@ -15,22 +15,21 @@ Button::Button(int xp, int yp, int wp, int hp) {
 void Button::render() {
 	//Setting the rectangle is pretty easy
 	SDL_Rect destinationRect = {x, y, w, h};
-	SDL_RenderCopy(Global::renderer, texture, NULL, &destinationRect);
+	texture->render(destinationRect);
 	
 	if (text != "") {
-		SDL_Texture* textTexture = Global::resourceHandler->getTextTexture(Text(text, Global::resourceHandler->colors["button-text"]));
-		int tw, th;
-		SDL_QueryTexture(textTexture, NULL, NULL, &tw, &th);
+		ATexture* textTexture = Global::resourceHandler->getTextTexture(Text(text, Global::resourceHandler->colors["button-text"]));
+		Dimension d = textTexture->getDimensions();
 		//TODO change this
 		int textSize = 16;
-		tw = tw / Global::defaultFontSize * textSize;
-		th = th / Global::defaultFontSize * textSize;
+		d *= textSize;
+		d /= Global::defaultFontSize;
 		//Setting rectangle
-		destinationRect.x = x + w / 2 - tw / 2;
-		destinationRect.y = y + h / 2 - th / 2;
-		destinationRect.w = tw;
-		destinationRect.h = th;
-		SDL_RenderCopy(Global::renderer, textTexture, NULL, &destinationRect);
+		destinationRect.x = x + w / 2 - d.W() / 2;
+		destinationRect.y = y + h / 2 - d.H() / 2;
+		destinationRect.w = d.W();
+		destinationRect.h = d.H();
+		textTexture->render(destinationRect);
 	}
 }
 

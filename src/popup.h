@@ -7,6 +7,7 @@
 #include "button.h"
 #include "point.h"
 #include "item.h"
+#include "animatabletexture.h"
 
 enum class PopupType {
 	POPUP_OK,
@@ -25,8 +26,8 @@ public:
 	
 	void render();
 	
-	SDL_Texture* backgroundT;
-	SDL_Texture* foregroundT;
+	ATexture* backgroundT;
+	ATexture* foregroundT;
 	
 	//Getters
 	PopupType getPopupType();

@@ -5,14 +5,15 @@
 
 #include "point.h"
 #include "item.h"
+#include "animatabletexture.h"
 
 class Cursor {
 public:
 	//Init
 	Cursor(std::string text);
-	Cursor(SDL_Texture* text);
+	Cursor(ATexture* text);
 	
-	SDL_Texture* texture;
+	ATexture* texture;
 	
 	//Renders the cursor
 	void render();

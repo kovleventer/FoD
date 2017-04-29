@@ -8,7 +8,7 @@ Player::Player(std::string text, int x, int y) : Player(text, Point(x, y)) {}
 Player::Player(std::string text, Point pos) : MapEntity(pos) {
 	hasPlannedPath = false;
 	state = PlayerState::STANDING;
-	texture = Global::resourceHandler->npcTextures[text];
+	texture = Global::resourceHandler->getATexture(TT::NPC, text);
 	speed = 0.1 / Global::fps * 60;
 	tileProgress = 0;
 	follow = NULL;
@@ -30,7 +30,7 @@ void Player::updatePlayerPosition() {
 	
 	//If we are following an npc
 	if (follow != NULL) {
-		//NOTE this slows down the program a lot
+		//NOTE this might slows down the program a lot
 		path = Pathfinding::findPath(position, follow->getPosition());
 		tileProgress = 0;
 		
@@ -45,6 +45,9 @@ void Player::updatePlayerPosition() {
 	
 	Point nextTile = path[tileProgress + 1];
 	progressVector += PointD(nextTile - position) * speed;
+	
+	//Calculating texture rotation
+	calcRotation(nextTile - position);
 	
 	if (std::abs(progressVector.getX()) > 1 || std::abs(progressVector.getY()) > 1) {
 		//We can not simply change the positon, we need the update the references on the tile
@@ -143,4 +146,36 @@ void Player::clearPath() {
 	follow = NULL;
 	hasPlannedPath = false;
 	path.clear();
+}
+
+void Player::calcRotation(Point pRot) {
+	//NOTE you can the find the same exact code at npc
+	//So its code duplication
+	if (pRot == Point(1, -1)) {
+		//Up right
+		texture->setRotation(RotationType::UPRIGHT);
+	} else if (pRot == Point(1, 0)) {
+		//Right
+		texture->setRotation(RotationType::RIGHT);
+	} else if (pRot == Point(1, 1)) {
+		//Down right
+		texture->setRotation(RotationType::DOWNRIGHT);
+	} else if (pRot == Point(0, 1)) {
+		//Down
+		texture->setRotation(RotationType::DOWN);
+	} else if (pRot == Point(-1, 1)) {
+		//Down left
+		texture->setRotation(RotationType::DOWNLEFT);
+	} else if (pRot == Point(-1, 0)) {
+		//Left
+		texture->setRotation(RotationType::LEFT);
+	} else if (pRot == Point(-1, -1)) {
+		//Up left
+		texture->setRotation(RotationType::UPLEFT);
+	} else if (pRot == Point(0, -1)) {
+		//Up
+		texture->setRotation(RotationType::UP);
+	} else {
+		std::clog << "Warning: Rotation calculating bug" << std::endl;
+	}
 }

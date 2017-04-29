@@ -49,15 +49,14 @@ void Item::render(int x, int y, int w, int h, bool withIndicator) {
 }
 
 void Item::render(SDL_Rect destinationRect, bool withIndicator) {
-	SDL_RenderCopy(Global::renderer, texture, NULL, &destinationRect);
+	texture->render(destinationRect);
 	if (withIndicator) {
 		//Rendering the colorful triangle
 		std::string rarityString = Global::itemHandler->translateR(itemRarity);
-		SDL_Texture* indicator = Global::resourceHandler->itemRarityIndicatorTextures[rarityString];
-		int w, h;
-		SDL_QueryTexture(indicator, NULL, NULL, &w, &h);
-		destinationRect.w = w;
-		destinationRect.h = h;
-		SDL_RenderCopy(Global::renderer, indicator, NULL, &destinationRect);
+		ATexture* indicator = Global::resourceHandler->getATexture(TT::ITRAIN, rarityString);
+		Dimension d = indicator->getDimensions();
+		destinationRect.w = d.W();
+		destinationRect.h = d.H();
+		indicator->render(destinationRect);
 	}
 }

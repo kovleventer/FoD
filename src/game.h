@@ -11,6 +11,7 @@
 #include <ctime>
 #include <sstream>
 #include <iomanip>
+#include <thread>
 
 #include "point.h"
 #include "version.h"
@@ -29,9 +30,10 @@ private:
 	void init();
 	
 	//Timer stuff
-	SDL_TimerID id;
+	SDL_TimerID frameID;
+	SDL_TimerID tickID;
 	//Old C code
-	static Uint32 timer(Uint32 ms, void* param);
+	static uint32_t timer(uint32_t ms, void* param);
 	
 	//Main loop of the program
 	void mainLoop();
@@ -46,4 +48,8 @@ private:
 	std::ofstream log;
 	
 	bool generateDefaultSettings;
+	
+	//Threading magic
+	std::thread t0;
+	std::thread t1;
 };

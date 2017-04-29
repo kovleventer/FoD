@@ -6,6 +6,7 @@
 #include "unit.h"
 #include "unitinfo.h"
 #include "point.h"
+#include "animatabletexture.h"
 
 enum class UnitAddingPreference {
 	FRONTROWFIRST,
@@ -28,14 +29,14 @@ public:
 	~Army();
 	
 	//Textures
-	SDL_Texture* bgTexture;
-	SDL_Texture* defaultUnitTextureFront;
-	SDL_Texture* defaultUnitTextureBack;
-	SDL_Texture* defaultUnitTextureSupport;
-	SDL_Texture* selectedUnitTexture;
-	SDL_Texture* hoveredUnitTexture;
-	SDL_Texture* attackableUnitTexture;
-	SDL_Texture* notAttackableUnitTexture;
+	ATexture* bgTexture;
+	ATexture* defaultUnitTextureFront;
+	ATexture* defaultUnitTextureBack;
+	ATexture* defaultUnitTextureSupport;
+	ATexture* selectedUnitTexture;
+	ATexture* hoveredUnitTexture;
+	ATexture* attackableUnitTexture;
+	ATexture* notAttackableUnitTexture;
 	
 	void render();
 	

@@ -6,7 +6,7 @@
 Unit::Unit(std::string n, UnitType uT) {
 	name = n;
 	unitType = uT;
-	texture = Global::resourceHandler->unitTextures[name];
+	texture = Global::resourceHandler->getATexture(TT::UNIT, name);
 	
 	unitInventorySize = 4;
 	
@@ -18,7 +18,7 @@ Unit::Unit(std::string n, UnitType uT) {
 	
 	dead = false;
 	if (deadTexture == NULL) {
-		Unit::deadTexture = Global::resourceHandler->unitTextures["_Dead"];
+		Unit::deadTexture = Global::resourceHandler->getATexture(TT::UNIT, "_Dead");
 	}
 	
 	clearTempXP();
@@ -35,9 +35,9 @@ void Unit::render(int x, int y, int w, int h) {
 
 void Unit::render(SDL_Rect destinationRect) {
 	if (dead) {
-		SDL_RenderCopy(Global::renderer, Unit::deadTexture, NULL, &destinationRect);
+		Unit::deadTexture->render(destinationRect);
 	} else {
-		SDL_RenderCopy(Global::renderer, texture, NULL, &destinationRect);
+		texture->render(destinationRect);
 		//Unit wounded inicator as red rectangle
 		SDL_SetRenderDrawColor(Global::renderer, 0x74, 0x00, 0x00, 0xAF);
 		destinationRect.h = (int)((double)(statsWithItems["life"] - statsWithItems["currentLife"]) / statsWithItems["life"] * destinationRect.h);
@@ -178,7 +178,7 @@ void Unit::recalculateInventory() {
 		if (tempItem != NULL) {
 			for(std::map<std::string, int>::const_iterator it = tempItem->stats.begin(); it != tempItem->stats.end(); ++it) {
 				statsWithItems[it->first] += it->second;
-				if (it->first == "life") {
+				if (it->first == "life" && statsWithItems["currentLife"] != 0) {
 					statsWithItems["currentLife"] += it->second;
 				}
 				if (it->first == "numberOfActions") {
@@ -202,7 +202,7 @@ bool Unit::finalizeExperience() {
 	return stats["experience"] <= stats["currentExperience"];
 }
 
-SDL_Texture* Unit::deadTexture = NULL;
+ATexture* Unit::deadTexture = NULL;
 
 bool UnitSpeedComparator::operator()(Unit* a, Unit* b) {
 	return (a->statsWithItems["speed"] < b->statsWithItems["speed"]);

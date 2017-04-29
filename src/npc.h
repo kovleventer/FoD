@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include <string>
+#include <thread>
 
 #include "point.h"
 #include "mapentity.h"
@@ -68,4 +69,6 @@ private:
 	std::string name;
 	//TODO factions
 	bool enemy;
+	
+	void calcRotation(Point pRot);
 };

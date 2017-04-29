@@ -126,6 +126,42 @@ bool Point::operator!=(const Point& other) const {
 }
 
 
+//Dimension stuff
+
+Dimension::Dimension(int wp, int hp) {
+	w = wp;
+	h = hp;
+}
+
+int Dimension::W() {
+	return w;
+}
+
+int Dimension::H() {
+	return h;
+}
+
+Dimension Dimension::operator*=(const int& mul) {
+	*this = *this * mul;
+	return *this;
+}
+
+Dimension Dimension::operator/=(const int& div) {
+	*this = *this / div;
+	return *this;
+}
+
+Dimension Dimension::operator*(const int& mul) const {
+	Dimension d(w * mul, h * mul);
+	return d;
+}
+
+Dimension Dimension::operator/(const int& mul) const {
+	Dimension d(w / mul, h / mul);
+	return d;
+}
+
+
 //PointD stuff
 
 PointD::PointD() {

@@ -6,6 +6,7 @@
 #include "wholescreengui.h"
 #include "player.h"
 #include "popup.h"
+#include "animatabletexture.h"
 
 class Battle {
 public:
@@ -16,6 +17,9 @@ public:
 	Battle(NPC* e);
 	
 	~Battle();
+	
+	//Its easier to hanlde this way due to animations
+	void render();
 	
 	//Starts the battle
 	void start();
@@ -32,6 +36,14 @@ public:
 	//Getters (probably not used very much)
 	int getMaxTurns();
 	int getCurrentTurn();
+	Point getAttackTexturePosition();
+	int getAnimSpeed();
+	
+	//Setters
+	void setAttackTexturePosition(Point newAttackTexturePosition);
+	
+	//Stores the animation texture
+	ATexture* attackTexture;
 private:
 	WholeScreenGUI* gui;
 	
@@ -56,4 +68,8 @@ private:
 	
 	//To prevent code duplication
 	void removeUnitFromQueue(Unit* unitToRemove);
+	
+	//Anim stuff
+	Point attackTexturePosition;
+	int animSpeed;
 };

@@ -4,13 +4,17 @@
 
 WholeScreenGUI::WholeScreenGUI(int xp, int yp, int wp, int hp) : TransientGUI(xp, yp, wp, hp) {
 	headerSize = h / 10;
-	headerT = Global::resourceHandler->guiTextures["guiheader"];
+	headerT = Global::resourceHandler->getATexture(TT::GUI, "guiheader");
 	headerText = "";
 }
 
 WholeScreenGUI::WholeScreenGUI(SDL_Rect dimensionRect) : WholeScreenGUI(dimensionRect.x, dimensionRect.y, dimensionRect.w, dimensionRect.h) {}
 
-WholeScreenGUI::~WholeScreenGUI() {}
+WholeScreenGUI::~WholeScreenGUI() {
+	for (unsigned int i = 0; i < tempParts.size(); i++) {
+		delete tempParts[i];
+	}
+}
 
 void WholeScreenGUI::render() {
 	//Rendering header
@@ -19,24 +23,30 @@ void WholeScreenGUI::render() {
 	destinationRect.y = y;
 	destinationRect.w = w;
 	destinationRect.h = headerSize;
-	SDL_RenderCopy(Global::renderer, headerT, NULL, &destinationRect);
+	headerT->render(destinationRect);
 	
 	//Rendereing header text
 	int headerTextSize = headerSize;
-	SDL_Texture* headerTextTexture = Global::resourceHandler->getTextTexture(headerText, Global::resourceHandler->colors["whole-header"]);
-	int tw, th;
-	SDL_QueryTexture(headerTextTexture, NULL, NULL, &tw, &th);
-	tw = tw / Global::defaultFontSize * headerTextSize;
-	th = th / Global::defaultFontSize * headerTextSize;
-	destinationRect.x = x + w / 2 - tw / 2;
-	destinationRect.y = y + headerSize / 2 - th / 2;
-	destinationRect.w = tw;
-	destinationRect.h = th;
-	SDL_RenderCopy(Global::renderer, headerTextTexture, NULL, &destinationRect);
+	ATexture* headerTextTexture = Global::resourceHandler->getTextTexture(headerText, Global::resourceHandler->colors["whole-header"]);
+	Dimension d = headerTextTexture->getDimensions();
+	d *= headerTextSize;
+	d /= Global::defaultFontSize;
+	destinationRect.x = x + w / 2 - d.W() / 2;
+	destinationRect.y = y + headerSize / 2 - d.H() / 2;
+	destinationRect.w = d.W();
+	destinationRect.h = d.H();
+	headerTextTexture->render(destinationRect);
 	
 	//Render all parts
 	for (unsigned int i = 0; i < parts.size(); i++) {
+		//NOTE NULL-checking is not done here
 		parts[i]->render();
+	}
+	
+	for (unsigned int i = 0; i < tempParts.size(); i++) {
+		if (tempParts[i] != NULL) {
+			tempParts[i]->render();
+		}
 	}
 }
 
@@ -44,8 +54,17 @@ void WholeScreenGUI::addPart(GUIPart* part) {
 	parts.push_back(part);
 }
 
+void WholeScreenGUI::addTempPart(GUIPart* part) {
+	tempParts.push_back(part);
+}
+
+
 std::string WholeScreenGUI::getHeaderText() {
 	return headerText;
+}
+
+int WholeScreenGUI::getHeaderSize() {
+	return headerSize;
 }
 
 void WholeScreenGUI::setHeaderText(std::string newHeaderText) {

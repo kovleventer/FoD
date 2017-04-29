@@ -6,6 +6,7 @@
 #include "item.h"
 #include "point.h"
 #include "iteminfo.h"
+#include "animatabletexture.h"
 
 class Inventory : public GUIPart {
 public:
@@ -17,7 +18,7 @@ public:
 	
 	~Inventory();
 	
-	SDL_Texture* slotTexture;
+	ATexture* slotTexture;
 	
 	void render();
 	

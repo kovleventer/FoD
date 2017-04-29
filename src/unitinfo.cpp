@@ -4,7 +4,7 @@
 
 UnitInfo::UnitInfo(int xp, int yp, int wp, int hp) : GUIPart(xp, yp, wp, hp) {
 	selectedUnit = NULL;
-	bgTexture = Global::resourceHandler->guiTextures["unitinfobg"];
+	bgTexture = Global::resourceHandler->getATexture(TT::GUI, "unitinfobg");
 	nameSize = 36;
 	statsSize = 15;
 }
@@ -12,7 +12,7 @@ UnitInfo::UnitInfo(int xp, int yp, int wp, int hp) : GUIPart(xp, yp, wp, hp) {
 void UnitInfo::render() {
 	//Setting rectangle
 	SDL_Rect destinationRect = {x, y, w, h};
-	SDL_RenderCopy(Global::renderer, bgTexture, NULL, &destinationRect);
+	bgTexture->render(destinationRect);
 	
 	if (selectedUnit != NULL) {
 		destinationRect = {x + w / 10, y + nameSize, w * 4 / 5, w * 4 / 5};
@@ -38,16 +38,15 @@ void UnitInfo::render() {
 		}
 		
 		//Name
-		SDL_Texture* nameText = Global::resourceHandler->getTextTexture(Text(selectedUnit->getName(), Global::resourceHandler->colors["unitinfo-desc"]));
-		int tw, th;
-		SDL_QueryTexture(nameText, NULL, NULL, &tw, &th);
-		tw = tw / Global::defaultFontSize * nameSize;
-		th = th / Global::defaultFontSize * nameSize;
-		destinationRect.x = unitTextX + unitTextWidth / 2 - tw / 2;
-		destinationRect.y = unitTextY - th;
-		destinationRect.w = tw;
-		destinationRect.h = th;
-		SDL_RenderCopy(Global::renderer, nameText, NULL, &destinationRect);
+		ATexture* nameText = Global::resourceHandler->getTextTexture(Text(selectedUnit->getName(), Global::resourceHandler->colors["unitinfo-desc"]));
+		Dimension d = nameText->getDimensions();
+		d *= nameSize;
+		d /= Global::defaultFontSize;
+		destinationRect.x = unitTextX + unitTextWidth / 2 - d.W() / 2;
+		destinationRect.y = unitTextY - d.H();
+		destinationRect.w = d.W();
+		destinationRect.h = d.H();
+		nameText->render(destinationRect);
 		
 		//Stats
 		for(int i = 0; i <= 9; i++) {
@@ -95,15 +94,15 @@ void UnitInfo::render() {
 				ossValue << selectedUnit->getLevel();
 			}
 			
-			SDL_Texture* statText = Global::resourceHandler->getTextTexture(Text(ossStat.str(), Global::resourceHandler->colors["unitinfo-desc"]));
-			SDL_QueryTexture(statText, NULL, NULL, &tw, &th);
-			tw = tw * statsSize / Global::defaultFontSize;
-			th = th * statsSize / Global::defaultFontSize;
+			ATexture* statText = Global::resourceHandler->getTextTexture(Text(ossStat.str(), Global::resourceHandler->colors["unitinfo-desc"]));
+			d = statText->getDimensions();
+			d *= statsSize;
+			d /= Global::defaultFontSize;
 			destinationRect.x = unitTextX;
-			destinationRect.y = unitTextY + unitTextHeight * 2 + i * (th + 10);
-			destinationRect.w = tw;
-			destinationRect.h = th;
-			SDL_RenderCopy(Global::renderer, statText, NULL, &destinationRect);
+			destinationRect.y = unitTextY + unitTextHeight * 2 + i * (d.H() + 10);
+			destinationRect.w = d.W();
+			destinationRect.h = d.H();
+			statText->render(destinationRect);
 			
 			
 			SDL_Color valueColor;
@@ -115,15 +114,15 @@ void UnitInfo::render() {
 				valueColor = Global::resourceHandler->colors["unitinfo-values-decremented"];
 			}
 			
-			SDL_Texture* valueText = Global::resourceHandler->getTextTexture(Text(ossValue.str(), valueColor));
-			SDL_QueryTexture(valueText, NULL, NULL, &tw, &th);
-			tw = tw * statsSize / Global::defaultFontSize;
-			th = th * statsSize / Global::defaultFontSize;
-			destinationRect.x = unitTextX + unitTextWidth - tw;
-			destinationRect.y = unitTextY + unitTextHeight * 2 + i * (th + 10);
-			destinationRect.w = tw * 1.1;
-			destinationRect.h = th * 1.1;
-			SDL_RenderCopy(Global::renderer, valueText, NULL, &destinationRect);
+			ATexture* valueText = Global::resourceHandler->getTextTexture(Text(ossValue.str(), valueColor));
+			d = valueText->getDimensions();
+			d *= statsSize;
+			d /= Global::defaultFontSize;
+			destinationRect.x = unitTextX + unitTextWidth - d.W();
+			destinationRect.y = unitTextY + unitTextHeight * 2 + i * (d.H() + 10);
+			destinationRect.w = d.W() * 1.1;
+			destinationRect.h = d.H() * 1.1;
+			valueText->render(destinationRect);
 		}
 	}
 }

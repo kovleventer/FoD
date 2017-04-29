@@ -14,7 +14,8 @@
 enum class PlayerState {
 	STANDING,
 	HAS_WAY,
-	MOVING
+	MOVING,
+	BATTLING
 };
 
 class Player : public MapEntity {
@@ -73,4 +74,6 @@ private:
 	Army* army;
 	
 	std::string name;
+	
+	void calcRotation(Point pRot);
 };

@@ -9,40 +9,36 @@
 #include <iterator>
 #include <vector>
 #include <iostream>
+#include <utility>
 
 #include "text.h"
 #include "filesystemhandler.h"
+#include "animatabletexture.h"
+
+//Stands for texturetype
+enum class TT {
+	TILE,
+	WORLDOBJECT,
+	CURSOR,
+	PATH,
+	NPC,
+	GUI,
+	ITEM,
+	ITRAIN, //Stands for Item Rarity Indicator
+	UNIT
+};
 
 class ResourceHandler {
 public:
 	ResourceHandler();
 	~ResourceHandler();
+	
 	void loadAll();
 	
-	//Every texture is loaded once
-	//NOTE private variables with getters would be safer to use
-	std::map<std::string, SDL_Texture*> tileTextures;
-	std::map<int, std::string> tileTextureIDs;
+	ATexture* getATexture(TT tType, std::string name);
 	
-	std::map<std::string, SDL_Texture*> worldObjectTextures;
-	
-	std::map<std::string, SDL_Texture*> cursorTextures;
-	
-	std::map<std::string, SDL_Texture*> pathTextures;
-	
-	std::map<std::string, SDL_Texture*> npcTextures;
-	
-	std::map<std::string, SDL_Texture*> guiTextures;
-	
-	std::map<std::string, SDL_Texture*> itemTextures;
-	
-	std::map<std::string, SDL_Texture*> itemRarityIndicatorTextures;
-	
-	std::map<std::string, SDL_Texture*> unitTextures;
-	
-	
-	SDL_Texture* getTextTexture(std::string text, SDL_Color color);
-	SDL_Texture* getTextTexture(Text text);
+	ATexture* getTextTexture(std::string text, SDL_Color color);
+	ATexture* getTextTexture(Text text);
 	//Clears all rendered text textures thus clearing memory
 	void clearTextTextures();
 	
@@ -54,6 +50,7 @@ public:
 	//NOTE might need better sound and music types
 	std::map<std::string, Mix_Chunk*> sounds;
 private:
+	//***IMAGES***
 	void loadImages();
 	void loadTerrainImages();
 	void loadWorldObjectImages();
@@ -69,20 +66,47 @@ private:
 	SDL_Texture* loadTexture(std::string path);
 	
 	
+	//Every texture is loaded once
+	std::map<std::string, ATexture*> tileTextures;
+	
+	std::map<std::string, ATexture*> worldObjectTextures;
+	
+	std::map<std::string, ATexture*> cursorTextures;
+	
+	std::map<std::string, ATexture*> pathTextures;
+	
+	std::map<std::string, ATexture*> npcTextures;
+	
+	std::map<std::string, ATexture*> guiTextures;
+	
+	std::map<std::string, ATexture*> itemTextures;
+	
+	std::map<std::string, ATexture*> itemRarityIndicatorTextures;
+	
+	std::map<std::string, ATexture*> unitTextures;
+	
+	
+	
+	//***TEXTS***
 	void loadFont();
 	TTF_Font* font;
 	
-	std::map<Text, SDL_Texture*> renderedTexts;
+	std::map<Text, ATexture*> renderedTexts;
 	
 	
+	//***COLORS***
 	void loadColors();
 	
 	
+	//***AUDIO***
 	//Loads the given audio files
 	void loadAudio();
 	//This method does the exact Mix_LoadWAV
 	Mix_Chunk* loadSound(std::string path);
 	
+	
+	
+	//***PATHS***
 	std::string terrainImagePath;
 	std::string worldObjectImagePath;
 	std::string cursorImagePath;

@@ -147,7 +147,7 @@ void NPCHandler::loadAll() {
 				Global::player->getInventory()->addItem(Global::itemHandler->getItem(inventory[i]));
 			}
 			
-			//Global::map->getTile(pathPieces[0])->entities.push_back(Global::player);
+			Global::camera->setPosition(pathPieces[0]);
 		} else {
 			//Initializing NPC
 			//NOTE a little bit of redundancy here

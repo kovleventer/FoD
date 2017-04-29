@@ -18,6 +18,10 @@ void UserInputHandler::handleKeyPressEvent(SDL_Event e) {
 			//Press F7 for freeing some memory
 			Global::resourceHandler->clearTextTextures();
 			break;
+		case SDLK_F8:
+			//Press F8 for showing tile coordinates on tiles
+			Global::map->setAllowCoordinateRendering(!Global::map->getAllowCoordinateRendering());
+			break;
 		case SDLK_ESCAPE:
 			//If the user presses escape we quit
 			Game::quit();
@@ -130,6 +134,9 @@ void UserInputHandler::handleMousePressEvent(SDL_Event e) {
 				Global::player->setTileProgress(0);
 				Global::player->clearPath();
 				break;
+			case PlayerState::BATTLING:
+				//Do nothing
+				break;
 		}
 	}
 }
@@ -186,7 +193,7 @@ void UserInputHandler::handleMouseWheelEvent(bool up) {
 	
 	//Immersive zooming
 	if (up) {
-		if (Global::tileSize <= 1024) {
+		if (Global::tileSize <= 256) {
 			Global::tileSize *= 2;
 		}
 	} else {

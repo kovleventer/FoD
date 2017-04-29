@@ -52,13 +52,12 @@ private:
 	static std::string errorMessage;
 };
 
-//TODO error messages (which media file is missing)
 class MediaNotFoundError : public std::runtime_error {
 public:
-	MediaNotFoundError();
+	MediaNotFoundError(std::string name);
 	const char* what() const throw();
 private:
-	static std::string errorMessage;
+	std::string errorMessage;
 };
 
 class TextureConvertError : public std::runtime_error {

@@ -51,6 +51,10 @@ void GUIHandler::render() {
 		SDL_Rect destinationRect = {0, Global::permaGUI->getUpperHeight(), Global::screenWidth, Global::permaGUI->getHeightLeftForMap()};
 		SDL_SetRenderDrawColor(Global::renderer, 0x00, 0x00, 0x00, 0xAF);
 		SDL_RenderFillRect(Global::renderer, &destinationRect);
-		currentGUI->render();
+		if (currentBattle != NULL) {
+			currentBattle->render();
+		} else {
+			currentGUI->render();
+		}
 	}
 }

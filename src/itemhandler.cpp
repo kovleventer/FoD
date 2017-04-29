@@ -51,7 +51,7 @@ void ItemHandler::loadAll() {
 		}
 		
 		currentItem->generateDescription();
-		currentItem->texture = Global::resourceHandler->itemTextures[FilesystemHandler::removeExtension(itemList[i])];
+		currentItem->texture = Global::resourceHandler->getATexture(TT::ITEM, FilesystemHandler::removeExtension(itemList[i]));
 		
 		items[FilesystemHandler::removeExtension(itemList[i])] = currentItem;
 		

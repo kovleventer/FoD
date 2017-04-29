@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "point.h"
+#include "animatabletexture.h"
 
 class MapEntity {
 public:
@@ -14,8 +15,7 @@ public:
 	//Virtual destructor
 	virtual ~MapEntity();
 	
-	//NOTE might become deprecated when working with animations
-	SDL_Texture* texture;
+	ATexture* texture;
 	
 	//Getters
 	Point getPosition();

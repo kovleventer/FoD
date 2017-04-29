@@ -6,6 +6,7 @@
 
 #include "item.h"
 #include "point.h"
+#include "animatabletexture.h"
 
 enum class UnitType {
 	FIGHTER,
@@ -19,7 +20,7 @@ public:
 	Unit(std::string n, UnitType uT);
 	~Unit();
 	
-	SDL_Texture* texture;
+	ATexture* texture;
 	
 	void render(int x, int y, int w, int h);
 	void render(SDL_Rect destinationRect);
@@ -68,7 +69,7 @@ public:
 	bool finalizeExperience();
 	
 	//Static texture for displaying deceased units
-	static SDL_Texture* deadTexture;
+	static ATexture* deadTexture;
 private:
 	std::string name;
 	int unitInventorySize;

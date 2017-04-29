@@ -11,7 +11,7 @@
 #include "npchandler.h"
 #include "filesystemhandler.h"
 #include "worldobjecthandler.h"
-
+#include "player.h"
 #include "popup.h"
 
 Game::Game(std::string aName, Version version) {
@@ -20,13 +20,11 @@ Game::Game(std::string aName, Version version) {
 	//Passing metadata
 	Global::appName = aName + version.toString();
 	
-	//So that means we have an (gameBoardWidth * tileSize) x (gameBoardHeight * tileSize) pixmap
-	Global::gameBoardWidth = 32;
-	Global::gameBoardHeight = 32;
-	
-	Global::defaultFontSize = 200;
+	Global::defaultFontSize = 100;
 	
 	Global::tileSize = 64;
+	
+	Global::ticks = 64;
 	
 	//Redirecting the default clog to file
 	//https://stackoverflow.com/questions/34618916/moving-stdclog-in-source-to-output-file
@@ -35,6 +33,7 @@ Game::Game(std::string aName, Version version) {
 	struct tm* now = localtime(&t);
 	std::stringstream logFileName;
 	logFileName << "log/";
+	//TODO make this work on Windows
 	logFileName << std::put_time(now, "%Y-%m-%d-%H-%M-%S");
 	logFileName << ".log";
 	log.open(logFileName.str());
@@ -46,6 +45,8 @@ Game::Game(std::string aName, Version version) {
 		init();
 		
 		Global::camera = new Camera();
+		
+		Global::animationHandler = new AnimationHandler();
 	
 		Global::resourceHandler = new ResourceHandler();
 		Global::resourceHandler->loadAll();
@@ -63,7 +64,7 @@ Game::Game(std::string aName, Version version) {
 		
 		//Generate map stuff
 		//NOTE this must run after the media has been loaded
-		Global::map = new Map(Global::gameBoardWidth, Global::gameBoardHeight);
+		Global::map = new Map();
 		Global::minimap->regenerateMinimap();
 		
 		Global::worldObjectHandler = new WorldObjectHandler();
@@ -75,22 +76,27 @@ Game::Game(std::string aName, Version version) {
 		Global::npcHandler = new NPCHandler();
 		Global::npcHandler->loadAll();
 		
-		
 		Global::cursor = new Cursor("impassable");
 		
 		
 		//60 fps (or not)
-		id = SDL_AddTimer(1000 / Global::fps, timer, NULL);
+		frameID = SDL_AddTimer(1000 / Global::fps, timer, (char*)1);
+		tickID = SDL_AddTimer(1000 / Global::ticks, timer, (char*)2);
+		
+		
+		//Contains a while loop
+		mainLoop();
+		
+		
+		//Deletes all variables
+		cleanup();
+		
+		
 	} catch (std::runtime_error& e) {
-		std::clog << e.what() << std::endl;
+		std::clog << "Fatal error : " << e.what() << std::endl;
 		return;
 	}
 	
-	
-	//Contains a while loop
-	mainLoop();
-	
-	cleanup();
 }
 
 void Game::loadSettings() {
@@ -218,11 +224,16 @@ void Game::init() {
 	std::clog << " ...done" << std::endl;
 }
 
-Uint32 Game::timer(Uint32 ms, void* param) {
-    SDL_Event ev;
-    ev.type = SDL_USEREVENT;
-    SDL_PushEvent(&ev);
-    return ms;
+uint32_t Game::timer(uint32_t ms, void* param) {
+	SDL_Event ev;
+	ev.type = SDL_USEREVENT;
+	//Throws an annoying warning which we disable here
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wstrict-aliasing"
+		ev.user.code = *((int*)(&param));
+	#pragma GCC diagnostic pop
+	SDL_PushEvent(&ev);
+	return ms;
 }
 
 void Game::mainLoop() {
@@ -241,16 +252,28 @@ void Game::mainLoop() {
 				UserInputHandler::handleKeyPressEvent(e);
 				break;
 			case SDL_USEREVENT:
-				if (Global::player->getState() == PlayerState::MOVING) {
-					Global::player->updatePlayerPosition();
-					Global::npcHandler->updateNPCsPosition();
+				if (e.user.code == 1) {
+					//Runs every frame
+					if (Global::player->getState() == PlayerState::MOVING) {
+						
+						//t0 = std::thread([] {
+							Global::player->updatePlayerPosition();
+							Global::npcHandler->updateNPCsPosition();
+						//});
+						//t0.detach();
+					}
+					UserInputHandler::handleKeyDownEvent(keyboardState);
+					Global::cursor->update();
+					renderGame();
+				} else if (e.user.code == 2) {
+					Global::animationHandler->nextTick();
 				}
-				UserInputHandler::handleKeyDownEvent(keyboardState);
-				Global::cursor->update();
-				renderGame();
 				break;
 			case SDL_MOUSEBUTTONDOWN:
-				UserInputHandler::handleMousePressEvent(e);
+				//t1 = std::thread([e] {
+					UserInputHandler::handleMousePressEvent(e);
+				//});
+				//t1.detach();
 				break;
 			case SDL_MOUSEWHEEL:
 				//https://wiki.libsdl.org/SDL_MouseWheelEvent
@@ -297,6 +320,8 @@ void Game::cleanup() {
 	Global::unitHandler = NULL;
 	delete Global::itemHandler;
 	Global::itemHandler = NULL;
+	delete Global::animationHandler;
+	Global::animationHandler = NULL;
 	delete Global::resourceHandler;
 	Global::resourceHandler = NULL;
 	delete Global::camera;
@@ -309,6 +334,10 @@ void Game::cleanup() {
 	SDL_DestroyWindow(Global::window);
 	Global::window = NULL;
 	Global::renderer = NULL;
+	
+	//Removing added SDL Timers
+	SDL_RemoveTimer(frameID);
+	SDL_RemoveTimer(tickID);
 	
 	//Quits SDL subsystems
 	Mix_Quit();

@@ -5,6 +5,7 @@ int Global::screenWidth = 0;
 int Global::screenHeight = 0; 
 std::string Global::appName = "";
 int Global::fps = 0;
+int Global::ticks = 0;
 
 int Global::gameBoardWidth = 0; 
 int Global::gameBoardHeight = 0; 
@@ -27,3 +28,5 @@ Player* Global::player = NULL;
 
 PermanentGUI* Global::permaGUI = NULL;
 GUIHandler* Global::guiHandler = NULL;
+
+AnimationHandler* Global::animationHandler = NULL;

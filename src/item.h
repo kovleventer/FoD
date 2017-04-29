@@ -6,6 +6,8 @@
 #include <sstream>
 #include <vector>
 
+#include "animatabletexture.h"
+
 //NOTE update itemhandler/translater when change these
 enum class ItemRarity {
 	COMMON,
@@ -42,7 +44,7 @@ public:
 	ItemRarity getItemRarity();
 	ItemType getItemType();
 	
-	SDL_Texture* texture;
+	ATexture* texture;
 	
 	//withIndicator sets if the colorful triangle should be rendered or not
 	void render(int x, int y, int w, int h, bool withIndicator);

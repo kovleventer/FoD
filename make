@@ -47,6 +47,8 @@ SOURCES=(
 	"filesystemhandler.cpp"
 	"worldobjecthandler.cpp"
 	"impassableworldobject.cpp"
+	"animationhandler.cpp"
+	"animatabletexture.cpp"
 )
 
 LINKER=(
@@ -54,6 +56,7 @@ LINKER=(
 	"-lSDL2_image"
 	"-lSDL2_ttf"
 	"-lSDL2_mixer"
+	"-lpthread"
 )
 
 FLAGS="-O3 -Wall -std=c++14 -c"

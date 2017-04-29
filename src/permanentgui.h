@@ -10,6 +10,7 @@
 #include "unitinfo.h"
 #include "army.h"
 #include "minimap.h"
+#include "animatabletexture.h"
 
 enum class ClickedEntry {
 	NONE,
@@ -26,9 +27,9 @@ public:
 	//Deletes the buttons
 	~PermanentGUI();
 	
-	SDL_Texture* texture;
+	ATexture* texture;
 	
-	//renders the permagui
+	//Renders the permagui
 	void render();
 	
 	//Getters

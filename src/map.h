@@ -19,7 +19,7 @@
 
 class Map {
 public:
-	Map(int w, int h);
+	Map();
 	~Map();
 	
 	//Getters
@@ -47,6 +47,9 @@ public:
 	//DEBUG
 	bool getAllowDebug();
 	void setAllowDebug(bool newAllowDebug);
+	
+	bool getAllowCoordinateRendering();
+	void setAllowCoordinateRendering(bool newAllowCoordinateRendering);
 private:
 	int width;
 	int height;
@@ -65,7 +68,9 @@ private:
 	//Uses file IO
 	void loadTileMap();
 	
+	//Paths
 	std::string tileMapPath;
+	std::string tileMapCodesPath;
 	
 	//Utility functions
 	bool isTileVisible(int x, int y);
@@ -74,4 +79,7 @@ private:
 	//DEBUG
 	void renderPassabilityDebugInfo();
 	bool allowDebug;
+	
+	void renderTileCoordinates();
+	bool allowCoordinateRendering;
 };

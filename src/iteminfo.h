@@ -4,12 +4,13 @@
 
 #include "guipart.h"
 #include "item.h"
+#include "animatabletexture.h"
 
 class ItemInfo : public GUIPart {
 public:
 	ItemInfo(int xp, int yp, int wp, int hp);
 	
-	SDL_Texture* bgTexture;
+	ATexture* bgTexture;
 	
 	void render();
 	

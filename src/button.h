@@ -4,6 +4,7 @@
 #include <string>
 
 #include "point.h"
+#include "animatabletexture.h"
 
 class Button {
 public:
@@ -13,7 +14,7 @@ public:
 	
 	Button(int xp, int yp, int wp, int hp);
 	
-	SDL_Texture* texture;
+	ATexture* texture;
 	
 	//Renders the button
 	void render();
