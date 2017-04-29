@@ -1,0 +1,44 @@
+#include "guihandler.h"
+
+#include "global.h"
+
+GUIHandler::GUIHandler() {
+	clear();
+}
+
+bool GUIHandler::isLocked() {
+	return hasGUI;
+}
+
+bool GUIHandler::isHardlocked() {
+	return hardlocked;
+}
+
+TransientGUI* GUIHandler::getGUI() {
+	return currentGUI;
+}
+
+void GUIHandler::setGUI(TransientGUI* newGUI) {
+	currentGUI = newGUI;
+	hasGUI = (currentGUI != NULL);
+}
+
+void GUIHandler::setHardlocked(bool newHardlocked) {
+	hardlocked = newHardlocked;
+}
+
+void GUIHandler::clear() {
+	currentGUI = NULL;
+	hasGUI = false;
+	hardlocked = false;
+}
+
+void GUIHandler::render() {
+	if (hasGUI) {
+		//Rendering semi-transparent black rectangle over the map, when we are focusing on a gui
+		SDL_Rect destinationRect = {0, Global::permaGUI->getUpperHeight(), Global::screenWidth, Global::permaGUI->getHeightLeftForMap()};
+		SDL_SetRenderDrawColor(Global::renderer, 0x00, 0x00, 0x00, 0xAF);
+		SDL_RenderFillRect(Global::renderer, &destinationRect);
+		currentGUI->render();
+	}
+}
