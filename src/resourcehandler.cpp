@@ -23,43 +23,43 @@ ResourceHandler::~ResourceHandler() {
 	//Free all the textures
 	for(std::map<std::string, SDL_Texture*>::const_iterator it = tileTextures.begin(); it != tileTextures.end(); ++it) {
 		SDL_DestroyTexture(it->second);
-		tileTextures.erase(it);
 	}
+	tileTextures.erase(tileTextures.begin(), tileTextures.end());
 	
 	for(std::map<std::string, SDL_Texture*>::const_iterator it = worldObjectTextures.begin(); it != worldObjectTextures.end(); ++it) {
 		SDL_DestroyTexture(it->second);
-		worldObjectTextures.erase(it);
 	}
+	worldObjectTextures.erase(worldObjectTextures.begin(), worldObjectTextures.end());
 	
 	for(std::map<std::string, SDL_Texture*>::const_iterator it = cursorTextures.begin(); it != cursorTextures.end(); ++it) {
 		SDL_DestroyTexture(it->second);
-		cursorTextures.erase(it);
 	}
+	cursorTextures.erase(cursorTextures.begin(), cursorTextures.end());
 	
 	for(std::map<std::string, SDL_Texture*>::const_iterator it = pathTextures.begin(); it != pathTextures.end(); ++it) {
 		SDL_DestroyTexture(it->second);
-		pathTextures.erase(it);
 	}
+	pathTextures.erase(pathTextures.begin(), pathTextures.end());
 	
 	for(std::map<std::string, SDL_Texture*>::const_iterator it = npcTextures.begin(); it != npcTextures.end(); ++it) {
 		SDL_DestroyTexture(it->second);
-		npcTextures.erase(it);
 	}
+	npcTextures.erase(npcTextures.begin(), npcTextures.end());
 	
 	for(std::map<std::string, SDL_Texture*>::const_iterator it = guiTextures.begin(); it != guiTextures.end(); ++it) {
 		SDL_DestroyTexture(it->second);
-		guiTextures.erase(it);
 	}
+	guiTextures.erase(guiTextures.begin(), guiTextures.end());
 	
 	for(std::map<std::string, SDL_Texture*>::const_iterator it = itemTextures.begin(); it != itemTextures.end(); ++it) {
 		SDL_DestroyTexture(it->second);
-		itemTextures.erase(it);
 	}
+	itemTextures.erase(itemTextures.begin(), itemTextures.end());
 	
 	for(std::map<std::string, SDL_Texture*>::const_iterator it = itemRarityIndicatorTextures.begin(); it != itemRarityIndicatorTextures.end(); ++it) {
 		SDL_DestroyTexture(it->second);
-		itemRarityIndicatorTextures.erase(it);
 	}
+	itemRarityIndicatorTextures.erase(itemRarityIndicatorTextures.begin(), itemRarityIndicatorTextures.end());
 	
 	clearTextTextures();
 	
@@ -69,6 +69,7 @@ ResourceHandler::~ResourceHandler() {
 	for(std::map<std::string, Mix_Chunk*>::const_iterator it = sounds.begin(); it != sounds.end(); ++it) {
 		Mix_FreeChunk(it->second);
 	}
+	sounds.erase(sounds.begin(), sounds.end());
 }
 
 void ResourceHandler::loadAll() {
@@ -99,14 +100,13 @@ SDL_Texture* ResourceHandler::getTextTexture(Text text) {
 void ResourceHandler::clearTextTextures() {
 	for(std::map<Text, SDL_Texture*>::const_iterator it = renderedTexts.begin(); it != renderedTexts.end(); ++it) {
 		SDL_DestroyTexture(it->second);
-		renderedTexts.erase(it);
 	}
+	renderedTexts.erase(renderedTexts.begin(), renderedTexts.end());
 }
 
 void ResourceHandler::loadImages() {
 	loadTerrainImages();
 	loadWorldObjectImages();
-	//loadInteractiveWorldObjectImages();
 	loadCursorImages();
 	loadPathImages();
 	loadNPCImages();

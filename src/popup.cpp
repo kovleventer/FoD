@@ -94,6 +94,15 @@ void Popup::render() {
 		destinationRect.w = tw;
 		destinationRect.h = th;
 		SDL_RenderCopy(Global::renderer, textTexture, NULL, &destinationRect);
+	} else if (items.size() != 0) {
+		for (unsigned int i = 0; i < items.size(); i++) {
+			//TODO packing, or better management
+			destinationRect.x = x + /*w / 2 +*/ i * Global::player->getInventory()->getSlotSize();
+			destinationRect.y = y + h / 2 - Global::player->getInventory()->getSlotSize() / 2;
+			destinationRect.w = Global::player->getInventory()->getSlotSize();
+			destinationRect.h = Global::player->getInventory()->getSlotSize();
+			items[i]->render(destinationRect, false);
+		}
 	}
 }
 
@@ -105,10 +114,18 @@ std::string Popup::getText() {
 	return text;
 }
 
+Item* Popup::getItem(int index) {
+	return items[index];
+}
+
 void Popup::setPopupType(PopupType newPopupType) {
 	popupType = newPopupType;
 }
 
 void Popup::setText(std::string newText) {
 	text = newText;
+}
+
+void Popup::addItem(Item* itemToAdd) {
+	items.push_back(itemToAdd);
 }

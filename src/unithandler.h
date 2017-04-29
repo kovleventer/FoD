@@ -7,6 +7,7 @@
 
 #include "unit.h"
 #include "abstractunit.h"
+#include "filesystemhandler.h"
 
 class UnitHandler {
 public:

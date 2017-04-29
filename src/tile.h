@@ -14,6 +14,7 @@ enum class TileInfo {
 
 class Tile {
 public:
+	//TODO rework this init system (renew it)
 	Tile();
 	Tile(std::string tileType);
 	Tile(int tileType);

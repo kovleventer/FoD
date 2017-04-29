@@ -28,10 +28,10 @@ Map::~Map() {
 	}
 	
 	for (int i = 0; i < width; i++) {
-		delete tiles[i];
+		delete[] tiles[i];
 	}
 	
-	delete tiles;
+	delete[] tiles;
 }
 
 int Map::getWidth() {

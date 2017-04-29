@@ -16,9 +16,7 @@ ItemHandler::~ItemHandler() {
 }
 
 void ItemHandler::loadAll() {
-	std::vector<std::string> itemList = {"sword", "shield", "amulet", "helmet", "ring", "staff", "roundshield", "poisonarrow", "frostcloak", "crossbow", "sickle", "boots",
-		"bow", "ironarrow", "wand", "oldcloak", "mshield1", "mshield2", "bread"
-	};
+	std::vector<std::string> itemList = FilesystemHandler::getFilesInDir("data/item/");
 	
 	//NOTE uses file IO
 	std::fstream file;
@@ -30,7 +28,7 @@ void ItemHandler::loadAll() {
 	//'stat' 'value'
 	for (unsigned int i = 0; i < itemList.size(); i++) {
 		
-		file.open(basePath + itemList[i] + ".data", std::ios::in);
+		file.open(basePath + itemList[i], std::ios::in);
 		
 		std::string itemName;
 		std::string itemRarityString;
@@ -53,11 +51,22 @@ void ItemHandler::loadAll() {
 		}
 		
 		currentItem->generateDescription();
-		currentItem->texture = Global::resourceHandler->itemTextures[itemList[i]];
+		currentItem->texture = Global::resourceHandler->itemTextures[FilesystemHandler::removeExtension(itemList[i])];
 		
-		items[itemList[i]] = currentItem;
+		items[FilesystemHandler::removeExtension(itemList[i])] = currentItem;
 		
 		file.close();
+	}
+}
+
+Item* ItemHandler::getItem(std::string itemName) {
+	if (items.find(itemName) == items.end()) {
+		if (itemName != "") {
+			std::clog << "Warning! " << itemName << " not found" << std::endl;
+		}
+		return NULL;
+	} else {
+		return items[itemName];
 	}
 }
 

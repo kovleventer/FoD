@@ -18,7 +18,12 @@ Player::Player(std::string text, Point pos) : MapEntity(pos) {
 	atBackground = false;
 }
 
-Player::~Player() {}
+Player::~Player() {
+	delete army->getUnitInfo();
+	delete army;
+	delete inventory->getItemInfo();
+	delete inventory;
+}
 
 void Player::updatePlayerPosition() {
 	Global::camera->setPosition(PointD(PointD(position) + progressVector) * Global::tileSize - PointD(Global::screenWidth / 2, Global::screenHeight / 2));
@@ -41,7 +46,7 @@ void Player::updatePlayerPosition() {
 	Point nextTile = path[tileProgress + 1];
 	progressVector += PointD(nextTile - position) * speed;
 	
-	if (fabs(progressVector.getX()) > 1 || fabs(progressVector.getY()) > 1) {
+	if (std::abs(progressVector.getX()) > 1 || std::abs(progressVector.getY()) > 1) {
 		//We can not simply change the positon, we need the update the references on the tile
 		setPosition(nextTile);
 		tileProgress++;

@@ -28,6 +28,7 @@ public:
 	double distanceTo(Point other);
 	int distanceToManhattan(Point other);
 	//Yes, this function is actually used
+	//No, its not anymore
 	int distanceToChebyshev(Point other);
 	
 	//Operator overloadnig in order to print out the point

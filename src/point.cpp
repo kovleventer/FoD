@@ -44,14 +44,14 @@ double Point::distanceTo(Point other) {
 }
 
 int Point::distanceToManhattan(Point other) {
-	int dx = abs(x - other.x);
-	int dy = abs(y - other.y);
+	int dx = std::abs(x - other.x);
+	int dy = std::abs(y - other.y);
 	return dx + dy;
 }
 
 int Point::distanceToChebyshev(Point other) {
-	int dx = abs(x - other.x);
-	int dy = abs(y - other.y);
+	int dx = std::abs(x - other.x);
+	int dy = std::abs(y - other.y);
 	//Return the greater value as distance
 	return dx > dy ? dx : dy;
 }
@@ -170,14 +170,14 @@ double PointD::distanceTo(PointD other) {
 }
 
 double PointD::distanceToManhattan(PointD other) {
-	double dx = fabs(x - other.x);
-	double dy = fabs(y - other.y);
+	double dx = std::abs(x - other.x);
+	double dy = std::abs(y - other.y);
 	return dx + dy;
 }
 
 double PointD::distanceToChebyshev(PointD other) {
-	double dx = abs(x - other.x);
-	double dy = abs(y - other.y);
+	double dx = std::abs(x - other.x);
+	double dy = std::abs(y - other.y);
 	//Return the greater value as distance
 	return dx > dy ? dx : dy;
 }

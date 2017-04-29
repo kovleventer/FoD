@@ -8,6 +8,9 @@
 #include <map>
 #include <stdexcept>
 #include <fstream>
+#include <ctime>
+#include <sstream>
+#include <iomanip>
 
 #include "point.h"
 #include "version.h"
@@ -38,4 +41,9 @@ private:
 	
 	//Closes SDL subsystems and deletes variables
 	void cleanup();
+	
+	//Redirects the clog to a file
+	std::ofstream log;
+	
+	bool generateDefaultSettings;
 };

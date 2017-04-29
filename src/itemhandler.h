@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "item.h"
+#include "filesystemhandler.h"
 
 class ItemHandler {
 public:
@@ -14,7 +15,8 @@ public:
 	
 	void loadAll();
 	
-	std::map<std::string, Item*> items;
+	//Gets an item, returns NULL if invalid
+	Item* getItem(std::string itemName);
 	
 	//The translater is used to convert an enum class into a string and vice versa
 	//https://stackoverflow.com/questions/7163069/c-string-to-enum
@@ -25,6 +27,8 @@ public:
 	std::string translateT(ItemType itemType);
 private:
 	std::string basePath;
+	
+	std::map<std::string, Item*> items;
 	
 	//Logic behind the translaters
 	std::map<std::string, ItemRarity> translaterSIR;

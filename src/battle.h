@@ -23,8 +23,11 @@ public:
 	//Continues the battle
 	void continueBattle();
 	
+	//Calculates damage
+	//Needs to be stored to call dealDamage properly
+	int getPossibleDamage(Unit* unitToAttack);
 	//Continues the battle by attacking a unit or just simply preforms the attack
-	void attack(Unit* unitToAttack, bool isContinuation);
+	void dealDamage(Unit* unitToAttack, int damage, bool isContinuation);
 	
 	//Getters (probably not used very much)
 	int getMaxTurns();
@@ -50,4 +53,7 @@ private:
 	
 	//Stores the current attacking unit
 	Unit* currentAttackingUnit;
+	
+	//To prevent code duplication
+	void removeUnitFromQueue(Unit* unitToRemove);
 };

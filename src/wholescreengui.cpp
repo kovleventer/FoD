@@ -10,11 +10,7 @@ WholeScreenGUI::WholeScreenGUI(int xp, int yp, int wp, int hp) : TransientGUI(xp
 
 WholeScreenGUI::WholeScreenGUI(SDL_Rect dimensionRect) : WholeScreenGUI(dimensionRect.x, dimensionRect.y, dimensionRect.w, dimensionRect.h) {}
 
-WholeScreenGUI::~WholeScreenGUI() {
-	for (unsigned int i = 0; i < parts.size(); i++) {
-		delete parts[i];
-	}
-}
+WholeScreenGUI::~WholeScreenGUI() {}
 
 void WholeScreenGUI::render() {
 	//Rendering header

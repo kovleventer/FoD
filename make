@@ -1,6 +1,7 @@
 #!/bin/bash
 
 EXECUTABLE="FallOfDyrangor"
+EXECUTABLE_DEBUG="FoD_DEBUG"
 
 SOURCES=(
 	"game.cpp"
@@ -54,6 +55,9 @@ LINKER=(
 	"-lSDL2_ttf"
 	"-lSDL2_mixer"
 )
+
+FLAGS="-O3 -Wall -std=c++14 -c"
+DEBUGFLAGS="-O0 -g -Wall -std=c++14 -c"
  
 if [[ $1 == "R" || $1 == "r" ]]; then
 	if [ -a $EXECUTABLE ]; then
@@ -67,11 +71,11 @@ elif [[ $1 == "D" || $1 == "d" ]]; then
 	echo "Fully Compiling Debug Version..."
 	mkdir -p o
 	for i in ${SOURCES[@]}; do
-		g++ -O0 -g -Wall -std=c++0x -c "src/"$i -o "o/${i%%.*}d.o"
+		g++ $DEBUGFLAGS "src/"$i -o "o/${i%%.*}d.o"
 		echo " $i"
 	done
 	
-	LINKCOMMAND="g++ -o $EXECUTABLE""_DEBUG "
+	LINKCOMMAND="g++ -o $EXECUTABLE_DEBUG"
 	for i in ${SOURCES[@]}; do
 		LINKCOMMAND=$LINKCOMMAND" o/${i%%.*}d.o"
 	done
@@ -88,7 +92,7 @@ elif [[ $1 == "F" || $1 == "f" ]]; then
 	echo "Fully Compiling..."
 	mkdir -p o
 	for i in ${SOURCES[@]}; do
-		g++ -O3 -Wall -std=c++0x -c "src/"$i -o "o/${i%%.*}.o"
+		g++ $FLAGS "src/"$i -o "o/${i%%.*}.o"
 		echo " $i"
 	done
 	
@@ -114,19 +118,19 @@ elif [[ $1 == "M" || $1 == "m" ]]; then
 	MODIFIED=false
 	for i in ${SOURCES[@]}; do
 		if [ ! -f "o/${i%%.*}.o" ]; then
-			g++ -O3 -Wall -std=c++0x -c "src/"$i -o "o/${i%%.*}.o"
+			g++ $FLAGS "src/"$i -o "o/${i%%.*}.o"
 			echo " $i"
 			MODIFIED=true
 		fi
 		
 		if [[ "src/"$i -nt "o/${i%%.*}.o" ]]; then
-			g++ -O3 -Wall -std=c++0x -c "src/"$i -o "o/${i%%.*}.o"
+			g++ $FLAGS "src/"$i -o "o/${i%%.*}.o"
 			echo " $i"
 			MODIFIED=true
 		else
 			if [ -f "src/${i%%.*}.h" ]; then
 				if [[ "src/${i%%.*}.h" -nt "o/${i%%.*}.o" ]]; then
-					g++ -O3 -Wall -std=c++0x -c "src/"$i -o "o/${i%%.*}.o"
+					g++ $FLAGS "src/"$i -o "o/${i%%.*}.o"
 					echo " $i"
 					MODIFIED=true
 				fi
@@ -155,7 +159,7 @@ elif [[ $1 == "C" || $1 == "c" ]]; then
 	echo "Clearing..."
 	rm -rf o
 	rm $EXECUTABLE
-	rm $EXECUTABLE"_DEBUG"
+	rm $EXECUTABLE_DEBUG
 	echo "Clearing done"
 else
 	echo "Invalid options, use 'c', 'r', 'f', 'd' or 'm'"

@@ -6,6 +6,7 @@
 #include "transientgui.h"
 #include "button.h"
 #include "point.h"
+#include "item.h"
 
 enum class PopupType {
 	POPUP_OK,
@@ -30,11 +31,13 @@ public:
 	//Getters
 	PopupType getPopupType();
 	std::string getText();
+	Item* getItem(int index);
 	
 	//Setters
 	//NOTE dont use this
 	void setPopupType(PopupType newPopupType);
 	void setText(std::string newText);
+	void addItem(Item* itemToAdd);
 	
 	//Never use all of them
 	Button* buttonOK;
@@ -51,4 +54,6 @@ private:
 	PopupType popupType;
 	
 	std::string text;
+	
+	std::vector<Item*> items;
 };

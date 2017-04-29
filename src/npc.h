@@ -8,6 +8,7 @@
 #include "mapentity.h"
 #include "circularpath.h"
 #include "army.h"
+#include "inventory.h"
 
 class NPC : public MapEntity {
 public:
@@ -34,6 +35,7 @@ public:
 	std::vector<Point> getTempCont();
 	CircularPath* getPath();
 	Army* getArmy();
+	Inventory* getInventory();
 	std::string getName();
 	bool isEnemy();
 	
@@ -58,8 +60,10 @@ private:
 	//Is NPC standing
 	bool isStanding;
 	
-	//NPC's army
+	//NPC's army and inventory
 	Army* army;
+	Inventory* inventory;
+	
 	
 	std::string name;
 	//TODO factions

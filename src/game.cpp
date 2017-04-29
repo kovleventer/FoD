@@ -15,6 +15,8 @@
 #include "popup.h"
 
 Game::Game(std::string aName, Version version) {
+	generateDefaultSettings = false;
+	
 	//Passing metadata
 	Global::appName = aName + version.toString();
 	
@@ -23,6 +25,20 @@ Game::Game(std::string aName, Version version) {
 	Global::gameBoardHeight = 32;
 	
 	Global::defaultFontSize = 200;
+	
+	Global::tileSize = 64;
+	
+	//Redirecting the default clog to file
+	//https://stackoverflow.com/questions/34618916/moving-stdclog-in-source-to-output-file
+	//Gets current time
+	time_t t = time(0);
+	struct tm* now = localtime(&t);
+	std::stringstream logFileName;
+	logFileName << "log/";
+	logFileName << std::put_time(now, "%Y-%m-%d-%H-%M-%S");
+	logFileName << ".log";
+	log.open(logFileName.str());
+	std::clog.rdbuf(log.rdbuf());
 	
 	try {
 		loadSettings();
@@ -42,7 +58,7 @@ Game::Game(std::string aName, Version version) {
 		Global::player = new Player("player", 0, 0);
 		
 		Global::permaGUI = new PermanentGUI();
-		//Global::permaGUI->initAfterMap();
+		
 		Global::guiHandler = new GUIHandler();
 		
 		//Generate map stuff
@@ -66,30 +82,10 @@ Game::Game(std::string aName, Version version) {
 		//60 fps (or not)
 		id = SDL_AddTimer(1000 / Global::fps, timer, NULL);
 	} catch (std::runtime_error& e) {
-		std::cout << e.what() << std::endl;
+		std::clog << e.what() << std::endl;
 		return;
 	}
 	
-	//TODO better initialization system for player and npc inventory
-	Global::player->getInventory()->addItem(Global::itemHandler->items["sword"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["shield"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["amulet"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["helmet"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["ring"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["staff"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["roundshield"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["poisonarrow"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["frostcloak"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["crossbow"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["sickle"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["boots"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["bow"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["ironarrow"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["wand"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["oldcloak"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["mshield1"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["mshield2"]);
-	Global::player->getInventory()->addItem(Global::itemHandler->items["bread"]);
 	
 	//Contains a while loop
 	mainLoop();
@@ -103,11 +99,19 @@ void Game::loadSettings() {
 	std::fstream file;
 	
 	file.open("settings.txt", std::ios::in);
+	if (!file.good()) {
+		generateDefaultSettings = true;
+		return;
+	}
+	
 	std::string key;
 	int value;
 	while (file >> key && file >> value) {
 		settings[key] = value;
 	}
+	file.close();
+	
+	//TODO check degeneracies in width & height
 	
 	if (settings.find("width") != settings.end()) {
 		Global::screenWidth = settings["width"];
@@ -121,12 +125,6 @@ void Game::loadSettings() {
 		throw SettingsLoadError();
 	}
 	
-	if (settings.find("tile_size") != settings.end()) {
-		Global::tileSize = settings["tile_size"];
-	} else {
-		throw SettingsLoadError();
-	}
-	
 	if (settings.find("fps") != settings.end()) {
 		Global::fps = settings["fps"];
 	} else {
@@ -135,12 +133,32 @@ void Game::loadSettings() {
 }
 
 void Game::init() {
-	std::cout << "Initializing...";
+	std::clog << "Initializing...";
 	
 	//SDL init
-	std::cout << " SDL";
+	std::clog << " SDL";
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
 		throw SDLInitError();
+	}
+	
+	if (generateDefaultSettings) {
+		//Gets the native resolution and saves it to the config file
+		SDL_Rect displayRect;
+		SDL_GetDisplayBounds(0, &displayRect);
+		Global::screenWidth = displayRect.w;
+		Global::screenHeight = displayRect.h;
+		Global::fps = 60;
+		std::fstream file;
+		file.open("settings.txt", std::ios::out);
+		if (!file.good()) {
+			std::clog << "Error! Config file is not writeable" << std::endl;
+		}
+		
+		file << "width" << "\t" << Global::screenWidth << std::endl;
+		file << "height" << "\t" << Global::screenHeight << std::endl;
+		file << "fps" << "\t" << Global::fps << std::endl;
+		
+		file.close();
 	}
 	
 	//Window stuff
@@ -159,7 +177,7 @@ void Game::init() {
 	SDL_ShowCursor(SDL_DISABLE);
 	
 	
-	//Renderer stuff
+	//Renderer init
 	Global::renderer = SDL_CreateRenderer(Global::window, -1, SDL_RENDERER_ACCELERATED);
 	if (Global::renderer == NULL) {
 		throw SDLRendererError();
@@ -170,7 +188,7 @@ void Game::init() {
     
 	
 	//IMG module init
-	std::cout << " SDL_IMG";
+	std::clog << " SDL_IMG";
 	int imgFlags = IMG_INIT_PNG;
 	if( !( IMG_Init( imgFlags ) & imgFlags ) ) {
 		throw SDLImageInitError();
@@ -178,21 +196,26 @@ void Game::init() {
 	
 	
 	//TTF module init
-	std::cout << " TTF";
+	std::clog << " TTF";
 	if (TTF_Init() == -1) {
 		throw TTFInitError();
 	}
 	
+	
 	//Mixer module opening
-	std::cout << " SDL_MIXER";
+	std::clog << " SDL_MIXER";
 	if(Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0) {
 		throw SDLMixerInitError();
 	}
-    
-    //TODO delete this
-    SDL_SetWindowIcon(Global::window, IMG_Load("data/img/icon.png"));
 	
-	std::cout << " ...done" << std::endl;
+	
+	//Icon stuff
+	SDL_Surface* tempIcon = IMG_Load("data/img/icon.png");
+	SDL_SetWindowIcon(Global::window, tempIcon);
+	SDL_FreeSurface(tempIcon);
+	
+	
+	std::clog << " ...done" << std::endl;
 }
 
 Uint32 Game::timer(Uint32 ms, void* param) {
@@ -254,7 +277,8 @@ void Game::renderGame() {
 }
 
 void Game::cleanup() {
-	std::cout << "Closing...";
+	std::clog << "Closing...";
+	
 	//Deletes global variables
 	//Setting these pointers to NULL might be pointless but it would cause problems otherwise
 	delete Global::guiHandler;
@@ -291,7 +315,12 @@ void Game::cleanup() {
 	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
-	std::cout << " done" << std::endl;
+	
+	std::clog << " done" << std::endl;
+	
+	//Resetting clog
+	log.close();
+	std::clog.rdbuf(NULL);
 }
 
 void Game::quit() {

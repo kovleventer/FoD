@@ -75,6 +75,8 @@ void UserInputHandler::handleMousePressEvent(SDL_Event e) {
 				if (popup->getPopupType() == PopupType::POPUP_OK) {
 					if (popup->buttonOK->isClicked(Global::cursor->getPosition())) {
 						popup->buttonOK->click();
+						Global::guiHandler->clear();
+						delete popup;
 					}
 				} else if (popup->getPopupType() == PopupType::POPUP_YESNO) {
 					if (popup->buttonYES->isClicked(Global::cursor->getPosition())) {

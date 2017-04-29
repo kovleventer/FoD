@@ -4,6 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <iostream>
+#include <iomanip>
 
 #include "point.h"
 #include "npc.h"

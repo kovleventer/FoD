@@ -25,6 +25,7 @@ public:
 	int getSlotSize();
 	ItemInfo* getItemInfo();
 	int getCurrentHeightPosition();
+	unsigned int getInventorySize();
 	
 	//Setters
 	void setItemInfo(ItemInfo* newItemInfo);
@@ -34,6 +35,7 @@ public:
 	//Returns an item
 	Item* getItem(int x, int y);
 	Item* getItem(Point p);
+	Item* getItem(int index);
 	
 	//Adds an item if possible
 	bool addItem(Item* itemToAdd);

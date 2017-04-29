@@ -27,19 +27,24 @@ Army::Army(int xp, int yp, int wp, int hp, int width, int height, bool isInv) : 
 	} else {
 		bgTexture = Global::resourceHandler->guiTextures["armybg"];
 	}
-	defaultUnitTexture = Global::resourceHandler->guiTextures["armyslotbg"];
+	defaultUnitTextureFront = Global::resourceHandler->guiTextures["armyslotbg_front"];
+	defaultUnitTextureBack = Global::resourceHandler->guiTextures["armyslotbg_back"];
+	defaultUnitTextureSupport = Global::resourceHandler->guiTextures["armyslotbg_support"];
 	selectedUnitTexture = Global::resourceHandler->guiTextures["selectedunit"];
 	hoveredUnitTexture = Global::resourceHandler->guiTextures["hoveredunit"];
+	attackableUnitTexture = Global::resourceHandler->guiTextures["attackableunit"];
+	notAttackableUnitTexture = Global::resourceHandler->guiTextures["notattackableunit"];
 	
 	selectedUnitPos = Point(-1, -1);
 	hoveredUnitPos = Point(-1, -1);
 	
-	//?
+	//?..oh..?
 	if (isInverted) {
 		setUnitInfo(Global::player->getArmy()->getUnitInfo());
 	}
 	
 	allowAttack = false;
+	enemyDamageIndicator = 0;
 }
 
 Army::~Army() {
@@ -72,14 +77,46 @@ void Army::render() {
 				//If there are no present units at the given position
 				//Or the unit is deceased and we are currently on the battlefield
 				//In these cases we render the no-unit-there texture
-				SDL_RenderCopy(Global::renderer, defaultUnitTexture, NULL, &destinationRect);
+				
+				switch (getUPFromPos(Point(i, j))) {
+					case UnitPosition::FRONTROW:
+						SDL_RenderCopy(Global::renderer, defaultUnitTextureFront, NULL, &destinationRect);
+						break;
+					case UnitPosition::BACKROW:
+						SDL_RenderCopy(Global::renderer, defaultUnitTextureBack, NULL, &destinationRect);
+						break;
+					case UnitPosition::SUPPORT:
+						SDL_RenderCopy(Global::renderer, defaultUnitTextureSupport, NULL, &destinationRect);
+						break;
+				}
+				
 			} else {
 				//Rendering of unit selection / hovering indicator
 				units[j * iWidth + i]->render(destinationRect);
 				if (selectedUnitPos == Point(i, j)) {
 					SDL_RenderCopy(Global::renderer, selectedUnitTexture, NULL, &destinationRect);
 				} else if (hoveredUnitPos == Point(i, j)) {
-					SDL_RenderCopy(Global::renderer, hoveredUnitTexture, NULL, &destinationRect);
+					if (isInverted) {
+						//If enemy we render an attack indicator texture
+						if (isEnemyAttackable) {
+							
+							//Rendering damage indicator rectangle
+							SDL_SetRenderDrawColor(Global::renderer, 0xAF, 0x33, 0x33, 0xAF);
+							SDL_Rect damageIndicatorDestinationRect;
+							damageIndicatorDestinationRect.x = destinationRect.x;
+							damageIndicatorDestinationRect.y = destinationRect.y + (int)((double)(units[j * iWidth + i]->statsWithItems["life"] - units[j * iWidth + i]->statsWithItems["currentLife"]) / units[j * iWidth + i]->statsWithItems["life"] * destinationRect.h);
+							damageIndicatorDestinationRect.w = destinationRect.w;
+							damageIndicatorDestinationRect.h = (int)((double)(enemyDamageIndicator) / units[j * iWidth + i]->statsWithItems["life"] * destinationRect.h);
+							SDL_RenderFillRect(Global::renderer, &damageIndicatorDestinationRect);
+							
+							
+							SDL_RenderCopy(Global::renderer, attackableUnitTexture, NULL, &destinationRect);
+						} else {
+							SDL_RenderCopy(Global::renderer, notAttackableUnitTexture, NULL, &destinationRect);
+						}
+					} else {
+						SDL_RenderCopy(Global::renderer, hoveredUnitTexture, NULL, &destinationRect);
+					}
 				}
 			}
 		}
@@ -118,12 +155,32 @@ bool Army::inverted() {
 	return isInverted;
 }
 
+unsigned char Army::getAttackRestrictionFlags() {
+	return attackRestrictionFlags;
+}
+
+int Army::getEnemyDamageIndicator() {
+	return enemyDamageIndicator;
+}
+
 void Army::setUnitInfo(UnitInfo* newUnitInfo) {
 	unitInfo = newUnitInfo;
 }
 
 void Army::setAllowAttack(bool newAllowAttack) {
 	allowAttack = newAllowAttack;
+}
+
+void Army::setSelectedUnitPos(Point newSelectedUnitPos) {
+	selectedUnitPos = newSelectedUnitPos;
+}
+
+void Army::setAttackRestrictionFlags(unsigned char newAttackRestrictionFlags) {
+	attackRestrictionFlags = newAttackRestrictionFlags;
+}
+
+void Army::setEnemyDamageIndicator(int newEnemyDamageIndicator) {
+	enemyDamageIndicator = newEnemyDamageIndicator;
 }
 
 Unit* Army::getUnit(int x, int y) {
@@ -180,7 +237,9 @@ bool Army::addUnit(Unit* unitToAdd, UnitAddingPreference unitAddingPreference) {
 
 void Army::setUnit(int x, int y, Unit* unitToSet) {
 	units[y * iWidth + x] = unitToSet;
-	unitToSet->setPositionIndicator(x, y);
+	if (unitToSet != NULL) {
+		unitToSet->setPositionIndicator(x, y);
+	}
 }
 
 void Army::setUnit(Point p, Unit* unitToSet) {
@@ -191,10 +250,6 @@ void Army::setUnit(int index, Unit* unitToSet) {
 	setUnit(index % iWidth, index / iWidth, unitToSet);
 }
 
-void Army::setSelectedUnitPos(Point newSelectedUnitPos) {
-	selectedUnitPos = newSelectedUnitPos;
-}
-
 void Army::removeUnit(int x, int y) {
 	//NOTE no checking done
 	delete units[y * iWidth + x];
@@ -203,6 +258,14 @@ void Army::removeUnit(int x, int y) {
 
 void Army::removeUnit(Point p) {
 	removeUnit(p.getX(), p.getY());
+}
+
+void Army::switchUnits(Point unitPos1, Point unitPos2) {
+	Unit* unitA = getUnit(unitPos1);
+	Unit* unitB = getUnit(unitPos2);
+	
+	setUnit(unitPos1, unitB);
+	setUnit(unitPos2, unitA);
 }
 
 void Army::handleMousePressEvent(int xp, int yp) {
@@ -217,8 +280,11 @@ void Army::handleMousePressEvent(int xp, int yp) {
 				if (isInverted) {
 					//If enemy units are clicked
 					
-					if (getUnit(clickPos) != NULL && !getUnit(clickPos)->isDead()) {
-						Global::guiHandler->getBattle()->attack(getUnit(clickPos), true);
+					//isEnemyAttackable is set on mousemotionevent handling
+					if (isEnemyAttackable) {
+						if (getUnit(clickPos) != NULL && !getUnit(clickPos)->isDead()) {
+							Global::guiHandler->getBattle()->dealDamage(getUnit(clickPos), enemyDamageIndicator, true);
+						}
 					}
 				} else {
 					//If player's units are clikced
@@ -268,7 +334,28 @@ void Army::handleMouseMotionEvent(int xp, int yp) {
 	
 	if (Global::guiHandler->isHardlocked()) {
 		if (hoverPos != Point(-1, -1) && getUnit(hoverPos) != NULL && !getUnit(hoverPos)->isDead()) {
+			
+			isEnemyAttackable = false;
+			switch (getUPFromPos(hoverPos)) {
+				case UnitPosition::FRONTROW:
+					if (attackRestrictionFlags & ALLOW_FRONTLINE) {
+						isEnemyAttackable = true;
+					}
+					break;
+				case UnitPosition::BACKROW:
+					if (attackRestrictionFlags & ALLOW_BACKLINE) {
+						isEnemyAttackable = true;
+					}
+					break;
+				case UnitPosition::SUPPORT:
+					if (attackRestrictionFlags & ALLOW_SUPPORT) {
+						isEnemyAttackable = true;
+					}
+					break;
+			}
+			
 			hoveredUnitPos = hoverPos;
+			enemyDamageIndicator = Global::guiHandler->getBattle()->getPossibleDamage(getUnit(hoverPos));
 			unitInfo->setUnit(getUnit(hoverPos));
 		} else {
 			clearHovering();
@@ -289,6 +376,86 @@ void Army::handleMouseMotionEvent(int xp, int yp) {
 
 void Army::clearHovering() {
 	hoveredUnitPos = Point(-1, -1);
+}
+
+bool Army::isFrontRowEmpty() {
+	for (int i = 1; i < iWidth - 1; i++) {
+		if (getUnit(i, 0) != NULL && !getUnit(i, 0)->isDead()) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool Army::isBackRowEmpty() {
+	for (int i = 1; i < iWidth - 1; i++) {
+		if (getUnit(i, 1) != NULL && !getUnit(i, 1)->isDead()) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool Army::areFrontAndBackRowsEmpty() {
+	return isFrontRowEmpty() && isBackRowEmpty();
+}
+
+Point Army::getFirstOpenFrontRowPosition() {
+	for (int i = 1; i < iWidth - 1; i++) {
+		if (getUnit(i, 0) == NULL || getUnit(i, 0)->isDead()) {
+			return Point(i, 0);
+		}
+	}
+	return Point(-1, -1);
+}
+
+Point Army::getFirstOpenBackRowPosition() {
+	for (int i = 1; i < iWidth - 1; i++) {
+		if (getUnit(i, 1) == NULL || getUnit(i, 1)->isDead()) {
+			return Point(i, 1);
+		}
+	}
+	return Point(-1, -1);
+}
+
+UnitPosition Army::getUPFromPos(Point pos) {
+	if (pos == Point(0, 0) || pos == Point(0, 1) ||
+		pos == Point(iWidth - 1, 0) || pos == Point(iWidth - 1, 1)) {
+		return UnitPosition::SUPPORT;
+	}
+	if (pos.getY() == 0) {
+		return UnitPosition::FRONTROW;
+	}
+	return UnitPosition::BACKROW;
+}
+
+void Army::finalizeUnitExperiences() {
+	for (unsigned int i = 0; i < iSize; i++) {
+		if (units[i] != NULL) {
+			bool isLeveledUp = units[i]->finalizeExperience();
+			if (isLeveledUp) {
+				int level = units[i]->getLevel();
+				
+				//Saving inventory
+				std::vector<Item*> unitInventory;
+				int size = units[i]->getUnitInventorySize();
+				for (int j = 0; j < size; j++) {
+					unitInventory.push_back(units[i]->getItem(j));
+				}
+				
+				std::string unitName = units[i]->getName();
+				
+				delete units[i];
+				
+				units[i] = Global::unitHandler->getUnit(unitName, level + 1);
+				for (int j = 0; j < size; j++) {
+					units[i]->addItem(unitInventory[j]);
+				}
+				
+				units[i]->recalculateInventory();
+			}
+		}
+	}
 }
 
 void Army::initArray() {

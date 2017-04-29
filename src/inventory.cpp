@@ -62,6 +62,10 @@ int Inventory::getCurrentHeightPosition() {
 	return currentHeightPosition;
 }
 
+unsigned int Inventory::getInventorySize() {
+	return iSize;
+}
+
 void Inventory::setItemInfo(ItemInfo* newItemInfo) {
 	itemInfo = newItemInfo;
 }
@@ -89,6 +93,10 @@ Item* Inventory::getItem(int x, int y) {
 
 Item* Inventory::getItem(Point p) {
 	return getItem(p.getX(), p.getY());
+}
+
+Item* Inventory::getItem(int index) {
+	return items[index];
 }
 
 bool Inventory::addItem(Item* itemToAdd) {

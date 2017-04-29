@@ -20,11 +20,14 @@ void NPCHandler::loadAll() {
 	
 	for (unsigned int i = 0; i < npcNames.size(); i++) {
 		file.open(basePath + npcNames[i], std::ios::in);
+		//TODO update this
 		//File pattern
 		//Name
 		//Texture Name
 		//Armys unit names ("" if empty)
 		//Armys unit unit levels
+		//Armys unit hps lost
+		//Armys unit xp gained
 		// a [b c (a times)]
 		// a: number of points in path
 		// b: the x coordinate of the current tile
@@ -39,12 +42,16 @@ void NPCHandler::loadAll() {
 		
 		std::vector<std::string> unitNames;
 		std::vector<int> unitLevels;
+		std::vector<int> unitDamages;
+		std::vector<int> unitExperiences;
+		//Storing 4 * 10 items
+		std::vector<std::string> unitInventory;
 		
 		for (int i = 0; i < 10; i++) {
 			std::string unitName;
-			file >> unitName;
 			//Removes quotes
-			unitName = unitName.substr(1, unitName.size() - 2);
+			//The beauties of the c++14 standards
+			file >> std::quoted(unitName);
 			unitNames.push_back(unitName);
 		}
 		
@@ -54,7 +61,37 @@ void NPCHandler::loadAll() {
 			unitLevels.push_back(unitLevel);
 		}
 		
-		int pathLen;
+		for (int i = 0; i < 10; i++) {
+			int unitDamage;
+			file >> unitDamage;
+			unitDamages.push_back(unitDamage);
+		}
+		
+		for (int i = 0; i < 10; i++) {
+			int unitExperience;
+			file >> unitExperience;
+			unitExperiences.push_back(unitExperience);
+		}
+		
+		//Loading unit items
+		for (int i = 0; i < 40; i++) {
+			std::string itemName;
+			file >> std::quoted(itemName);
+			unitInventory.push_back(itemName);
+		}
+		
+		//Loading inventory
+		int inventoryLen = 0;
+		file >> inventoryLen;
+		std::vector<std::string> inventory;
+		
+		for (int i = 0; i < inventoryLen; i++) {
+			std::string itemName;
+			file >> std::quoted(itemName);
+			inventory.push_back(itemName);
+		}
+		
+		int pathLen = 0;
 		file >> pathLen;
 		
 		std::vector<Point> pathPieces;
@@ -75,18 +112,42 @@ void NPCHandler::loadAll() {
 		
 		file.close();
 		
+		if (!file) {
+			//If the file pattern is wrong
+			std::clog << "Error! Skipping " << npcNames[i] << std::endl;
+			continue;
+		}
+		
 		
 		if (textureName == "player") {
 			//Player counts as an npc
 			Global::player->setPosition(pathPieces[0]);
 			Global::player->setScale(scale);
 			Global::player->setName(name);
+			//Adding units to army
 			for (int i = 0; i < 10; i++) {
 				if (unitNames[i] == "") continue;
 				
-				Global::player->getArmy()->setUnit(i, Global::unitHandler->getUnit(unitNames[i], unitLevels[i]));
+				Unit* currentUnit = Global::unitHandler->getUnit(unitNames[i], unitLevels[i]);
+				currentUnit->stats["currentLife"] -= unitDamages[i];
+				currentUnit->stats["currentExperience"] += unitExperiences[i];
+				
+				//Adding items to units
+				for (int j = 0; j < 4; j++) {
+					currentUnit->addItem(Global::itemHandler->getItem(unitInventory[i * 4 + j]));
+				}
+				
+				currentUnit->recalculateInventory();
+				
+				Global::player->getArmy()->setUnit(i, currentUnit);
 			}
-			Global::map->getTile(pathPieces[0])->entities.push_back(Global::player);
+			
+			//Adding items to invetory
+			for (int i = 0; i < inventoryLen; i++) {
+				Global::player->getInventory()->addItem(Global::itemHandler->getItem(inventory[i]));
+			}
+			
+			//Global::map->getTile(pathPieces[0])->entities.push_back(Global::player);
 		} else {
 			//Initializing NPC
 			//NOTE a little bit of redundancy here
@@ -107,10 +168,27 @@ void NPCHandler::loadAll() {
 			loaded->setIsEnemy(isEnemy);
 			loaded->setScale(scale);
 			
+			//Adding units to army
 			for (int i = 0; i < 10; i++) {
 				if (unitNames[i] == "") continue;
 				
-				loaded->getArmy()->setUnit(i, Global::unitHandler->getUnit(unitNames[i], unitLevels[i]));
+				Unit* currentUnit = Global::unitHandler->getUnit(unitNames[i], unitLevels[i]);
+				currentUnit->stats["currentLife"] -= unitDamages[i];
+				currentUnit->stats["currentExperience"] += unitExperiences[i];
+				
+				//Adding items to units
+				for (int j = 0; j < 4; j++) {
+					currentUnit->addItem(Global::itemHandler->getItem(unitInventory[i * 4 + j]));
+				}
+				
+				currentUnit->recalculateInventory();
+				
+				loaded->getArmy()->setUnit(i, currentUnit);
+			}
+			
+			//Adding items to invetory
+			for (int i = 0; i < inventoryLen; i++) {
+				loaded->getInventory()->addItem(Global::itemHandler->getItem(inventory[i]));
 			}
 			
 			//Setting path

@@ -84,8 +84,8 @@ void UnitInfo::render() {
 				ossValue << selectedUnit->statsWithItems["speed"];
 				difference = selectedUnit->statsWithItems["speed"] - selectedUnit->stats["speed"];
 			} else if (i == 7) {
-				ossStat << "Number of Actions";
-				ossValue << selectedUnit->statsWithItems["numberOfActions"];
+				ossStat << "NoA";
+				ossValue << selectedUnit->statsWithItems["currentNumberOfActions"] << "/" << selectedUnit->statsWithItems["numberOfActions"];
 				difference = selectedUnit->statsWithItems["numberOfActions"] - selectedUnit->stats["numberOfActions"];
 			} else if (i == 8) {
 				ossStat << "Experience";
@@ -145,6 +145,9 @@ void UnitInfo::setUnit(Unit* newUnit) {
 }
 
 void UnitInfo::handleMousePressEvent(int xp, int yp) {
+	//On battle it does nothing
+	if (Global::guiHandler->isHardlocked()) return;
+	
 	if (Global::cursor->getItem() == NULL) {
 		Global::cursor->setItem(removeItemOnCursor(xp, yp));
 		if (selectedUnit != NULL) {

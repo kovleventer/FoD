@@ -20,7 +20,13 @@ UnitHandler::~UnitHandler() {
 
 Unit* UnitHandler::getUnit(std::string name, int level) {
 	
+	if (level <= 0) {
+		//Invalid level
+		std::clog << "Warning! \"" << name << "\" has invalid level of " << level << std::endl;
+	}
+	
 	if (baseUnits.find(name) == baseUnits.end()) {
+		std::clog << "Error! Unit with name \"" << name << "\" does not exist." << std::endl;
 		return NULL;
 	} else {
 		//NOTE ugly
@@ -35,6 +41,7 @@ Unit* UnitHandler::getUnit(std::string name, int level) {
 		newUnit->stats["magicDefense"] = (int)((double)unitTemplate->getMagicDefense() * pow(levelMultipliers, level - 1));
 		newUnit->stats["speed"] = (int)((double)unitTemplate->getSpeed() * pow(levelMultipliers, level - 1));
 		newUnit->stats["numberOfActions"] = (int)((double)unitTemplate->getNumberOfActions() * pow(levelMultipliersForNOA, level - 1));
+		newUnit->stats["currentNumberOfActions"] = newUnit->stats["numberOfActions"];
 		newUnit->stats["experience"] = (int)((double)unitTemplate->getExperience() * pow(levelMultipliersForEXP, level - 1));
 		newUnit->stats["currentExperience"] = 0;
 		newUnit->setLevel(level);
@@ -57,7 +64,7 @@ std::string UnitHandler::translateT(UnitType unitType) {
 }
 
 void UnitHandler::loadUnitData() {
-	std::vector<std::string> unitList = {"Axeman", "Dog", "Bowman", "Gray Mage"};
+	std::vector<std::string> unitList = FilesystemHandler::getFilesInDir("data/unit/");
 	
 	//NOTE uses file IO
 	std::fstream file;
@@ -76,7 +83,7 @@ void UnitHandler::loadUnitData() {
 	//experience;
 	for (unsigned int i = 0; i < unitList.size(); i++) {
 		//Loading the units into level 1 unittemplates
-		file.open(basePath + unitList[i] + ".data", std::ios::in);
+		file.open(basePath + unitList[i], std::ios::in);
 		
 		AbstractUnit* currentUnit = new AbstractUnit();
 		

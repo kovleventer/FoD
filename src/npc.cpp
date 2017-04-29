@@ -27,6 +27,9 @@ NPC::~NPC() {
 		delete path;
 	
 	Global::npcHandler->npcs.erase(std::remove(Global::npcHandler->npcs.begin(), Global::npcHandler->npcs.end(), this));
+	
+	delete army;
+	delete inventory;
 }
 
 void NPC::updateNPCPosition() {
@@ -78,6 +81,10 @@ Army* NPC::getArmy() {
 	return army;
 }
 
+Inventory* NPC::getInventory() {
+	return inventory;
+}
+
 std::string NPC::getName() {
 	return name;
 }
@@ -114,4 +121,5 @@ void NPC::init() {
 					5, 2, true);
 	enemy = true;
 	atBackground = false;
+	inventory = new Inventory(20);
 }
