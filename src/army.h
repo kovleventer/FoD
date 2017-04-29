@@ -39,6 +39,8 @@ public:
 	
 	//Setters
 	void setUnitInfo(UnitInfo* newUnitInfo);
+	void setAllowAttack(bool newAllowAttack);
+	void setSelectedUnitPos(Point newSelectedUnitPos);
 	
 	Unit* getUnit(int x, int y);
 	Unit* getUnit(Point p);
@@ -80,4 +82,8 @@ private:
 	//Gets the position in point
 	//Returns -1, -1, if no unit is clicked
 	Point getUnitOnCursor(int xp, int yp);
+	
+	//Variable used in battles
+	//If true, we can attack an enemy
+	bool allowAttack;
 };

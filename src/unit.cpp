@@ -42,6 +42,22 @@ int Unit::getUnitInventorySize() {
 	return unitInventorySize;
 }
 
+bool Unit::getTeamOne() {
+	return isTeamOne;
+}
+
+Point Unit::getPosition() {
+	return position;
+}
+
+void Unit::setTeamOne(bool newTeamOne) {
+	isTeamOne = newTeamOne;
+}
+
+void Unit::setPositionIndicator(Point newPos) {
+	position = newPos;
+}
+
 bool Unit::addItem(Item* itemToAdd) {
 	if (UnitInventoryHandler::matches(unitType, itemToAdd->getItemType()) && !UnitInventoryHandler::hasType(this, itemToAdd->getItemType())) {
 		for (int i = 0; i < unitInventorySize; i++) {

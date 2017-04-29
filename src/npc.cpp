@@ -51,6 +51,9 @@ void NPC::updateNPCPosition() {
 
 void NPC::activate() {
 	Battle* battle = new Battle(this);
+	
+	battle->start();
+	
 	//delete battle;
 }
 

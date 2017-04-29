@@ -17,6 +17,8 @@ ResourceHandler::ResourceHandler() {
 	unitImagePath = "data/img/units/";
 	
 	fontPath = "data/MerriweatherSans-Regular.ttf";
+	
+	audioPath = "data/audio/";
 }
 
 ResourceHandler::~ResourceHandler() {
@@ -64,12 +66,18 @@ ResourceHandler::~ResourceHandler() {
 	SDL_DestroyTexture(playerTexture);
 	
 	TTF_CloseFont(font);
+	
+	//Free all the sounds
+	for(std::map<std::string, Mix_Chunk*>::const_iterator it = sounds.begin(); it != sounds.end(); ++it) {
+		Mix_FreeChunk(it->second);
+	}
 }
 
 void ResourceHandler::loadAll() {
 	loadImages();
 	loadFont();
 	loadColors();
+	loadAudio();
 }
 
 SDL_Texture* ResourceHandler::getTextTexture(std::string text, SDL_Color color) {
@@ -219,6 +227,9 @@ SDL_Texture* ResourceHandler::loadTexture(std::string path) {
 
 void ResourceHandler::loadFont() {
 	font = TTF_OpenFont(fontPath.c_str(), Global::defaultFontSize);
+	if (font == NULL) {
+		throw MediaNotFoundError();
+	}
 }
 
 void ResourceHandler::loadColors() {
@@ -228,4 +239,21 @@ void ResourceHandler::loadColors() {
 	colors["unitinfo-values-unchanged"] = {45, 75, 228};
 	colors["unitinfo-values-incremented"] = {75, 228, 45};
 	colors["unitinfo-values-decremented"] = {228, 45, 75};
+}
+
+void ResourceHandler::loadAudio() {
+	//http://lazyfoo.net/tutorials/SDL/21_sound_effects_and_music/index.php
+	std::vector<std::string> soundNames = {"test"};
+	for (unsigned int i = 0; i < soundNames.size(); i++) {
+		sounds[soundNames[i]] = loadSound(audioPath + soundNames[i] + ".wav");
+	}
+}
+
+Mix_Chunk* ResourceHandler::loadSound(std::string path) {
+	//LoadWAV needs a c-type string (char*)
+	Mix_Chunk* newChunk = Mix_LoadWAV(path.c_str());
+	if (newChunk == NULL) {
+		throw MediaNotFoundError();
+	}
+	return newChunk;
 }

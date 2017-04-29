@@ -74,7 +74,7 @@ Game::Game(std::string aName, Version version) {
 	Global::player->getInventory()->addItem(Global::itemHandler->items["mshield2"]);
 	Global::player->getInventory()->addItem(Global::itemHandler->items["bread"]);
 	
-	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 1), UnitAddingPreference::FRONTROWFIRST);
+	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 10), UnitAddingPreference::FRONTROWFIRST);
 	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 2), UnitAddingPreference::FRONTROWFIRST);
 	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 3), UnitAddingPreference::FRONTROWFIRST);
 	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 4), UnitAddingPreference::FRONTROWFIRST);
@@ -166,7 +166,7 @@ void Game::init() {
 	SDL_SetRenderDrawBlendMode(Global::renderer, SDL_BLENDMODE_BLEND);
     
 	
-	//IMG module stuff
+	//IMG module init
 	std::cout << " SDL_IMG";
 	int imgFlags = IMG_INIT_PNG;
 	if( !( IMG_Init( imgFlags ) & imgFlags ) ) {
@@ -174,10 +174,16 @@ void Game::init() {
 	}
 	
 	
-	//TTF module stuff
+	//TTF module init
 	std::cout << " TTF";
 	if (TTF_Init() == -1) {
 		throw TTFInitError();
+	}
+	
+	//Mixer module opening
+	std::cout << " SDL_MIXER";
+	if(Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0) {
+		throw SDLMixerInitError();
 	}
     
     //TODO delete this
@@ -220,6 +226,15 @@ void Game::mainLoop() {
 			case SDL_MOUSEBUTTONDOWN:
 				UserInputHandler::handleMousePressEvent(e);
 				break;
+			case SDL_MOUSEWHEEL:
+				//https://wiki.libsdl.org/SDL_MouseWheelEvent
+				//Check if the mouse wheel is flipped
+				if (e.wheel.direction == SDL_MOUSEWHEEL_NORMAL) {
+					UserInputHandler::handleMouseWheelEvent(!(e.wheel.y-1));
+				} else {
+					UserInputHandler::handleMouseWheelEvent(e.wheel.y-1);
+				}
+				break;
 		}
 	}
 }
@@ -255,6 +270,7 @@ void Game::cleanup() {
 	Global::renderer = NULL;
 	
 	//Quits SDL subsystems
+	Mix_Quit();
 	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();

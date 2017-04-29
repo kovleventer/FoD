@@ -28,6 +28,7 @@ public:
 	//0, 0 is at the top legt corner of our GUI
 	void handleMousePressEvent(int xp, int yp);
 	void handleMouseMotionEvent(int xp, int yp);
+	void handleMouseWheelEvent(bool up);
 private:
 	std::vector<GUIPart*> parts;
 	

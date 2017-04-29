@@ -149,3 +149,15 @@ void UserInputHandler::handleMouseMotionEvent(int x, int y) {
 	
 	Global::camera->move(moveVectorX, moveVectorY);
 }
+
+void UserInputHandler::handleMouseWheelEvent(bool up) {
+	if (Global::guiHandler->isLocked()) {
+		WholeScreenGUI* possibleGUI = dynamic_cast<WholeScreenGUI*>(Global::guiHandler->getGUI());
+		if (possibleGUI == NULL) {
+			//TODO Popup stuff
+		} else {
+			possibleGUI->handleMouseWheelEvent(up);
+		}
+		return;
+	}
+}

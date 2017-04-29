@@ -5,6 +5,7 @@
 #include <map>
 
 #include "item.h"
+#include "point.h"
 
 enum class UnitType {
 	FIGHTER,
@@ -26,6 +27,12 @@ public:
 	//Getters
 	std::string getName();
 	int getUnitInventorySize();
+	bool getTeamOne();
+	Point getPosition();
+	
+	//Setters
+	void setTeamOne(bool newTeamOne);
+	void setPositionIndicator(Point newPos);
 	
 	bool addItem(Item* itemToAdd);
 	Item* removeItem(int position);
@@ -44,6 +51,11 @@ private:
 	UnitType unitType;
 	
 	Item** items;
+	
+	//Temporary variable to store the parent of the unit
+	bool isTeamOne;
+	
+	Point position;
 };
 
 //Compares two units by their speed stats (used in battle)

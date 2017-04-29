@@ -28,6 +28,7 @@ public:
 	virtual void render();
 	virtual void handleMousePressEvent(int xp, int yp);
 	virtual void handleMouseMotionEvent(int xp, int yp);
+	virtual void handleMouseWheelEvent(bool up);
 protected:
 	int x, y, w, h;
 };

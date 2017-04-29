@@ -30,6 +30,12 @@ const char* TTFInitError::what() const throw() {
 	return errorMessage.c_str();
 }
 
+std::string SDLMixerInitError::errorMessage = "SDL mixer initialization failed";
+SDLMixerInitError::SDLMixerInitError() : std::runtime_error::runtime_error(errorMessage) {}
+const char* SDLMixerInitError::what() const throw() {
+	return errorMessage.c_str();
+}
+
 std::string MediaNotFoundError::errorMessage = "At least one of the media files is missing";
 MediaNotFoundError::MediaNotFoundError() : std::runtime_error::runtime_error(errorMessage) {}
 const char* MediaNotFoundError::what() const throw() {

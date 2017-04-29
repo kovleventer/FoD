@@ -107,7 +107,7 @@ void PermanentGUI::init() {
 	guiMinimap->setHeaderText("Map");
 	
 	//Player's inventory (5*5)
-	Inventory* tempInventory = new Inventory(tempX + tempW / 5, tempY + tempH / 10, tempW * 2 / 5, tempH * 2 / 5, 5, 5);
+	Inventory* tempInventory = new Inventory(tempX + tempW / 5, tempY + tempH / 10, tempW * 2 / 5, tempH * 2 / 5, 5, 10);
 	guiArmy->addPart(tempInventory);
 	Global::player->setInventory(tempInventory);
 	

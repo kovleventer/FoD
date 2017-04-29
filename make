@@ -47,6 +47,7 @@ LINKER=(
 	"-lSDL2"
 	"-lSDL2_image"
 	"-lSDL2_ttf"
+	"-lSDL2_mixer"
 )
  
 if [[ $1 == "R" || $1 == "r" ]]; then

@@ -18,17 +18,23 @@ TransientGUI* GUIHandler::getGUI() {
 	return currentGUI;
 }
 
+Battle* GUIHandler::getBattle() {
+	return currentBattle;
+}
+
 void GUIHandler::setGUI(TransientGUI* newGUI) {
 	currentGUI = newGUI;
 	hasGUI = (currentGUI != NULL);
 }
 
-void GUIHandler::setHardlocked(bool newHardlocked) {
-	hardlocked = newHardlocked;
+void GUIHandler::setBattle(Battle* newBattle) {
+	currentBattle = newBattle;
+	hardlocked = (currentBattle != NULL);
 }
 
 void GUIHandler::clear() {
 	currentGUI = NULL;
+	currentBattle = NULL;
 	hasGUI = false;
 	hardlocked = false;
 }

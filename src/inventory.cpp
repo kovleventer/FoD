@@ -7,6 +7,7 @@ Inventory::Inventory(int xp, int yp, int wp, int hp, int width, int height) : GU
 	//Setting size attributes
 	iWidth = width;
 	iHeight = height;
+	currentHeightPosition = 0;
 	iSize = iWidth * iHeight;
 	
 	slotSize = w / iWidth;
@@ -38,8 +39,12 @@ void Inventory::render() {
 			destinationRect.x = x + i * slotSize;
 			destinationRect.y = y + j * slotSize;
 			SDL_RenderCopy(Global::renderer, slotTexture, NULL, &destinationRect);
-			if (items[j * iWidth + i] != NULL) {
-				items[j * iWidth + i]->render(destinationRect, true);
+			/*if (items[(j + currentHeightPosition) * iWidth + i] != NULL) {
+				items[(j + currentHeightPosition) * iWidth + i]->render(destinationRect, true);
+			}*/
+			Item* itemToRender = getItem(i, j + currentHeightPosition);
+			if (itemToRender != NULL) {
+				itemToRender->render(destinationRect, true);
 			}
 		}
 	}
@@ -53,13 +58,29 @@ ItemInfo* Inventory::getItemInfo() {
 	return itemInfo;
 }
 
+int Inventory::getCurrentHeightPosition() {
+	return currentHeightPosition;
+}
+
 void Inventory::setItemInfo(ItemInfo* newItemInfo) {
 	itemInfo = newItemInfo;
 }
 
+void Inventory::incrementCurrentHeightPosition() {
+	if (currentHeightPosition < iHeight - iWidth) {
+		currentHeightPosition++;
+	}
+}
+
+void Inventory::decrementCurrentHeightPosition() {
+	if (currentHeightPosition > 0) {
+		currentHeightPosition--;
+	}
+}
+
 Item* Inventory::getItem(int x, int y) {
 	//Checking for boundaries
-	if (y * iWidth + x >= (int)iSize) {
+	if (y * iWidth + x >= (int)iSize || y * iWidth + x < 0) {
 		return NULL;
 	} else {
 		return items[y * iWidth + x];
@@ -82,7 +103,7 @@ bool Inventory::addItem(Item* itemToAdd) {
 
 void Inventory::setItem(int x, int y, Item* itemToSet) {
 	//Checking for boundaries
-	if (y * iWidth + x < (int)iSize) {
+	if (y * iWidth + x < (int)iSize || y * iWidth + x < 0) {
 		items[y * iWidth + x] = itemToSet;
 	}
 }
@@ -93,7 +114,7 @@ void Inventory::setItem(Point p, Item* itemToSet) {
 
 Item* Inventory::removeItem(int x, int y) {
 	//Checking for boundaries
-	if (y * iWidth + x >= (int)iSize) {
+	if (y * iWidth + x >= (int)iSize || y * iWidth + x < 0) {
 		return NULL;
 	} else {
 		Item* itemToRemove = items[y * iWidth + x];
@@ -109,6 +130,7 @@ Item* Inventory::removeItem(Point p) {
 void Inventory::handleMousePressEvent(int xp, int yp) {
 	Point rel = Point(xp - x, yp - y);
 	rel /= slotSize;
+	rel += Point(0, currentHeightPosition);
 	
 	//Switching items
 	Item* clickedItem = removeItem(rel);
@@ -120,7 +142,16 @@ void Inventory::handleMousePressEvent(int xp, int yp) {
 void Inventory::handleMouseMotionEvent(int xp, int yp) {
 	Point rel = Point(xp - x, yp - y);
 	rel /= slotSize;
+	rel += Point(0, currentHeightPosition);
 	itemInfo->setItem(getItem(rel));
+}
+
+void Inventory::handleMouseWheelEvent(bool up) {
+	if (up) {
+		Global::player->getInventory()->decrementCurrentHeightPosition();
+	} else {
+		Global::player->getInventory()->incrementCurrentHeightPosition();
+	}
 }
 
 void Inventory::initArray() {

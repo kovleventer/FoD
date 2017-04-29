@@ -60,3 +60,4 @@ void GUIPart::render() {
 //Do nothing since they are virtual functions
 void GUIPart::handleMousePressEvent(int xp, int yp) {}
 void GUIPart::handleMouseMotionEvent(int xp, int yp) {}
+void GUIPart::handleMouseWheelEvent(bool up) {}

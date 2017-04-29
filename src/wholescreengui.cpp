@@ -75,3 +75,13 @@ void WholeScreenGUI::handleMouseMotionEvent(int xp, int yp) {
 		}
 	}
 }
+
+void WholeScreenGUI::handleMouseWheelEvent(bool up) {
+	//Events are passed to parts
+	for (unsigned int i = 0; i < parts.size(); i++) {
+		if (parts[i]->contains(Global::cursor->getPosition())) {
+			parts[i]->handleMouseWheelEvent(up);
+			break;
+		}
+	}
+}

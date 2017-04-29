@@ -44,6 +44,15 @@ private:
 	static std::string errorMessage;
 };
 
+class SDLMixerInitError : public std::runtime_error {
+public:
+	SDLMixerInitError();
+	const char* what() const throw();
+private:
+	static std::string errorMessage;
+};
+
+//TODO error messages (which media file is missing)
 class MediaNotFoundError : public std::runtime_error {
 public:
 	MediaNotFoundError();

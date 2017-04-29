@@ -1,6 +1,7 @@
 #include "army.h"
 
 #include "global.h"
+#include "battle.h"
 
 Army::Army(int xp, int yp, int wp, int hp, int width, int height, bool isInv) : GUIPart(xp, yp, wp, hp) {
 	units = new Unit*[width * height];
@@ -31,6 +32,8 @@ Army::Army(int xp, int yp, int wp, int hp, int width, int height, bool isInv) : 
 	if (isInverted) {
 		setUnitInfo(Global::player->getArmy()->getUnitInfo());
 	}
+	
+	allowAttack = false;
 }
 
 Army::~Army() {
@@ -103,6 +106,10 @@ void Army::setUnitInfo(UnitInfo* newUnitInfo) {
 	unitInfo = newUnitInfo;
 }
 
+void Army::setAllowAttack(bool newAllowAttack) {
+	allowAttack = newAllowAttack;
+}
+
 Unit* Army::getUnit(int x, int y) {
 	return units[y * iWidth + x];
 }
@@ -163,6 +170,10 @@ void Army::setUnit(Point p, Unit* unitToSet) {
 	setUnit(p.getX(), p.getY(), unitToSet);
 }
 
+void Army::setSelectedUnitPos(Point newSelectedUnitPos) {
+	selectedUnitPos = newSelectedUnitPos;
+}
+
 void Army::removeUnit(int x, int y) {
 	//NOTE no checking done
 	delete units[y * iWidth + x];
@@ -177,8 +188,22 @@ void Army::handleMousePressEvent(int xp, int yp) {
 	Point clickPos = getUnitOnCursor(xp, yp);
 	if (clickPos != Point(-1, -1)) {
 		if (Global::guiHandler->isHardlocked()) {
-			//If enemy units are clicked
+			//If we are in a battle
 			
+			if (allowAttack) {
+				//If we can make actions
+				
+				if (isInverted) {
+					//If enemy units are clicked
+					
+					if (getUnit(clickPos) != NULL) {
+						Global::guiHandler->getBattle()->attack(getUnit(clickPos));
+					}
+				} else {
+					//If player's units are clikced
+					
+				}
+			}
 		} else {
 			//If player's units are clikced
 			//TODO check if in battle and make different behaviours
@@ -213,8 +238,20 @@ void Army::handleMousePressEvent(int xp, int yp) {
 
 void Army::handleMouseMotionEvent(int xp, int yp) {
 	Point hoverPos = getUnitOnCursor(xp, yp);
+	
+	if (Global::guiHandler->isHardlocked()) {
+		if (hoverPos != Point(-1, -1) && getUnit(hoverPos) != NULL) {
+			hoveredUnitPos = hoverPos;
+			unitInfo->setUnit(getUnit(hoverPos));
+		} else {
+			clearHovering();
+		}
+		return;
+	}
+	
 	if (hoverPos != Point(-1, -1) && getUnit(hoverPos) != NULL && selectedUnitPos != hoverPos) {
 		hoveredUnitPos = hoverPos;
+		//If we dont have an active unit
 		if (selectedUnitPos == Point(-1, -1)) {
 			unitInfo->setUnit(getUnit(hoverPos));
 		}
@@ -239,6 +276,7 @@ bool Army::addUnitToFrontRow(Unit* unitToAdd) {
 	for (int i = 1; i < iWidth - 1; i++) {
 		if (getUnit(i, 0) == NULL) {
 			setUnit(i, 0, unitToAdd);
+			unitToAdd->setPositionIndicator(Point(i, 0));
 			return true;
 		}
 	}
@@ -251,6 +289,7 @@ bool Army::addUnitToBackRow(Unit* unitToAdd) {
 	for (int i = 1; i < iWidth - 1; i++) {
 		if (getUnit(i, 1) == NULL) {
 			setUnit(i, 1, unitToAdd);
+			unitToAdd->setPositionIndicator(Point(i, 1));
 			return true;
 		}
 	}
@@ -262,18 +301,22 @@ bool Army::addUnitToSupport(Unit* unitToAdd) {
 	// x...x
 	if (getUnit(0, 0) == NULL) {
 		setUnit(0, 0, unitToAdd);
+		unitToAdd->setPositionIndicator(Point(0, 0));
 		return true;
 	}
 	if (getUnit(0, 1) == NULL) {
 		setUnit(0, 1, unitToAdd);
+		unitToAdd->setPositionIndicator(Point(0, 1));
 		return true;
 	}
 	if (getUnit(iWidth - 1, 0) == NULL) {
 		setUnit(iWidth - 1, 0, unitToAdd);
+		unitToAdd->setPositionIndicator(Point(iWidth - 1, 0));
 		return true;
 	}
 	if (getUnit(iWidth - 1, 1) == NULL) {
 		setUnit(iWidth - 1, 1, unitToAdd);
+		unitToAdd->setPositionIndicator(Point(iWidth - 1, 1));
 		return true;
 	}
 	return false;

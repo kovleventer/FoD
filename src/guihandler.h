@@ -1,6 +1,7 @@
 #pragma once
 
 #include "transientgui.h"
+#include "battle.h"
 
 class GUIHandler {
 public:
@@ -10,10 +11,11 @@ public:
 	bool isLocked();
 	bool isHardlocked();
 	TransientGUI* getGUI();
+	Battle* getBattle();
 	
 	//Setters
 	void setGUI(TransientGUI* newGUI);
-	void setHardlocked(bool newHardlocked);
+	void setBattle(Battle* newBattle);
 	
 	void clear();
 	
@@ -21,6 +23,7 @@ public:
 	void render();
 private:
 	TransientGUI* currentGUI;
+	Battle* currentBattle;
 	
 	//If we have a gui currently
 	bool hasGUI;

@@ -3,6 +3,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 #include <map>
 #include <string>
 #include <iterator>
@@ -47,13 +48,16 @@ public:
 	std::map<std::string, SDL_Texture*> unitTextures;
 	
 	
-	
 	SDL_Texture* getTextTexture(std::string text, SDL_Color color);
 	SDL_Texture* getTextTexture(Text text);
 	
 	
 	//Stores the colors that can be later referenced
 	std::map<std::string, SDL_Color> colors;
+	
+	
+	//NOTE might need better sound and music types
+	std::map<std::string, Mix_Chunk*> sounds;
 private:
 	void loadImages();
 	void loadTerrainImages();
@@ -79,6 +83,12 @@ private:
 	
 	void loadColors();
 	
+	
+	//Loads the given audio files
+	void loadAudio();
+	//This method does the exact Mix_LoadWAV
+	Mix_Chunk* loadSound(std::string path);
+	
 	std::string terrainImagePath;
 	std::string worldObjectImagePath;
 	std::string interactiveWorldObjectImagePath;
@@ -92,4 +102,6 @@ private:
 	std::string unitImagePath;
 	
 	std::string fontPath;
+	
+	std::string audioPath;
 };

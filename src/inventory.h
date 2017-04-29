@@ -24,9 +24,12 @@ public:
 	//Getters
 	int getSlotSize();
 	ItemInfo* getItemInfo();
+	int getCurrentHeightPosition();
 	
 	//Setters
 	void setItemInfo(ItemInfo* newItemInfo);
+	void incrementCurrentHeightPosition();
+	void decrementCurrentHeightPosition();
 	
 	//Returns an item
 	Item* getItem(int x, int y);
@@ -45,9 +48,12 @@ public:
 	
 	void handleMousePressEvent(int xp, int yp);
 	void handleMouseMotionEvent(int xp, int yp);
+	void handleMouseWheelEvent(bool up);
 private:
 	Item** items;
 	int iWidth, iHeight;
+	//Stores the current height used by scrolling
+	int currentHeightPosition;
 	unsigned int iSize;
 	int slotSize;
 	

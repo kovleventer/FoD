@@ -21,5 +21,6 @@ public:
 	//When the mouse is moved
 	static void handleMouseMotionEvent(int x, int y);
 	
-	//NOTE might need mousedrag event
+	//When the mouse wheel is triggered
+	static void handleMouseWheelEvent(bool up);
 };
