@@ -92,5 +92,9 @@ void NPC::setPath(CircularPath* newPath) {
 }
 
 void NPC::init() {
-	army = new Army(Global::permaGUI->getDim().x + Global::permaGUI->getDim().w / 5, Global::permaGUI->getDim().y, Global::permaGUI->getDim().w * 4 / 5, Global::permaGUI->getDim().h / 2, 5, 2, true);
+	army = new Army(Global::permaGUI->getDim().x + Global::permaGUI->getDim().w / 5,
+					Global::permaGUI->getDim().y,
+					Global::permaGUI->getDim().w * 4 / 5,
+					Global::permaGUI->getDim().h / 2,
+					5, 2, true);
 }

@@ -16,6 +16,7 @@ public:
 	//Renders the gui and the parts in it
 	void render();
 	
+	//Adds a part to the gui
 	void addPart(GUIPart* part);
 	
 	//Getters
@@ -32,6 +33,7 @@ public:
 private:
 	std::vector<GUIPart*> parts;
 	
+	//Th height of the top part of the gui
 	int headerSize;
 	
 	//Base GUI textures

@@ -172,4 +172,10 @@ void UserInputHandler::handleMouseWheelEvent(bool up) {
 		}
 		return;
 	}
+	
+	if (up) {
+		Global::tileSize *= 2;
+	} else {
+		Global::tileSize /= 2;
+	}
 }

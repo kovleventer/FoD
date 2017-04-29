@@ -63,6 +63,14 @@ bool Unit::isDead() {
 	return dead;
 }
 
+UnitType Unit::getUnitType() {
+	return unitType;
+}
+
+int Unit::getLevel() {
+	return level;
+}
+
 void Unit::setTeamOne(bool newTeamOne) {
 	isTeamOne = newTeamOne;
 }
@@ -73,6 +81,10 @@ void Unit::setPositionIndicator(Point newPos) {
 
 void Unit::setPositionIndicator(int newX, int newY) {
 	setPositionIndicator(Point(newX, newY));
+}
+
+void Unit::setLevel(int newLevel) {
+	level = newLevel;
 }
 
 bool Unit::addItem(Item* itemToAdd) {

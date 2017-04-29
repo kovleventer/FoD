@@ -50,7 +50,7 @@ void UnitInfo::render() {
 		SDL_RenderCopy(Global::renderer, nameText, NULL, &destinationRect);
 		
 		//Stats
-		for(int i = 0; i < 9; i++) {
+		for(int i = 0; i <= 9; i++) {
 			std::stringstream ossStat;
 			std::stringstream ossValue;
 			//NOTE should have been done with a translator
@@ -90,6 +90,9 @@ void UnitInfo::render() {
 			} else if (i == 8) {
 				ossStat << "Experience";
 				ossValue << selectedUnit->statsWithItems["currentExperience"] << "/" << selectedUnit->statsWithItems["experience"];
+			} else if (i == 9) {
+				ossStat << "Level";
+				ossValue << selectedUnit->getLevel();
 			}
 			
 			SDL_Texture* statText = Global::resourceHandler->getTextTexture(Text(ossStat.str(), Global::resourceHandler->colors["unitinfo-desc"]));

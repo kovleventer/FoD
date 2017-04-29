@@ -92,7 +92,7 @@ void Battle::continueBattle() {
 		
 		while(!speedPQ.empty()) {
 			Unit* currentUnit = speedPQ.top();
-			if (currentUnit == NULL) {
+			if (currentUnit == NULL || currentUnit->isDead()) {
 				speedPQ.pop();
 				continue;
 			}
@@ -133,9 +133,40 @@ void Battle::continueBattle() {
 void Battle::attack(Unit* unitToAttack, bool isContinuation) {
 	//TODO better implementation
 	
-	unitToAttack->statsWithItems["currentLife"] -= currentAttackingUnit->statsWithItems["meleeDamage"];
+	
+	//Calculating damage
+	int attackValue;
+	int defenseValue;
+	switch(currentAttackingUnit->getUnitType()) {
+		case UnitType::FIGHTER:
+		case UnitType::OTHER:
+			attackValue = currentAttackingUnit->statsWithItems["meleeDamage"];
+			defenseValue = unitToAttack->statsWithItems["physicalDefense"];
+			break;
+		case UnitType::ARCHER:
+			attackValue = currentAttackingUnit->statsWithItems["shootingDamage"];
+			defenseValue = unitToAttack->statsWithItems["physicalDefense"];
+			break;
+		case UnitType::MAGE:
+			attackValue = currentAttackingUnit->statsWithItems["magicDamage"];
+			defenseValue = unitToAttack->statsWithItems["magicDefense"];
+			break;
+		default:
+			attackValue = 0;
+			defenseValue = 0;
+			break;
+	}
+	
+	if (attackValue <= defenseValue) {
+		attackValue = 1;
+	} else {
+		attackValue -= defenseValue;
+	}
+	
+	unitToAttack->statsWithItems["currentLife"] -= attackValue;
 	
 	if (unitToAttack->statsWithItems["currentLife"] <= 0) {
+		unitToAttack->statsWithItems["currentLife"] = 0;
 		if (unitToAttack->getTeamOne()) {
 			playerUnitCount--;
 		} else {

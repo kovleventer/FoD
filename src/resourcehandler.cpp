@@ -113,7 +113,7 @@ void ResourceHandler::loadImages() {
 }
 
 void ResourceHandler::loadTerrainImages() {
-	std::vector<std::string> textureNames = {"grass", "water", "sand"};
+	std::vector<std::string> textureNames = {"grass", "water", "sand", "snow"};
 	
 	for (unsigned int i = 0; i < textureNames.size(); i++) {
 		tileTextures[textureNames[i]] = loadTexture(terrainImagePath + textureNames[i] + ".png");
@@ -171,7 +171,7 @@ void ResourceHandler::loadNPCImages() {
 }
 
 void ResourceHandler::loadGUIImages() {
-	std::vector<std::string> textureNames = {"permabg", "button", "guiheader", "inventoryslot", "iteminfobg", "unitinfobg", "armybg", "armyslotbg", "selectedunit",
+	std::vector<std::string> textureNames = {"permabg", "button", "guiheader", "inventoryslot", "iteminfobg", "unitinfobg", "armybg", "armyinvbg", "armyslotbg", "selectedunit",
 		"hoveredunit", "popupback", "popupfore"};
 	
 	for (unsigned int i = 0; i < textureNames.size(); i++) {

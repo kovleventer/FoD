@@ -30,11 +30,14 @@ public:
 	bool getTeamOne();
 	Point getPosition();
 	bool isDead();
+	UnitType getUnitType();
+	int getLevel();
 	
 	//Setters
 	void setTeamOne(bool newTeamOne);
 	void setPositionIndicator(Point newPos);
 	void setPositionIndicator(int newX, int newY);
+	void setLevel(int newLevel);
 	
 	bool addItem(Item* itemToAdd);
 	Item* removeItem(int position);
@@ -67,6 +70,9 @@ private:
 	
 	//Is unit dead
 	bool dead;
+	
+	//THe unit's level
+	int level;
 };
 
 //Compares two units by their speed stats (used in battle)

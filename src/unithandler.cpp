@@ -37,6 +37,7 @@ Unit* UnitHandler::getUnit(std::string name, int level) {
 		newUnit->stats["numberOfActions"] = (int)((double)unitTemplate->getNumberOfActions() * pow(levelMultipliersForNOA, level - 1));
 		newUnit->stats["experience"] = (int)((double)unitTemplate->getExperience() * pow(levelMultipliersForEXP, level - 1));
 		newUnit->stats["currentExperience"] = 0;
+		newUnit->setLevel(level);
 		
 		newUnit->statsWithItems = newUnit->stats;
 		

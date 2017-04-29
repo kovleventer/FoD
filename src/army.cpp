@@ -22,7 +22,11 @@ Army::Army(int xp, int yp, int wp, int hp, int width, int height, bool isInv) : 
 	paddingHorizontal = (w - iWidth * unitSize) / (iWidth + 1);
 	
 	//Setting textures
-	bgTexture = Global::resourceHandler->guiTextures["armybg"];
+	if (isInverted) {
+		bgTexture = Global::resourceHandler->guiTextures["armyinvbg"];
+	} else {
+		bgTexture = Global::resourceHandler->guiTextures["armybg"];
+	}
 	defaultUnitTexture = Global::resourceHandler->guiTextures["armyslotbg"];
 	selectedUnitTexture = Global::resourceHandler->guiTextures["selectedunit"];
 	hoveredUnitTexture = Global::resourceHandler->guiTextures["hoveredunit"];
@@ -214,12 +218,18 @@ void Army::handleMousePressEvent(int xp, int yp) {
 					}
 				} else {
 					//If player's units are clikced
-					
+					Unit* tempUnit = getUnit(clickPos);
+					if (tempUnit != getUnit(selectedUnitPos)) {
+						setUnit(clickPos, getUnit(selectedUnitPos));
+						setUnit(selectedUnitPos, tempUnit);
+						selectedUnitPos = Point(-1, -1);
+						unitInfo->setUnit(NULL);
+					}
+					Global::guiHandler->getBattle()->continueBattle();
 				}
 			}
 		} else {
 			//If player's units are clikced
-			//TODO check if in battle and make different behaviours
 			
 			if (getUnit(clickPos) != NULL && Global::cursor->getItem() != NULL) {
 				//If we are currently dragging an item and we click on a unit

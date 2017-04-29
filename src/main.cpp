@@ -7,11 +7,11 @@
 //2016-11-28
 
 const std::string APPNAME = "Fall of Dyrangor";
-const Version VERSION = Version("1.1.0.0");
+const Version VERSION = Version("1.1.1.0");
 
-int main ( int argc, char* args[] ){
+int main ( int argc, char* args[] ) {
 	//Game is not extern anymore
-	Game * game;
+	Game* game;
 	
 	//Init
 	game = new Game(APPNAME, VERSION);
