@@ -25,6 +25,12 @@ Battle* GUIHandler::getBattle() {
 void GUIHandler::setGUI(TransientGUI* newGUI) {
 	currentGUI = newGUI;
 	hasGUI = (currentGUI != NULL);
+	
+	//We allow hardlocking on popup
+	Popup* possiblePopup = dynamic_cast<Popup*>(newGUI);
+	if (possiblePopup != NULL) {
+		hardlocked = true;
+	}
 }
 
 void GUIHandler::setBattle(Battle* newBattle) {

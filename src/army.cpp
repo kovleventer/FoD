@@ -16,7 +16,8 @@ Army::Army(int xp, int yp, int wp, int hp, int width, int height, bool isInv) : 
 	
 	initArray();
 	
-	unitSize = 144;
+	//Unit size is defined so it hopefully won't cause any errors later
+	unitSize = w / (iWidth + 1);
 	paddingVertical = (h - iHeight * unitSize) / (iHeight + 1);
 	paddingHorizontal = (w - iWidth * unitSize) / (iWidth + 1);
 	
@@ -29,6 +30,7 @@ Army::Army(int xp, int yp, int wp, int hp, int width, int height, bool isInv) : 
 	selectedUnitPos = Point(-1, -1);
 	hoveredUnitPos = Point(-1, -1);
 	
+	//?
 	if (isInverted) {
 		setUnitInfo(Global::player->getArmy()->getUnitInfo());
 	}
@@ -51,11 +53,21 @@ void Army::render() {
 	
 	destinationRect.w = unitSize;
 	destinationRect.h = unitSize;
+	//FIXME correct display and interaction when army is inverted
+	/*for (int j0 = 0; j0 < iHeight; j0++) {
+		int j = isInverted ? iHeight - 1 - j0 : j0;*/
 	for (int j = 0; j < iHeight; j++) {
 		for (int i = 0; i < iWidth; i++) {
 			destinationRect.x = x + paddingHorizontal * (i + 1) + unitSize * i;
-			destinationRect.y = y + paddingVertical * (j + 1) + unitSize * j;
-			if (units[j * iWidth + i] == NULL) {
+			/*if (isInverted) {
+				destinationRect.y = y + paddingVertical * (iHeight - j) + unitSize * (iHeight - 1 - j);
+			} else {*/
+				destinationRect.y = y + paddingVertical * (j + 1) + unitSize * j;
+			//}
+			if (units[j * iWidth + i] == NULL || (units[j * iWidth + i]->isDead() && Global::guiHandler->isHardlocked())) {
+				//If there are no present units at the given position
+				//Or the unit is deceased and we are currently on the battlefield
+				//In these cases we render the no-unit-there texture
 				SDL_RenderCopy(Global::renderer, defaultUnitTexture, NULL, &destinationRect);
 			} else {
 				//Rendering of unit selection / hovering indicator
@@ -164,6 +176,7 @@ bool Army::addUnit(Unit* unitToAdd, UnitAddingPreference unitAddingPreference) {
 
 void Army::setUnit(int x, int y, Unit* unitToSet) {
 	units[y * iWidth + x] = unitToSet;
+	unitToSet->setPositionIndicator(x, y);
 }
 
 void Army::setUnit(Point p, Unit* unitToSet) {
@@ -196,8 +209,8 @@ void Army::handleMousePressEvent(int xp, int yp) {
 				if (isInverted) {
 					//If enemy units are clicked
 					
-					if (getUnit(clickPos) != NULL) {
-						Global::guiHandler->getBattle()->attack(getUnit(clickPos));
+					if (getUnit(clickPos) != NULL && !getUnit(clickPos)->isDead()) {
+						Global::guiHandler->getBattle()->attack(getUnit(clickPos), true);
 					}
 				} else {
 					//If player's units are clikced
@@ -240,7 +253,7 @@ void Army::handleMouseMotionEvent(int xp, int yp) {
 	Point hoverPos = getUnitOnCursor(xp, yp);
 	
 	if (Global::guiHandler->isHardlocked()) {
-		if (hoverPos != Point(-1, -1) && getUnit(hoverPos) != NULL) {
+		if (hoverPos != Point(-1, -1) && getUnit(hoverPos) != NULL && !getUnit(hoverPos)->isDead()) {
 			hoveredUnitPos = hoverPos;
 			unitInfo->setUnit(getUnit(hoverPos));
 		} else {

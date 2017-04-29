@@ -15,6 +15,10 @@ std::vector<Point> Pathfinding::findPath(Point start, Point destination) {
 	std::queue<Point> frontier;
 	frontier.push(start);
 	
+	int count = 0;
+	
+	std::vector<Point> path;
+	
 	//ALERT infinity loop if not implemented properly
 	while (!frontier.empty()) {
 		//Store the first element and then remove it from the queue
@@ -40,11 +44,12 @@ std::vector<Point> Pathfinding::findPath(Point start, Point destination) {
 				cameFrom[next] = current;
 			}
 		}
+		count++;
+		if (count == 1000) return path;
 	}
 	
 	//Get the final path from the map
 	Point current = destination;
-	std::vector<Point> path;
 	path.push_back(current);
 	while (current != start) {
 		current = cameFrom[current];

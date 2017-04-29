@@ -9,12 +9,29 @@ Button::Button(int xp, int yp, int wp, int hp) {
 	h = hp;
 	texture = Global::resourceHandler->guiTextures["button"];
 	functionPointer = NULL;
+	text = "";
 }
 
 void Button::render() {
 	//Setting the rectangle is pretty easy
 	SDL_Rect destinationRect = {x, y, w, h};
 	SDL_RenderCopy(Global::renderer, texture, NULL, &destinationRect);
+	
+	if (text != "") {
+		SDL_Texture* textTexture = Global::resourceHandler->getTextTexture(Text(text, Global::resourceHandler->colors["button-text"]));
+		int tw, th;
+		SDL_QueryTexture(textTexture, NULL, NULL, &tw, &th);
+		//TODO change this
+		int textSize = 16;
+		tw = tw / Global::defaultFontSize * textSize;
+		th = th / Global::defaultFontSize * textSize;
+		//Setting rectangle
+		destinationRect.x = x + w / 2 - tw / 2;
+		destinationRect.y = y + h / 2 - th / 2;
+		destinationRect.w = tw;
+		destinationRect.h = th;
+		SDL_RenderCopy(Global::renderer, textTexture, NULL, &destinationRect);
+	}
 }
 
 int Button::getX() {
@@ -33,6 +50,10 @@ int Button::getH() {
 	return h;
 }
 
+std::string Button::getText() {
+	return text;
+}
+
 void Button::setX(int newX) {
 	x = newX;
 }
@@ -47,6 +68,10 @@ void Button::setW(int newW) {
 
 void Button::setH(int newH) {
 	h = newH;
+}
+
+void Button::setText(std::string newText) {
+	text = newText;
 }
 
 bool Button::isClicked(Point cursorPosition) {

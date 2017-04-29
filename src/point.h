@@ -3,11 +3,17 @@
 #include <iostream>
 #include <cmath>
 
+//Needed becouse cross initialization
+//Point(PointD p) and PointD(Point p)
+class PointD;
+
 //Represents a 2 dimensional point with integer coordinates
 class Point {
 public:
 	Point();
 	Point(int newX, int newY);
+	//Casting double to int
+	Point(PointD p);
 	
 	//Getters
 	int getX();
@@ -20,6 +26,9 @@ public:
 	//Geometrical functions
 	double vectorLength();
 	double distanceTo(Point other);
+	int distanceToManhattan(Point other);
+	//Yes, this function is actually used
+	int distanceToChebyshev(Point other);
 	
 	//Operator overloadnig in order to print out the point
 	friend std::ostream& operator<<(std::ostream& out, Point const& point);
@@ -72,6 +81,8 @@ public:
 	//Geometrical functions
 	double vectorLength();
 	double distanceTo(PointD other);
+	double distanceToManhattan(PointD other);
+	double distanceToChebyshev(PointD other);
 	
 	//Operator overloadnig in order to print out the point
 	friend std::ostream& operator<<(std::ostream& out, PointD const& point);

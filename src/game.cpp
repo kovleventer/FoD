@@ -9,6 +9,8 @@
 #include "userinputhandler.h"
 #include "camera.h"
 
+#include "popup.h"
+
 Game::Game(std::string aName, Version version) {
 	//Passing metadata
 	Global::appName = aName + version.toString();
@@ -85,7 +87,12 @@ Game::Game(std::string aName, Version version) {
 	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Bowman", 2), UnitAddingPreference::BACKROWFIRST);
 	Global::player->getArmy()->addUnit(Global::unitHandler->getUnit("Gray Mage", 1), UnitAddingPreference::BACKROWFIRST);
 	
-	Global::map->getNPC(0)->getArmy()->addUnit(Global::unitHandler->getUnit("Gray Mage", 20), UnitAddingPreference::BACKROWFIRST);
+	Global::map->getNPC(0)->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 10), UnitAddingPreference::BACKROWFIRST);
+	Global::map->getNPC(0)->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 10), UnitAddingPreference::BACKROWFIRST);
+	Global::map->getNPC(0)->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 10), UnitAddingPreference::BACKROWFIRST);
+	Global::map->getNPC(0)->getArmy()->addUnit(Global::unitHandler->getUnit("Axeman", 10), UnitAddingPreference::BACKROWFIRST);
+	
+	//Global::guiHandler->setGUI(new Popup(400, 400, PopupType::POPUP_YESNO));
 	
 	
 	//Contains a while loop

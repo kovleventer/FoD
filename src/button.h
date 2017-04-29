@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+#include <string>
 
 #include "point.h"
 
@@ -22,12 +23,14 @@ public:
 	int getY();
 	int getW();
 	int getH();
+	std::string getText();
 	
 	//Setters
 	void setX(int newX);
 	void setY(int newY);
 	void setW(int newW);
 	void setH(int newH);
+	void setText(std::string newText);
 	
 	//Checks whether the cursor is over the button
 	bool isClicked(Point cursorPosition);
@@ -40,4 +43,6 @@ public:
 private:
 	int x, y, w, h;
 	eventFunction functionPointer;
+	
+	std::string text;
 };

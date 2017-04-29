@@ -164,6 +164,11 @@ void Map::renderMapEntities() {
 				//currEnt get it?:D
 				MapEntity* currEnt = current->entities[k];
 				
+				//NULL-checking
+				if (currEnt == NULL) {
+					continue;
+				}
+				
 				//Built in SDL function, to get the width and the height of the texture
 				//Params: texture, format, access, w, h
 				int w, h;

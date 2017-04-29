@@ -171,7 +171,8 @@ void ResourceHandler::loadNPCImages() {
 }
 
 void ResourceHandler::loadGUIImages() {
-	std::vector<std::string> textureNames = {"permabg", "button", "guiheader", "inventoryslot", "iteminfobg", "unitinfobg", "armybg", "armyslotbg", "selectedunit", "hoveredunit"};
+	std::vector<std::string> textureNames = {"permabg", "button", "guiheader", "inventoryslot", "iteminfobg", "unitinfobg", "armybg", "armyslotbg", "selectedunit",
+		"hoveredunit", "popupback", "popupfore"};
 	
 	for (unsigned int i = 0; i < textureNames.size(); i++) {
 		guiTextures[textureNames[i]] = loadTexture(guiImagePath + textureNames[i] + ".png");
@@ -198,7 +199,7 @@ void ResourceHandler::loadItemRarityIndicatorImages() {
 }
 
 void ResourceHandler::loadUnitImages() {
-	std::vector<std::string> textureNames = {"Axeman", "Dog", "Bowman", "Gray Mage"};
+	std::vector<std::string> textureNames = {"Axeman", "Dog", "Bowman", "Gray Mage", "_Dead"};
 	
 	for (unsigned int i = 0; i < textureNames.size(); i++) {
 		//NOTE the filenames start with an '_' character
@@ -239,6 +240,8 @@ void ResourceHandler::loadColors() {
 	colors["unitinfo-values-unchanged"] = {45, 75, 228};
 	colors["unitinfo-values-incremented"] = {75, 228, 45};
 	colors["unitinfo-values-decremented"] = {228, 45, 75};
+	colors["button-text"] = {210, 220, 190};
+	colors["popup-text"] = {210, 220, 190};
 }
 
 void ResourceHandler::loadAudio() {

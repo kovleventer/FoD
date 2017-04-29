@@ -29,10 +29,12 @@ public:
 	int getUnitInventorySize();
 	bool getTeamOne();
 	Point getPosition();
+	bool isDead();
 	
 	//Setters
 	void setTeamOne(bool newTeamOne);
 	void setPositionIndicator(Point newPos);
+	void setPositionIndicator(int newX, int newY);
 	
 	bool addItem(Item* itemToAdd);
 	Item* removeItem(int position);
@@ -44,6 +46,12 @@ public:
 	std::map<std::string, int> statsWithItems;
 	
 	void recalculateInventory();
+	
+	//This kills the unit
+	void kill();
+	
+	//Static texture for displaying deceased units
+	static SDL_Texture* deadTexture;
 private:
 	std::string name;
 	int unitInventorySize;
@@ -56,6 +64,9 @@ private:
 	bool isTeamOne;
 	
 	Point position;
+	
+	//Is unit dead
+	bool dead;
 };
 
 //Compares two units by their speed stats (used in battle)

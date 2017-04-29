@@ -32,7 +32,7 @@ void WholeScreenGUI::render() {
 	SDL_QueryTexture(headerTextTexture, NULL, NULL, &tw, &th);
 	tw = tw / Global::defaultFontSize * headerTextSize;
 	th = th / Global::defaultFontSize * headerTextSize;
-	destinationRect.x = w / 2 + x - tw / 2;
+	destinationRect.x = x + w / 2 - tw / 2;
 	destinationRect.y = y + headerSize / 2 - th / 2;
 	destinationRect.w = tw;
 	destinationRect.h = th;

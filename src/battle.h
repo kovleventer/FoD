@@ -5,6 +5,7 @@
 #include "npc.h"
 #include "wholescreengui.h"
 #include "player.h"
+#include "popup.h"
 
 class Battle {
 public:
@@ -22,14 +23,15 @@ public:
 	//Continues the battle
 	void continueBattle();
 	
-	//Continues the battle by attacking a unit
-	void attack(Unit* unitToAttack);
+	//Continues the battle by attacking a unit or just simply preforms the attack
+	void attack(Unit* unitToAttack, bool isContinuation);
 private:
 	WholeScreenGUI* gui;
 	
 	//If the player is participating in the battle
 	NPC* enemy;
 	Player* player;
+	int playerUnitCount, enemyUnitCount;
 	
 	//If the battle is between two npcs
 	NPC* npc1, npc2;

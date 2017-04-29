@@ -53,8 +53,6 @@ void NPC::activate() {
 	Battle* battle = new Battle(this);
 	
 	battle->start();
-	
-	//delete battle;
 }
 
 PointD NPC::getProgressVector() {

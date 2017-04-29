@@ -12,6 +12,11 @@ Point::Point(int newX, int newY) {
 	y = newY;
 }
 
+Point::Point(PointD p) {
+	x = (int)p.getX();
+	y = (int)p.getY();
+}
+
 int Point::getX() {
 	return x;
 }
@@ -38,6 +43,18 @@ double Point::distanceTo(Point other) {
 	return sqrt(dx * dx + dy * dy);
 }
 
+int Point::distanceToManhattan(Point other) {
+	int dx = abs(x - other.x);
+	int dy = abs(y - other.y);
+	return dx + dy;
+}
+
+int Point::distanceToChebyshev(Point other) {
+	int dx = abs(x - other.x);
+	int dy = abs(y - other.y);
+	//Return the greater value as distance
+	return dx > dy ? dx : dy;
+}
 
 std::ostream& operator<<(std::ostream& out, Point const& point) {
 	out << "(" << point.x << "; " << point.y << ")";
@@ -152,6 +169,18 @@ double PointD::distanceTo(PointD other) {
 	return sqrt(dx * dx + dy * dy);
 }
 
+double PointD::distanceToManhattan(PointD other) {
+	double dx = fabs(x - other.x);
+	double dy = fabs(y - other.y);
+	return dx + dy;
+}
+
+double PointD::distanceToChebyshev(PointD other) {
+	double dx = abs(x - other.x);
+	double dy = abs(y - other.y);
+	//Return the greater value as distance
+	return dx > dy ? dx : dy;
+}
 
 std::ostream& operator<<(std::ostream& out, PointD const& point) {
 	out.precision(2);

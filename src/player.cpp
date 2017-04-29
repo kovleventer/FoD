@@ -19,7 +19,13 @@ void Player::updatePlayerPosition() {
 		//NOTE this slows down the program a lot
 		path = Pathfinding::findPath(position, follow->getPosition());
 		tileProgress = 0;
-		if (position == follow->getPosition()) {
+		
+		//TODO clean up this mess
+		//if (position.distanceToChebyshev(follow->getPosition()) <= 1) {
+		
+		//std::cout << (((PointD)position * Global::tileSize) + progressVector * Global::tileSize).distanceTo(((PointD)follow->getPosition() * Global::tileSize) + follow->getProgressVector() * Global::tileSize) << std::endl;
+		
+		if ((((PointD)position * Global::tileSize) + progressVector * Global::tileSize).distanceTo(((PointD)follow->getPosition() * Global::tileSize) + follow->getProgressVector() * Global::tileSize) <= Global::tileSize * 2 / 3) {
 			follow->activate();
 			state = PlayerState::STANDING;
 			clearPath();

@@ -62,7 +62,19 @@ void UserInputHandler::handleMousePressEvent(SDL_Event e) {
 		if (Global::guiHandler->isLocked()) {
 			WholeScreenGUI* possibleGUI = dynamic_cast<WholeScreenGUI*>(Global::guiHandler->getGUI());
 			if (possibleGUI == NULL) {
-				//TODO Popup stuff
+				Popup* popup = (Popup*)Global::guiHandler->getGUI();
+				if (popup->getPopupType() == PopupType::POPUP_OK) {
+					if (popup->buttonOK->isClicked(Global::cursor->getPosition())) {
+						popup->buttonOK->click();
+					}
+				} else if (popup->getPopupType() == PopupType::POPUP_YESNO) {
+					if (popup->buttonYES->isClicked(Global::cursor->getPosition())) {
+						popup->buttonYES->click();
+					}
+					if (popup->buttonNO->isClicked(Global::cursor->getPosition())) {
+						popup->buttonNO->click();
+					}
+				}
 			} else {
 				possibleGUI->handleMousePressEvent(Global::cursor->getPosition().getX(), Global::cursor->getPosition().getY());
 			}
