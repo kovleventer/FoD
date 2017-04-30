@@ -167,6 +167,7 @@ elif [[ $1 == "M" || $1 == "m" ]]; then
 elif [[ $1 == "C" || $1 == "c" ]]; then
 	echo "Clearing..."
 	rm -rf o
+	rm -rf o_win
 	rm $EXECUTABLE
 	rm $EXECUTABLE_DEBUG
 	echo "Clearing done"

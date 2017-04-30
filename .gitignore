@@ -1,9 +1,14 @@
 #Object folder
 o
+o_win
 
 #Executable
 FallOfDyrangor
 FallOfDyrangor_DEBUG
+*.exe
 
 #Settings file
 settings.txt
+
+#Text editor swap
+*.kate-swp
