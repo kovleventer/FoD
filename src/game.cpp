@@ -178,7 +178,7 @@ void Game::init() {
 							SDL_WINDOWPOS_UNDEFINED,
 							Global::screenWidth,
 							Global::screenHeight,
-							SDL_WINDOW_OPENGL);
+							0);
 	if (Global::window == NULL) {
 		throw SDLWindowError();
 	}
