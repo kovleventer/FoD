@@ -80,12 +80,23 @@ void InteractiveGUI::handleMouseWheelEvent(bool up) {
 // Specialized parts begins here
 
 TestGUIPart::TestGUIPart(InteractiveGUI* parent) : WholeScreenGUI(parent->getRemainingDim()) {
-	//addPart(Global::player->getInventory());
-	addPart(Global::player->getInventory()->getItemInfo());
-	auto temp = new ItemBuyingMenu(Global::player->getInventory()->getDimensionRect());
-	temp->addItem(Global::itemHandler->getItem("sword"));
-	temp->addItem(Global::itemHandler->getItem("sickle"));
-	addTempPart(temp);
+	addPart(Global::player->getInventory());
+	ItemBuyingMenu* tempIBM = new ItemBuyingMenu(Global::player->getInventory()->getItemInfo()->getDimensionRect());
+	tempIBM->addItem(Global::itemHandler->getItem("sword"));
+	tempIBM->addItem(Global::itemHandler->getItem("sickle"));
+	tempIBM->addItem(Global::itemHandler->getItem("shield"));
+	tempIBM->addItem(Global::itemHandler->getItem("mshield1"));
+	tempIBM->addItem(Global::itemHandler->getItem("mshield2"));
+	tempIBM->addItem(Global::itemHandler->getItem("bow"));
+	ItemInfo* tempII = new ItemInfo(tempIBM->getX(), tempIBM->getY() + tempIBM->getH(), tempIBM->getW(), tempIBM->getH());
+	tempIBM->setItemInfo(tempII);
+	ItemCheckoutMenu* tempICM = new ItemCheckoutMenu(tempII->getX() - tempII->getW(), tempII->getY(), tempII->getW(), tempII->getH());
+	tempIBM->setItemCheckoutMenu(tempICM);
+	tempICM->setItemBuyingMenu(tempIBM);
+	
+	addTempPart(tempIBM);
+	addTempPart(tempII);
+	addTempPart(tempICM);
 }
 
 ItemBuyingMenu::ItemBuyingMenu(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp, wp, hp) {
@@ -93,7 +104,12 @@ ItemBuyingMenu::ItemBuyingMenu(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp
 	itemSlotHeight = h / numberOfDisplayableItems;
 	padding = 1;
 	currentItemPosition = 0;
-	itemBgText = Global::resourceHandler->getATexture(TT::GUI, "marketitemgb");
+	selectedItemPosition = 0;
+	itemBgText = Global::resourceHandler->getATexture(TT::GUI, "marketitembg");
+	selectedItemBgText = Global::resourceHandler->getATexture(TT::GUI, "marketitemselectedbg");
+	fontSize = 28;
+	itemInfo = NULL;
+	itemCheckoutMenu = NULL;
 }
 
 ItemBuyingMenu::ItemBuyingMenu(SDL_Rect dimensionRect) : ItemBuyingMenu(dimensionRect.x, dimensionRect.y, dimensionRect.w, dimensionRect.h) {}
@@ -106,11 +122,18 @@ void ItemBuyingMenu::render() {
 	destinationRect.h = itemSlotHeight;
 	for (int i = 0; i < numberOfDisplayableItems; i++) {
 		destinationRect.y = y + i * itemSlotHeight;
-		itemBgText->render(destinationRect);
+		//Rendering background
+		if (selectedItemPosition == i + currentItemPosition) {
+			selectedItemBgText->render(destinationRect);
+		} else {
+			itemBgText->render(destinationRect);
+		}
 		
 		//Rendering current item if possible
 		Item* currentRenderedItem = getItem(i + currentItemPosition);
+		int currentItemPrice = getItemPrice(i + currentItemPosition);
 		if (currentRenderedItem != NULL) {
+			//Rendering the item itself
 			SDL_Rect itemDestionationRect = destinationRect;
 			itemDestionationRect.x += padding;
 			itemDestionationRect.y += padding;
@@ -118,37 +141,85 @@ void ItemBuyingMenu::render() {
 			itemDestionationRect.w = itemDestionationRect.h;
 			currentRenderedItem->render(itemDestionationRect, true);
 			
+			//Rendering item name
 			ATexture* itemNameText = Global::resourceHandler->getTextTexture(currentRenderedItem->getName(), Global::resourceHandler->colors["whole-header"]);
 			Dimension d = itemNameText->getDimensions();
-			d *= 28;
+			d *= fontSize;
 			d /= Global::defaultFontSize;
 			itemDestionationRect.x += padding + itemDestionationRect.w;
 			itemDestionationRect.w = d.W();
 			itemDestionationRect.h = d.H();
 			itemNameText->render(itemDestionationRect);
+			
+			//Rendering item price
+			ATexture* itemPriceText = Global::resourceHandler->getTextTexture(std::to_string(currentItemPrice), Global::resourceHandler->colors["whole-header"]);
+			d = itemPriceText->getDimensions();
+			d *= fontSize;
+			d /= Global::defaultFontSize;
+			itemDestionationRect.x = destinationRect.x + destinationRect.w - padding - d.W();
+			itemDestionationRect.w = d.W();
+			itemDestionationRect.h = d.H();
+			itemPriceText->render(itemDestionationRect);
 		}
-		
-		
 	}
 }
 
 Item* ItemBuyingMenu::getItem(unsigned int index) {
 	if (index < itemsToSell.size()) {
-		return itemsToSell[index];
+		return itemsToSell[index].first;
 	}
 	return NULL;
 }
 
+int ItemBuyingMenu::getItemPrice(unsigned int index) {
+	if (index < itemsToSell.size()) {
+		return itemsToSell[index].second;
+	}
+	return 0;
+}
+
 void ItemBuyingMenu::addItem(Item* itemToAdd) {
-	itemsToSell.push_back(itemToAdd);
+	itemsToSell.push_back({itemToAdd, 5});
+}
+
+void ItemBuyingMenu::removeCurrentItem() {
+	itemsToSell.erase(itemsToSell.begin() + selectedItemPosition);
+	selectedItemPosition = 0;
+}
+
+int ItemBuyingMenu::getFontSize() {
+	return fontSize;
+}
+
+int ItemBuyingMenu::getPadding() {
+	return padding;
+}
+
+ItemInfo* ItemBuyingMenu::getItemInfo() {
+	return itemInfo;
+}
+
+ItemCheckoutMenu* ItemBuyingMenu::getItemCheckoutMenu() {
+	return itemCheckoutMenu;
+}
+
+void ItemBuyingMenu::setFontSize(int newFontSize) {
+	fontSize = newFontSize;
+}
+
+void ItemBuyingMenu::setItemInfo(ItemInfo* newItemInfo) {
+	itemInfo = newItemInfo;
+}
+
+void ItemBuyingMenu::setItemCheckoutMenu(ItemCheckoutMenu* newItemCheckoutMenu) {
+	itemCheckoutMenu = newItemCheckoutMenu;
 }
 
 void ItemBuyingMenu::handleMousePressEvent(int xp, int yp) {
-	
-}
-
-void ItemBuyingMenu::handleMouseMotionEvent(int xp, int yp) {
-	
+	selectedItemPosition = (yp - y) / itemSlotHeight + currentItemPosition;
+	itemInfo->setItem(getItem(selectedItemPosition));
+	itemCheckoutMenu->setCurrentItemToBuy(getItem(selectedItemPosition));
+	itemCheckoutMenu->setItemToBuyPrice(getItemPrice(selectedItemPosition));
 }
 
 void ItemBuyingMenu::handleMouseWheelEvent(bool up) {
@@ -161,4 +232,183 @@ void ItemBuyingMenu::handleMouseWheelEvent(bool up) {
 			currentItemPosition++;
 		}
 	}
+}
+
+ItemCheckoutMenu::ItemCheckoutMenu(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp, wp, hp) {
+	goldText = Global::resourceHandler->getATexture(TT::GUI, "gold");
+	bgText = Global::resourceHandler->getATexture(TT::GUI, "marketcheckoutbg");
+	horizontalPadding = 10;
+	verticalPadding = 10;
+	rowHeight = (h - 6 * verticalPadding) / 3;
+	fontSize = 30;
+	currentItemToBuy = NULL;
+	currentItemToSell = NULL;
+	itemToBuyPrice = 0;
+	itemToSellPrice = 10;
+	buyButton = new Button(x + w - horizontalPadding - rowHeight,
+							y + verticalPadding, rowHeight, rowHeight);
+	buyButton->setText("Buy");
+	sellButton = new Button(x + w - horizontalPadding - rowHeight,
+							y + verticalPadding * 5 + rowHeight * 2, rowHeight, rowHeight);
+	sellButton->setText("Sell");
+	itemBuyingMenu = NULL;
+}
+
+ItemCheckoutMenu::ItemCheckoutMenu(SDL_Rect dimensionRect) : ItemCheckoutMenu(dimensionRect.x, dimensionRect.y, dimensionRect.w, dimensionRect.h) {}
+
+ItemCheckoutMenu::~ItemCheckoutMenu() {
+	//Deletes buttons
+	delete buyButton;
+	delete sellButton;
+}
+
+void ItemCheckoutMenu::render() {
+	//Setting rectangle
+	SDL_Rect destinationRect = {x, y, w, h};
+	//Rendering background
+	bgText->render(destinationRect);
+	
+	//Rendering item to buy
+	destinationRect.x += horizontalPadding;
+	destinationRect.y += verticalPadding;
+	destinationRect.w = rowHeight;
+	destinationRect.h = rowHeight;
+	if (currentItemToBuy != NULL) {
+		currentItemToBuy->render(destinationRect, true);
+	}
+	
+	//Rendering gold icon
+	destinationRect.y += 2 * verticalPadding + rowHeight;
+	goldText->render(destinationRect);
+	
+	//Rendering item to sell
+	destinationRect.y += 2 * verticalPadding + rowHeight;
+	if (currentItemToSell != NULL) {
+		currentItemToSell->render(destinationRect, true);
+	}
+	
+	Dimension d;
+	//Rendering item price textures
+	ATexture* itemPriceTextB;
+	if (Global::player->getGold() >= itemToBuyPrice) {
+		itemPriceTextB = Global::resourceHandler->getTextTexture(std::to_string(itemToBuyPrice), Global::resourceHandler->colors["unitinfo-values-unchanged"]);
+	} else {
+		itemPriceTextB = Global::resourceHandler->getTextTexture(std::to_string(itemToBuyPrice), Global::resourceHandler->colors["unitinfo-values-decremented"]);
+	}
+	d = itemPriceTextB->getDimensions();
+	d *= fontSize;
+	d /= Global::defaultFontSize;
+	destinationRect.x = x + w / 2 - d.W() / 2;
+	destinationRect.y = y + verticalPadding + rowHeight / 2 - d.H() / 2;
+	destinationRect.w = d.W();
+	destinationRect.h = d.H();
+	if (currentItemToBuy != NULL) {
+		itemPriceTextB->render(destinationRect);
+	}
+	
+	ATexture* goldValueText = Global::resourceHandler->getTextTexture(std::to_string(Global::player->getGold()), Global::resourceHandler->colors["whole-header"]);
+	d = goldValueText->getDimensions();
+	d *= fontSize;
+	d /= Global::defaultFontSize;
+	destinationRect.x = x + w / 2 - d.W() / 2;
+	destinationRect.y += 2 * verticalPadding + rowHeight;
+	destinationRect.w = d.W();
+	destinationRect.h = d.H();
+	goldValueText->render(destinationRect);
+	
+	ATexture* itemPriceTextS = Global::resourceHandler->getTextTexture(std::to_string(itemToSellPrice), Global::resourceHandler->colors["unitinfo-values-incremented"]);
+	d = itemPriceTextS->getDimensions();
+	d *= fontSize;
+	d /= Global::defaultFontSize;
+	destinationRect.x = x + w / 2 - d.W() / 2;
+	destinationRect.y += 2 * verticalPadding + rowHeight;
+	destinationRect.w = d.W();
+	destinationRect.h = d.H();
+	if (currentItemToSell != NULL) {
+		itemPriceTextS->render(destinationRect);
+	}
+	
+	buyButton->render();
+	sellButton->render();
+}
+
+Item* ItemCheckoutMenu::getCurrentItemToBuy() {
+	return currentItemToBuy;
+}
+
+Item* ItemCheckoutMenu::getCurrentItemToSell() {
+	return currentItemToSell;
+}
+
+int ItemCheckoutMenu::getItemToBuyPrice() {
+	return itemToBuyPrice;
+}
+
+int ItemCheckoutMenu::getItemToSellPrice() {
+	return itemToSellPrice;
+}
+
+int ItemCheckoutMenu::getPaddingH() {
+	return horizontalPadding;
+}
+
+int ItemCheckoutMenu::getPaddingV() {
+	return verticalPadding;
+}
+
+int ItemCheckoutMenu::getRowHeight() {
+	return rowHeight;
+}
+
+ItemBuyingMenu* ItemCheckoutMenu::getItemBuyingMenu() {
+	return itemBuyingMenu;
+}
+
+void ItemCheckoutMenu::setCurrentItemToBuy(Item* newItemToBuy) {
+	currentItemToBuy = newItemToBuy;
+}
+
+void ItemCheckoutMenu::setCurrentItemToSell(Item* newItemToSell) {
+	currentItemToSell = newItemToSell;
+}
+
+void ItemCheckoutMenu::setItemToBuyPrice(int newItemToBuyPrice) {
+	itemToBuyPrice = newItemToBuyPrice;
+}
+
+void ItemCheckoutMenu::setItemToSellPrice(int newItemToSellPrice) {
+	itemToSellPrice = newItemToSellPrice;
+}
+
+void ItemCheckoutMenu::setItemBuyingMenu(ItemBuyingMenu* newItemBuyingMenu) {
+	itemBuyingMenu = newItemBuyingMenu;
+}
+
+void ItemCheckoutMenu::handleMousePressEvent(int xp, int yp) {
+	//Checing button clicking
+	//NOTE very ugly
+	if (buyButton->contains(xp, yp)) {
+		if (currentItemToBuy != NULL) {
+			if (Global::player->getGold() >= itemToBuyPrice) {
+				Global::player->takeGold(itemToBuyPrice);
+				Global::player->getInventory()->addItem(currentItemToBuy);
+				currentItemToBuy = NULL;
+				itemBuyingMenu->removeCurrentItem();
+			}
+		}
+		return;
+	}
+	
+	if (sellButton->contains(xp, yp)) {
+		if (currentItemToSell != NULL) {
+			Global::player->giveGold(itemToSellPrice);
+			itemToSellPrice = 0;
+			currentItemToSell = NULL;
+		}
+		return;
+	}
+	
+	Item* currItemOnCursor = Global::cursor->getItem();
+	Global::cursor->setItem(currentItemToSell);
+	currentItemToSell = currItemOnCursor;
 }

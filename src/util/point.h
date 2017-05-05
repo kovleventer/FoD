@@ -75,6 +75,7 @@ private:
  */
 class Dimension {
 public:
+	Dimension();
 	Dimension(int wp, int hp);
 	
 	//Getters

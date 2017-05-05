@@ -110,11 +110,12 @@ void Army::render() {
 							damageIndicatorDestinationRect.x = destinationRect.x;
 							damageIndicatorDestinationRect.y = destinationRect.y + (int)((double)(units[j * iWidth + i]->statsWithItems["life"] - units[j * iWidth + i]->statsWithItems["currentLife"]) / units[j * iWidth + i]->statsWithItems["life"] * destinationRect.h);
 							damageIndicatorDestinationRect.w = destinationRect.w;
-							damageIndicatorDestinationRect.h = (int)((double)(enemyDamageIndicator) / units[j * iWidth + i]->statsWithItems["life"] * destinationRect.h);
+							damageIndicatorDestinationRect.h = (int)((double)(enemyDamageIndicator) / units[j * iWidth + i]->statsWithItems["life"] * destinationRect.h) + 1;
 							SDL_RenderFillRect(Global::renderer, &damageIndicatorDestinationRect);
 							
 							
-							attackableUnitTexture->render(destinationRect);
+							//Cleaner this way, maybe we should look for a better solution
+							//attackableUnitTexture->render(destinationRect);
 						} else {
 							notAttackableUnitTexture->render(destinationRect);
 						}

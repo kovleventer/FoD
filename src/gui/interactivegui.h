@@ -10,6 +10,7 @@
 #include "wholescreengui.h"
 #include "button.h"
 #include "../item.h"
+#include "../iteminfo.h"
 
 /*!
  * @author kovlev
@@ -62,6 +63,9 @@ public:
 };
 
 
+class ItemCheckoutMenu; // Forward declaration
+
+
 /*!
  * @class ItemBuyingMenu WIP class
  * We will able to buy and sell items
@@ -73,24 +77,99 @@ public:
 	ItemBuyingMenu(SDL_Rect dimensionRect);
 	
 	ATexture* itemBgText;
+	ATexture* selectedItemBgText;
 	
 	//Renders the gui and the currently visible parts of the list
 	void render();
 	
 	//Getters, setters for items
 	Item* getItem(unsigned int index);
+	int getItemPrice(unsigned int index);
 	void addItem(Item* itemToAdd);
+	void removeCurrentItem();
+	
+	//Getters
+	int getFontSize();
+	int getPadding();
+	ItemInfo* getItemInfo();
+	ItemCheckoutMenu* getItemCheckoutMenu();
+	
+	//Setters
+	void setFontSize(int newFontSize);
+	void setItemInfo(ItemInfo* newItemInfo);
+	void setItemCheckoutMenu(ItemCheckoutMenu* newItemCheckoutMenu);
 	
 	//Event handling
 	void handleMousePressEvent(int xp, int yp);
-	void handleMouseMotionEvent(int xp, int yp);
 	void handleMouseWheelEvent(bool up);
 private:
-	std::vector<Item*> itemsToSell;
+	//An item and its price are packed into the std::pair
+	std::vector< std::pair<Item*, int> > itemsToSell;
 	
 	//Item's height is itemSlotHeight - 2 * padding
 	int padding;
 	int itemSlotHeight;
 	int numberOfDisplayableItems;
+	int fontSize;
+	
 	unsigned int currentItemPosition;
+	unsigned int selectedItemPosition;
+	
+	ItemInfo* itemInfo;
+	ItemCheckoutMenu* itemCheckoutMenu;
+};
+
+
+/*!
+ * @class ItemCheckoutMenu WIP class
+ * Allows the actual buxing and selling of items
+ */
+class ItemCheckoutMenu : public BasicGUI {
+public:
+	ItemCheckoutMenu(int xp, int yp, int wp, int hp);
+	ItemCheckoutMenu(SDL_Rect dimensionRect);
+	~ItemCheckoutMenu();
+	
+	ATexture* bgText;
+	ATexture* goldText;
+	
+	void render();
+	
+	//Getters
+	Item* getCurrentItemToBuy();
+	Item* getCurrentItemToSell();
+	//NOTE Items and prices stored independently
+	int getItemToBuyPrice();
+	int getItemToSellPrice();
+	int getPaddingH();
+	int getPaddingV();
+	int getRowHeight();
+	ItemBuyingMenu* getItemBuyingMenu();
+	
+	//Setters
+	void setCurrentItemToBuy(Item* newItemToBuy);
+	void setCurrentItemToSell(Item* newItemToSell);
+	void setItemToBuyPrice(int newItemToBuyPrice);
+	void setItemToSellPrice(int newItemToBuyPrice);
+	void setItemBuyingMenu(ItemBuyingMenu* newItemBuyingMenu);
+	
+	//Event handling
+	void handleMousePressEvent(int xp, int yp);
+private:
+	Item* currentItemToBuy;
+	Item* currentItemToSell;
+	
+	int horizontalPadding;
+	int verticalPadding;
+	//The remaining height for the three rows (calculated)
+	int rowHeight;
+	int fontSize;
+	
+	int itemToBuyPrice;
+	int itemToSellPrice;
+	
+	Button* buyButton;
+	Button* sellButton;
+	
+	ItemBuyingMenu* itemBuyingMenu;
 };

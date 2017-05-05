@@ -40,7 +40,7 @@ const char* SDLMixerInitError::what() const throw() {
 	return errorMessage.c_str();
 }
 
-MediaNotFoundError::MediaNotFoundError(std::string name) : std::runtime_error::runtime_error(errorMessage) {
+MediaNotFoundError::MediaNotFoundError(std::string name) :std::runtime_error::runtime_error("Media file is missing: " + name + "") {
 	errorMessage = "Media file is missing: " + name + "";
 }
 const char* MediaNotFoundError::what() const throw() {

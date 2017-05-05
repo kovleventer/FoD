@@ -132,6 +132,8 @@ bool Point::operator!=(const Point& other) const {
 
 //Dimension stuff
 
+Dimension::Dimension() : Dimension(0, 0) {}
+
 Dimension::Dimension(int wp, int hp) {
 	w = wp;
 	h = hp;
