@@ -99,6 +99,21 @@ TestGUIPart::TestGUIPart(InteractiveGUI* parent) : WholeScreenGUI(parent->getRem
 	addTempPart(tempICM);
 }
 
+TestGUIPart2::TestGUIPart2(InteractiveGUI* parent) : WholeScreenGUI(parent->getRemainingDim()) {
+	addPart(Global::player->getArmy());
+	UnitBuyingMenu* tempUBM = new UnitBuyingMenu(Global::player->getInventory()->getX(), Global::player->getInventory()->getY(),
+												 Global::player->getInventory()->getW() * 2, Global::player->getInventory()->getH());
+	tempUBM->addUnit(Global::unitHandler->getUnit("Bowman", 1));
+	tempUBM->addUnit(Global::unitHandler->getUnit("Bowman", 1));
+	tempUBM->addUnit(Global::unitHandler->getUnit("Axeman", 1));
+	tempUBM->addUnit(Global::unitHandler->getUnit("Bowman", 1));
+	tempUBM->addUnit(Global::unitHandler->getUnit("Bowman", 1));
+	tempUBM->addUnit(Global::unitHandler->getUnit("Axeman", 1));
+	tempUBM->addUnit(Global::unitHandler->getUnit("Axeman", 1));
+	
+	addTempPart(tempUBM);
+}
+
 ItemBuyingMenu::ItemBuyingMenu(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp, wp, hp) {
 	numberOfDisplayableItems = 5;
 	itemSlotHeight = h / numberOfDisplayableItems;
@@ -411,4 +426,155 @@ void ItemCheckoutMenu::handleMousePressEvent(int xp, int yp) {
 	Item* currItemOnCursor = Global::cursor->getItem();
 	Global::cursor->setItem(currentItemToSell);
 	currentItemToSell = currItemOnCursor;
+}
+
+UnitBuyingMenu::UnitBuyingMenu(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp, wp, hp) {
+	bgText = Global::resourceHandler->getATexture(TT::GUI, "marketcheckoutbg"); // TODO Change this
+	currentUnitPosition = 0;
+	numberOfDisplayableUnits = Global::player->getArmy()->getWidth();
+	
+	//Initializing buttons
+	buyButtons = new Button*[numberOfDisplayableUnits];
+	for (unsigned int i = 0; i < numberOfDisplayableUnits; i++) {
+		buyButtons[i] = new Button(0, 0, 0, 0);
+		buyButtons[i]->setText("Buy");
+	}
+	
+	visibleUnitCount = 0;
+	unitSize = Global::player->getArmy()->getUnitSize();
+	paddingH = 0; // Might be changed
+	paddingV = (h - unitSize) / 2; // Will not be changed
+	
+	fontSize = 28;
+}
+
+UnitBuyingMenu::UnitBuyingMenu(SDL_Rect dimensionRect) : UnitBuyingMenu(dimensionRect.x, dimensionRect.y, dimensionRect.w, dimensionRect.h) {}
+
+UnitBuyingMenu::~UnitBuyingMenu() {
+	//Deleting remaining units
+	for (unsigned int i = 0; i < unitsToSell.size(); i++) {
+		delete unitsToSell[i].first;
+	}
+	
+	//Deleting buttons
+	for (unsigned int i = 0; i < numberOfDisplayableUnits; i++) {
+		delete buyButtons[i];
+	}
+	delete[] buyButtons;
+}
+
+void UnitBuyingMenu::render() {
+	//Setting rectangle
+	SDL_Rect destinationRect = {x, y, w, h};
+	bgText->render(destinationRect);
+	
+	destinationRect.y += paddingV;
+	for (int i = 0; i < visibleUnitCount; i++) {
+		destinationRect.x += paddingH;
+		destinationRect.w = unitSize;
+		destinationRect.h = unitSize;
+		
+		unitsToSell[i + currentUnitPosition].first->render(destinationRect);
+		
+		buyButtons[i]->render();
+		
+		ATexture* priceText = Global::resourceHandler->getTextTexture(std::to_string(unitsToSell[i + currentUnitPosition].second), Global::resourceHandler->colors["whole-header"]);
+		Dimension d = priceText->getDimensions();
+		d *= fontSize;
+		d /= Global::defaultFontSize;
+		SDL_Rect textDestinationRect = destinationRect;
+		textDestinationRect.w = d.W();
+		textDestinationRect.h = d.H();
+		textDestinationRect.y -= d.H() + 10;
+		textDestinationRect.x += unitSize / 2 - d.W() / 2;
+		priceText->render(textDestinationRect);
+		
+		destinationRect.x += unitSize;
+	}
+}
+
+Unit* UnitBuyingMenu::getUnit(unsigned int index) {
+	if (index < unitsToSell.size()) {
+		return unitsToSell[index].first;
+	}
+	return NULL;
+}
+
+int UnitBuyingMenu::getUnitPrice(unsigned int index) {
+	if (index < unitsToSell.size()) {
+		return unitsToSell[index].second;
+	}
+	return 0;
+}
+
+void UnitBuyingMenu::addUnit(Unit* unitToAdd) {
+	unitsToSell.push_back({unitToAdd, 50});
+	if (unitsToSell.size() <= 5) {
+		recalcPositions();
+	}
+}
+
+void UnitBuyingMenu::removeUnit(unsigned int index) {
+	//Does not actually delete the unit
+	unitsToSell.erase(unitsToSell.begin() + index);
+	
+	//Checking indexes
+	if (unitsToSell.size() < 5) {
+		recalcPositions();
+	}
+	if (unitsToSell.size() <= 5) {
+		currentUnitPosition = 0;
+	} else {
+		if (currentUnitPosition + numberOfDisplayableUnits >= unitsToSell.size()) {
+			currentUnitPosition--;
+		}
+	}
+}
+
+void UnitBuyingMenu::handleMousePressEvent(int xp, int yp) {
+	for (int i = 0; i < visibleUnitCount; i++) {
+		//If we clicked on the buy button
+		if (buyButtons[i]->contains(xp, yp)) {
+			
+			//Price checking
+			if (getUnitPrice(currentUnitPosition + i) <= Global::player->getGold()) {
+				Unit* unitToAdd = getUnit(currentUnitPosition + i);
+				
+				//We do not purchase the unit if our army is full
+				if (Global::player->getArmy()->addUnit(unitToAdd, UnitAddingPreference::FRONTROWFIRST)) {
+					removeUnit(currentUnitPosition + i);
+					Global::player->takeGold(getUnitPrice(currentUnitPosition + i));
+				}
+			}
+			break;
+		}
+	}
+}
+
+void UnitBuyingMenu::handleMouseWheelEvent(bool up) {
+	if (unitsToSell.size() > 5) {
+		if (up) {
+			if (currentUnitPosition > 0) {
+				currentUnitPosition--;
+			}
+		} else {
+			if (currentUnitPosition + numberOfDisplayableUnits < unitsToSell.size()) { // Avoiding negative values
+				currentUnitPosition++;
+			}
+		}
+	}
+}
+
+void UnitBuyingMenu::recalcPositions() {
+	visibleUnitCount = unitsToSell.size() <= 5 ? unitsToSell.size() : 5;
+	paddingH = (w - visibleUnitCount * unitSize) / (visibleUnitCount + 1);
+	
+	SDL_Rect helperRect = {x, y + paddingV + unitSize + 10, unitSize, unitSize / 3};
+	for (int i = 0; i < visibleUnitCount; i++) {
+		helperRect.x += paddingH;
+		
+		buyButtons[i]->setDimensionRect(helperRect);
+		
+		helperRect.x += unitSize;
+	}
 }

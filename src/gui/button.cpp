@@ -6,6 +6,8 @@
  * @author kovlev
  */
 
+Button::Button() : Button(0, 0, 0, 0) {}
+
 Button::Button(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp, wp, hp) {
 	texture = Global::resourceHandler->getATexture(TT::GUI, "button");
 	functionPointer = NULL;

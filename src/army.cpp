@@ -42,7 +42,7 @@ Army::Army(int xp, int yp, int wp, int hp, int width, int height, bool isInv) : 
 	selectedUnitPos = Point(-1, -1);
 	hoveredUnitPos = Point(-1, -1);
 	
-	//?..oh..?
+	//NOTE maybe unneeded, maybe necessary, maybe harmful and can cause errors
 	if (isInverted) {
 		setUnitInfo(Global::player->getArmy()->getUnitInfo());
 	}

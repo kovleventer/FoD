@@ -35,7 +35,7 @@ The game should run now.
 ### Visual studio
 Not tested yet.
 
-## Linux
+## GNU/Linux
 Installing libraries is a lot more easier, also *dirent.h* actually works as intended. To get the SDL devel libs under Ubuntu using apt-get, just type
 ```
 sudo apt-get install libsdl2*

@@ -165,7 +165,7 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 		
 		//Setting interactive properties
 		loaded->getGUI()->addPart({"TEST", new TestGUIPart(loaded->getGUI())});
-		loaded->getGUI()->addPart({"TEST2", new TestGUIPart(loaded->getGUI())});
+		loaded->getGUI()->addPart({"TEST2", new TestGUIPart2(loaded->getGUI())});
 		loaded->getGUI()->addPart({"TEST3", new TestGUIPart(loaded->getGUI())});
 		
 		loaded->setScale(scale);

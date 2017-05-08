@@ -11,6 +11,7 @@
 #include "button.h"
 #include "../item.h"
 #include "../iteminfo.h"
+#include "../unit.h"
 
 /*!
  * @author kovlev
@@ -60,6 +61,15 @@ private:
 class TestGUIPart : public WholeScreenGUI {
 public:
 	TestGUIPart(InteractiveGUI* parent);
+};
+
+
+/*!
+ * @class TestGUIPart2 temporary gui class used on testing
+ */
+class TestGUIPart2 : public WholeScreenGUI {
+public:
+	TestGUIPart2(InteractiveGUI* parent);
 };
 
 
@@ -172,4 +182,48 @@ private:
 	Button* sellButton;
 	
 	ItemBuyingMenu* itemBuyingMenu;
+};
+
+
+/*!
+ * @class UnitBuyingMenu handles unit buying options
+ * Does NOT have an UnitCheckoutMenu, like its counterparts related to items has
+ */
+class UnitBuyingMenu : public BasicGUI {
+public:
+	UnitBuyingMenu(int xp, int yp, int wp, int hp);
+	UnitBuyingMenu(SDL_Rect destinationRect);
+	~UnitBuyingMenu();
+	
+	ATexture* bgText;
+	
+	void render();
+	
+	//Getters, setters for units
+	Unit* getUnit(unsigned int index);
+	int getUnitPrice(unsigned int index);
+	void addUnit(Unit* unitToAdd);
+	void removeUnit(unsigned int index);
+	
+	//Event handling
+	void handleMousePressEvent(int xp, int yp);
+	void handleMouseWheelEvent(bool up);
+private:
+	std::vector< std::pair<Unit*, int> > unitsToSell;
+	
+	//The first rendered unit's index
+	unsigned int currentUnitPosition;
+	unsigned int numberOfDisplayableUnits;
+	
+	Button** buyButtons;
+	
+	//Recalculates gui element positions when needed
+	void recalcPositions();
+	int visibleUnitCount;
+	int unitSize;
+	int paddingH;
+	int paddingV;
+	
+	//The price font size
+	int fontSize;
 };

@@ -23,6 +23,8 @@ public:
 	//Magic stuff that makes the callback onclick function work
 	typedef void(*eventFunction)();
 	
+	//Constructor that should be only used when creating dynamic positioned buttons
+	Button();
 	Button(int xp, int yp, int wp, int hp);
 	
 	//Button's texture
