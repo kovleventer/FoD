@@ -114,6 +114,16 @@ TestGUIPart2::TestGUIPart2(InteractiveGUI* parent) : WholeScreenGUI(parent->getR
 	addTempPart(tempUBM);
 }
 
+TestGUIPart3::TestGUIPart3(InteractiveGUI* parent) : WholeScreenGUI(parent->getRemainingDim()) {
+	addPart(Global::player->getArmy());
+	Garrison* tempG = new Garrison(Global::player->getArmy()->getX(),
+								   parent->getY() + headerSize,
+								   Global::player->getArmy()->getW(),
+								   Global::player->getArmy()->getY() - parent->getY() - headerSize);
+	tempG->getArmy()->addUnit(Global::unitHandler->getUnit("Bowman", 1), UnitAddingPreference::FRONTROWFIRST);
+	addTempPart(tempG);
+}
+
 ItemBuyingMenu::ItemBuyingMenu(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp, wp, hp) {
 	numberOfDisplayableItems = 5;
 	itemSlotHeight = h / numberOfDisplayableItems;
@@ -542,6 +552,7 @@ void UnitBuyingMenu::handleMousePressEvent(int xp, int yp) {
 				
 				//We do not purchase the unit if our army is full
 				if (Global::player->getArmy()->addUnit(unitToAdd, UnitAddingPreference::FRONTROWFIRST)) {
+					//TODO maybe different unit adding preferences based on unit type
 					removeUnit(currentUnitPosition + i);
 					Global::player->takeGold(getUnitPrice(currentUnitPosition + i));
 				}
@@ -577,4 +588,32 @@ void UnitBuyingMenu::recalcPositions() {
 		
 		helperRect.x += unitSize;
 	}
+}
+
+Garrison::Garrison(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp, wp, hp) {
+	garrisonArmy = new Army(x, y, w, h, Global::player->getArmy()->getWidth(), Global::player->getArmy()->getHeight(), true);
+}
+
+Garrison::Garrison(SDL_Rect dimensionRect) : Garrison(dimensionRect.x, dimensionRect.y, dimensionRect.w, dimensionRect.h) {}
+
+Garrison::~Garrison() {
+	delete garrisonArmy;
+}
+
+void Garrison::render() {
+	garrisonArmy->render();
+}
+
+Army* Garrison::getArmy() {
+	return garrisonArmy;
+}
+
+void Garrison::handleMousePressEvent(int xp, int yp) {
+	//Simple passthrough
+	garrisonArmy->handleMousePressEvent(xp, yp);
+}
+
+void Garrison::handleMouseMotionEvent(int xp, int yp) {
+	//Simple passthrough
+	garrisonArmy->handleMouseMotionEvent(xp, yp);
 }

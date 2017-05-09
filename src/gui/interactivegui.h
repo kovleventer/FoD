@@ -12,6 +12,7 @@
 #include "../item.h"
 #include "../iteminfo.h"
 #include "../unit.h"
+#include "../army.h"
 
 /*!
  * @author kovlev
@@ -70,6 +71,15 @@ public:
 class TestGUIPart2 : public WholeScreenGUI {
 public:
 	TestGUIPart2(InteractiveGUI* parent);
+};
+
+
+/*!
+ * @class TestGUIPart3 temporary gui class used on testing
+ */
+class TestGUIPart3 : public WholeScreenGUI {
+public:
+	TestGUIPart3(InteractiveGUI* parent);
 };
 
 
@@ -226,4 +236,27 @@ private:
 	
 	//The price font size
 	int fontSize;
+};
+
+
+/*!
+ * @class Garrison if the player owes the world object he can place guard there
+ * Stores units
+ */
+class Garrison : public BasicGUI {
+public:
+	Garrison(int xp, int yp, int wp, int hp);
+	Garrison(SDL_Rect dimensionRect);
+	~Garrison();
+	
+	void render();
+	
+	//Getters
+	Army* getArmy();
+	
+	//Event handling
+	void handleMousePressEvent(int xp, int yp);
+	void handleMouseMotionEvent(int xp, int yp);
+private:
+	Army* garrisonArmy;
 };

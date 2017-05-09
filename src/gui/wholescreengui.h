@@ -45,7 +45,7 @@ public:
 	void handleMousePressEvent(int xp, int yp);
 	void handleMouseMotionEvent(int xp, int yp);
 	void handleMouseWheelEvent(bool up);
-private:
+protected:
 	std::vector<BasicGUI*> parts;
 	
 	//Temporary parts are deleted on gui deletion

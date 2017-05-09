@@ -14,6 +14,8 @@ Unit::Unit(std::string n, UnitType uT) {
 	
 	unitInventorySize = 4;
 	
+	miniStatsFontSize = 17;
+	
 	//Setting the unit's inventory
 	items = new Item*[unitInventorySize];
 	for (int i = 0; i < unitInventorySize; i++) {
@@ -47,6 +49,57 @@ void Unit::render(SDL_Rect destinationRect) {
 		destinationRect.h = (int)((double)(statsWithItems["life"] - statsWithItems["currentLife"]) / statsWithItems["life"] * destinationRect.h);
 		SDL_RenderFillRect(Global::renderer, &destinationRect);
 	}
+}
+
+void Unit::renderMiniStats(SDL_Rect destinationRect) {
+	Dimension d;
+	SDL_Rect tempDestRect;
+	
+	ATexture* attackText = Global::resourceHandler->getTextTexture("A: " + std::to_string(getAttack()), Global::resourceHandler->colors["whole-header"]);
+	d = attackText->getDimensions();
+	d *= miniStatsFontSize;
+	d /= Global::defaultFontSize;
+	tempDestRect.x = destinationRect.x;
+	tempDestRect.y = destinationRect.y;
+	tempDestRect.w = d.W();
+	tempDestRect.h = d.H();
+	attackText->render(tempDestRect);
+	
+	ATexture* defenseText = Global::resourceHandler->getTextTexture(
+		"D: " + std::to_string(statsWithItems["physicalDefense"]) + "/" +  std::to_string(statsWithItems["magicDefense"]),
+																	Global::resourceHandler->colors["whole-header"]);
+	d = defenseText->getDimensions();
+	d *= miniStatsFontSize;
+	d /= Global::defaultFontSize;
+	tempDestRect.x = destinationRect.x + destinationRect.w - d.W();
+	tempDestRect.y = destinationRect.y;
+	tempDestRect.w = d.W();
+	tempDestRect.h = d.H();
+	defenseText->render(tempDestRect);
+	
+	ATexture* lifeText = Global::resourceHandler->getTextTexture(
+		"L: " + std::to_string(statsWithItems["currentLife"]) + "/" + std::to_string(statsWithItems["life"]),
+																 Global::resourceHandler->colors["whole-header"]);
+	d = lifeText->getDimensions();
+	d *= miniStatsFontSize;
+	d /= Global::defaultFontSize;
+	tempDestRect.x = destinationRect.x;
+	tempDestRect.y = destinationRect.y + destinationRect.h - d.H();
+	tempDestRect.w = d.W();
+	tempDestRect.h = d.H();
+	lifeText->render(tempDestRect);
+	
+	ATexture* noaText = Global::resourceHandler->getTextTexture(
+		"N: " + std::to_string(statsWithItems["currentNumberOfActions"]) /*+ "/" + std::to_string(statsWithItems["numberOfActions"])*/,
+																 Global::resourceHandler->colors["whole-header"]);
+	d = noaText->getDimensions();
+	d *= miniStatsFontSize;
+	d /= Global::defaultFontSize;
+	tempDestRect.x = destinationRect.x + destinationRect.w - d.W();
+	tempDestRect.y = destinationRect.y + destinationRect.h - d.H();
+	tempDestRect.w = d.W();
+	tempDestRect.h = d.H();
+	noaText->render(tempDestRect);
 }
 
 std::string Unit::getName() {

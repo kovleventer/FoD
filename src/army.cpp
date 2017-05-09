@@ -97,6 +97,7 @@ void Army::render() {
 			} else {
 				//Rendering of unit selection / hovering indicator
 				units[j * iWidth + i]->render(destinationRect);
+				units[j * iWidth + i]->renderMiniStats({destinationRect.x, destinationRect.y + destinationRect.h, destinationRect.w, destinationRect.h / 3});
 				if (selectedUnitPos == Point(i, j)) {
 					selectedUnitTexture->render(destinationRect);
 				} else if (hoveredUnitPos == Point(i, j)) {

@@ -6,6 +6,7 @@ o_win
 FallOfDyrangor
 FoD_DEBUG
 *.exe
+*.dll
 build
 
 #Settings file
@@ -13,3 +14,4 @@ settings.txt
 
 #Text editor swaps
 *.kate-swp
+*.swp

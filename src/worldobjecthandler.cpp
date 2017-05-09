@@ -166,7 +166,7 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 		//Setting interactive properties
 		loaded->getGUI()->addPart({"TEST", new TestGUIPart(loaded->getGUI())});
 		loaded->getGUI()->addPart({"TEST2", new TestGUIPart2(loaded->getGUI())});
-		loaded->getGUI()->addPart({"TEST3", new TestGUIPart(loaded->getGUI())});
+		loaded->getGUI()->addPart({"TEST3", new TestGUIPart3(loaded->getGUI())});
 		
 		loaded->setScale(scale);
 		Global::map->getTile(posX, posY)->entities.push_back(loaded);

@@ -395,7 +395,7 @@ int Battle::getPossibleDamage(Unit* unitToAttack) {
 }
 
 void Battle::dealDamage(Unit* unitToAttack, int damage, bool isContinuation) {
-	//Aniamtion settings
+	//Animation settings
 	//Wew thats ugly
 	Point startCoord, endCoord;
 	if (isContinuation) {

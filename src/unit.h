@@ -37,6 +37,8 @@ public:
 	
 	void render(int x, int y, int w, int h);
 	void render(SDL_Rect destinationRect);
+	//Renders small stats about the unit
+	void renderMiniStats(SDL_Rect destinationRect);
 	
 	//Getters
 	std::string getName();
@@ -104,6 +106,9 @@ private:
 	
 	//Used while in battle
 	int temporaryExperienceHolder;
+	
+	//The font size of the mini stats displayed
+	int miniStatsFontSize;
 };
 
 
