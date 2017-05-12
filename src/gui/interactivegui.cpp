@@ -1,6 +1,6 @@
 #include "interactivegui.h"
 
-#include "../global.h"
+#include "../core/global.h"
 
 /*!
  * @author kovlev

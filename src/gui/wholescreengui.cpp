@@ -1,6 +1,6 @@
 #include "wholescreengui.h"
 
-#include "../global.h"
+#include "../core/global.h"
 
 /*!
  * @author kovlev

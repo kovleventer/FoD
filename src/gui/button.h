@@ -5,7 +5,7 @@
 
 #include "basicgui.h"
 #include "../util/point.h"
-#include "../animatabletexture.h"
+#include "../core/animatabletexture.h"
 
 /*!
  * @author kovlev

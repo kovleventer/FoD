@@ -1,7 +1,7 @@
 #pragma once
 
 #include "basicgui.h"
-#include "../battle.h"
+#include "../core/battle.h"
 
 /*!
  * @author kovlev

@@ -6,13 +6,13 @@
 #include <utility>
 
 #include "basicgui.h"
-#include "../animatabletexture.h"
+#include "../core/animatabletexture.h"
 #include "wholescreengui.h"
 #include "button.h"
-#include "../item.h"
-#include "../iteminfo.h"
-#include "../unit.h"
-#include "../army.h"
+#include "../player/item.h"
+#include "../player/iteminfo.h"
+#include "../player/unit.h"
+#include "../player/army.h"
 
 /*!
  * @author kovlev

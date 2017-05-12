@@ -5,7 +5,7 @@
 #include <string>
 
 #include "basicgui.h"
-#include "../animatabletexture.h"
+#include "../core/animatabletexture.h"
 
 /*!
  * @author kovlev

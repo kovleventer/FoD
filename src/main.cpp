@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "game.h"
+#include "core/game.h"
 #include "util/version.h"
 
 /*!
@@ -10,7 +10,7 @@
  */
 
 const std::string APPNAME = "Fall of Dyrangor";
-const Version VERSION = Version("1.0.1.6");
+const Version VERSION = Version("1.1.4.0");
 
 int main (int argc, char* args[]) {
 	Game* game;

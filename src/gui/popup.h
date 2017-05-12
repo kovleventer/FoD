@@ -6,8 +6,8 @@
 #include "basicgui.h"
 #include "button.h"
 #include "../util/point.h"
-#include "../item.h"
-#include "../animatabletexture.h"
+#include "../player/item.h"
+#include "../core/animatabletexture.h"
 
 /*!
  * @author kovlev

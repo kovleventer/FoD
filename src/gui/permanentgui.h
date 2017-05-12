@@ -5,12 +5,12 @@
 
 #include "button.h"
 #include "wholescreengui.h"
-#include "../inventory.h"
-#include "../iteminfo.h"
-#include "../unitinfo.h"
-#include "../army.h"
-#include "../minimap.h"
-#include "../animatabletexture.h"
+#include "../player/inventory.h"
+#include "../player/iteminfo.h"
+#include "../player/unitinfo.h"
+#include "../player/army.h"
+#include "../map/minimap.h"
+#include "../core/animatabletexture.h"
 
 
 /*!
