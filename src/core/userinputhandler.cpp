@@ -14,8 +14,12 @@ void UserInputHandler::handleKeyPressEvent(SDL_Event e) {
 	//Useful:
 	//https://wiki.libsdl.org/SDL_Keycode
 	switch (e.key.keysym.sym) {
+		case SDLK_F5:
+			//Press F5 for displaying game ticks
+			Global::permaGUI->setRenderDebugTickInfo(!Global::permaGUI->getRenderDebugTickInfo());
+			break;
 		case SDLK_F6:
-			//Press F6 for debug info
+			//Press F6 for debug info on map passability
 			Global::map->setAllowDebug(!Global::map->getAllowDebug());
 			break;
 		case SDLK_F7:
@@ -63,6 +67,7 @@ void UserInputHandler::handleKeyDownEvent(const Uint8* keyboardState) {
 
 void UserInputHandler::handleMousePressEvent(SDL_Event e) {
 	if (e.button.button == SDL_BUTTON_LEFT) {
+		//Checking permaGUI buttons
 		if (Global::cursor->getPosition().getY() < Global::permaGUI->getUpperHeight() || Global::cursor->getPosition().getY() > Global::screenHeight - Global::permaGUI->getLowerHeight()) {
 			if (!Global::guiHandler->isHardlocked()) {
 				if (Global::cursor->getItem() == NULL) {
@@ -76,8 +81,9 @@ void UserInputHandler::handleMousePressEvent(SDL_Event e) {
 			}
 		}
 		
+		//Checking present gui elements
 		if (Global::guiHandler->isLocked()) {
-			Global::guiHandler->getGUI()->handleMousePressEvent(Global::cursor->getPosition().getX(), Global::cursor->getPosition().getY());
+			Global::guiHandler->getGUI()->handleLeftClickEvent(Global::cursor->getPosition().getX(), Global::cursor->getPosition().getY());
 			return;
 		}
 		
@@ -123,18 +129,21 @@ void UserInputHandler::handleMousePressEvent(SDL_Event e) {
 				//Do nothing
 				break;
 		}
+	} else if (e.button.button == SDL_BUTTON_RIGHT) {
+		//Checking present gui elements
+		if (Global::guiHandler->isLocked()) {
+			Global::guiHandler->getGUI()->handleRightClickEvent(Global::cursor->getPosition().getX(), Global::cursor->getPosition().getY());
+			return;
+		}
 	}
 }
 
-void UserInputHandler::handleMouseReleaseEvent(SDL_Event e) {
-	
-}
+void UserInputHandler::handleMouseReleaseEvent(SDL_Event e) {}
 
 void UserInputHandler::handleMouseMotionEvent(int x, int y) {
+	//Checking present gui elements
 	if (Global::guiHandler->isLocked()) {
-		
 		Global::guiHandler->getGUI()->handleMouseMotionEvent(Global::cursor->getPosition().getX(), Global::cursor->getPosition().getY());
-		
 		return;
 	}
 	

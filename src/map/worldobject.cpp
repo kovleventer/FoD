@@ -43,6 +43,7 @@ InteractiveWorldObject::InteractiveWorldObject(std::string text, Point pos, std:
 	owner = NULL;
 	
 	gui = new InteractiveGUI(Global::permaGUI->getDim());
+	gui->setParent(this);
 }
 
 InteractiveWorldObject::~InteractiveWorldObject() {
@@ -80,5 +81,13 @@ void InteractiveWorldObject::setOwner(Character* newOwner) {
 void InteractiveWorldObject::activate() {
 	//TODO implementation
 	std::cout << name << " (owned by " << owner->getName() << ") activated" << std::endl;
-	Global::guiHandler->setGUI(gui);
+	if (owner->getName() == "__takeable__") {
+		owner = Global::player;
+	}
+	
+	if (dynamic_cast<NPC*>(owner) != NULL && dynamic_cast<NPC*>(owner)->isEnemy()) {
+		std::cout << "Battle with structures is not yet implemented" << std::endl;
+	} else {
+		Global::guiHandler->setGUI(gui);
+	}
 }

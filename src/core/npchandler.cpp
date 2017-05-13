@@ -14,9 +14,15 @@ NPCHandler::~NPCHandler() {
 	for (unsigned int i = 0; i < npcs.size(); i++) {
 		delete npcs[i];
 	}
+	
+	delete Character::characterPlaceholderTakeable;
+	Character::characterPlaceholderTakeable = NULL;
 }
 
 void NPCHandler::loadAll() {
+	Character::characterPlaceholderTakeable = new Character(-1, -1);
+	Character::characterPlaceholderTakeable->setName("__takeable__");
+	
 	std::vector<std::string> npcNames = FilesystemHandler::getFilesInDir(basePath);
 	
 	//NOTE uses file IO
@@ -138,8 +144,6 @@ void NPCHandler::loadAll() {
 				if (unitNames[i] == "") continue;
 				
 				Unit* currentUnit = Global::unitHandler->getUnit(unitNames[i], unitLevels[i]);
-				currentUnit->stats["currentLife"] -= unitDamages[i];
-				currentUnit->stats["currentExperience"] += unitExperiences[i];
 				
 				//Adding items to units
 				for (int j = 0; j < 4; j++) {
@@ -147,6 +151,9 @@ void NPCHandler::loadAll() {
 				}
 				
 				currentUnit->recalculateInventory();
+				
+				currentUnit->statsWithItems["currentLife"] -= unitDamages[i];
+				currentUnit->statsWithItems["currentExperience"] += unitExperiences[i];
 				
 				Global::player->getArmy()->setUnit(i, currentUnit);
 			}
@@ -184,8 +191,6 @@ void NPCHandler::loadAll() {
 				if (unitNames[i] == "") continue;
 				
 				Unit* currentUnit = Global::unitHandler->getUnit(unitNames[i], unitLevels[i]);
-				currentUnit->stats["currentLife"] -= unitDamages[i];
-				currentUnit->stats["currentExperience"] += unitExperiences[i];
 				
 				//Adding items to units
 				for (int j = 0; j < 4; j++) {
@@ -193,6 +198,9 @@ void NPCHandler::loadAll() {
 				}
 				
 				currentUnit->recalculateInventory();
+				
+				currentUnit->statsWithItems["currentLife"] -= unitDamages[i];
+				currentUnit->statsWithItems["currentExperience"] += unitExperiences[i];
 				
 				loaded->getArmy()->setUnit(i, currentUnit);
 			}

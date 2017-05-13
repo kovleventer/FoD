@@ -38,6 +38,7 @@ void WorldObjectHandler::loadAll() {
 void WorldObjectHandler::setOwnershipRelations() {
 	for (unsigned int i = 0; i < interactives.size(); i++) {
 		interactives[i]->setOwner(Global::npcHandler->getCharacterByName(interactives[i]->tempOwnerHolder));
+		Global::npcHandler->getCharacterByName(interactives[i]->tempOwnerHolder)->addOwned(interactives[i]);
 	}
 }
 
@@ -126,6 +127,11 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 		//Name
 		//Texture name
 		//Owner name
+		//Has ItemBuyingMenu?, Has UnitBuyingMenu?, Has Garrison? bools
+		//IF HAS ItemBuyingMenu
+		//	[itemcount] ["itemname"] itemcount times
+		//IF HAS UnitBuyingMenu
+		//	[unitcount] ["unitname"] unitcount times
 		//Position point
 		// a [b c (a times)]
 		// a: number of interactive tiles
@@ -140,6 +146,73 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 		
 		std::string ownerName;
 		std::getline(file, ownerName);
+		
+		bool hasIBM, hasUBM, hasGar;
+		file >> hasIBM;
+		file >> hasUBM;
+		file >> hasGar;
+		
+		std::vector<Item*> itemsToSell;
+		if (hasIBM) {
+			int invLen;
+			file >> invLen;
+			for (int i = 0; i < invLen; i++) {
+				std::string itemName;
+				file >> std::quoted(itemName);
+				itemsToSell.push_back(Global::itemHandler->getItem(itemName));
+			}
+		}
+		
+		std::vector<Unit*> unitsToSell;
+		if (hasUBM) {
+			int armLen;
+			file >> armLen;
+			for (int i = 0; i < armLen; i++) {
+				std::string unitName;
+				file >> std::quoted(unitName);
+				unitsToSell.push_back(Global::unitHandler->getUnit(unitName, 1));
+			}
+		}
+		
+		std::vector<std::string> unitNames;
+		std::vector<int> unitLevels;
+		std::vector<int> unitDamages;
+		std::vector<int> unitExperiences;
+		//Storing 4 * 10 items
+		std::vector<std::string> unitInventory;
+		
+		if (hasGar) {
+			for (int i = 0; i < 10; i++) {
+				std::string unitName;
+				file >> std::quoted(unitName);
+				unitNames.push_back(unitName);
+			}
+			
+			for (int i = 0; i < 10; i++) {
+				int unitLevel;
+				file >> unitLevel;
+				unitLevels.push_back(unitLevel);
+			}
+			
+			for (int i = 0; i < 10; i++) {
+				int unitDamage;
+				file >> unitDamage;
+				unitDamages.push_back(unitDamage);
+			}
+			
+			for (int i = 0; i < 10; i++) {
+				int unitExperience;
+				file >> unitExperience;
+				unitExperiences.push_back(unitExperience);
+			}
+			
+			//Loading unit items
+			for (int i = 0; i < 40; i++) {
+				std::string itemName;
+				file >> std::quoted(itemName);
+				unitInventory.push_back(itemName);
+			}
+		}
 		
 		int posX, posY;
 		file >> posX;
@@ -158,20 +231,56 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 		double scale;
 		file >> scale;
 		
+		file.close();
+		
+		if (!file) {
+			//If the file pattern is wrong
+			std::clog << "Error! Skipping " << interactiveNames[i] << std::endl;
+			continue;
+		}
+		
 		InteractiveWorldObject* loaded = new InteractiveWorldObject(textureName, posX, posY, interactiveTiles, false);
 		loaded->setName(name);
 		
 		loaded->tempOwnerHolder = ownerName;
 		
 		//Setting interactive properties
-		loaded->getGUI()->addPart({"TEST", new TestGUIPart(loaded->getGUI())});
-		loaded->getGUI()->addPart({"TEST2", new TestGUIPart2(loaded->getGUI())});
-		loaded->getGUI()->addPart({"TEST3", new TestGUIPart3(loaded->getGUI())});
+		if (hasIBM) {
+			ItemMarket* tempItemMarket = new ItemMarket(loaded->getGUI());
+			tempItemMarket->getItemBuyingMenu()->setItemList(itemsToSell);
+			loaded->getGUI()->addPart({"Market", tempItemMarket});
+			
+		}
+		if (hasUBM) {
+			Barracks* tempBarracks = new Barracks(loaded->getGUI());
+			tempBarracks->getUnitBuyingMenu()->setUnitList(unitsToSell);
+			loaded->getGUI()->addPart({"Barracks", tempBarracks});
+		}
+		if (hasGar) {
+			GarrisonWrapper* tempGarrisonWrapper = new GarrisonWrapper(loaded->getGUI());
+			tempGarrisonWrapper->setIsRenderableWhenNotOwnedByPlayer(false);
+			for (int i = 0; i < 10; i++) {
+				if (unitNames[i] == "") continue;
+				
+				Unit* currentUnit = Global::unitHandler->getUnit(unitNames[i], unitLevels[i]);
+				
+				//Adding items to units
+				for (int j = 0; j < 4; j++) {
+					currentUnit->addItem(Global::itemHandler->getItem(unitInventory[i * 4 + j]));
+				}
+				
+				currentUnit->recalculateInventory();
+				
+				currentUnit->statsWithItems["currentLife"] -= unitDamages[i];
+				currentUnit->statsWithItems["currentExperience"] += unitExperiences[i];
+				
+				tempGarrisonWrapper->getGarrison()->getArmy()->setUnit(i, currentUnit);
+			}
+			loaded->getGUI()->addPart({"Garrison", tempGarrisonWrapper});
+		}
 		
 		loaded->setScale(scale);
 		Global::map->getTile(posX, posY)->entities.push_back(loaded);
 		interactives.push_back(loaded);
-		
-		file.close();
 	}
 }

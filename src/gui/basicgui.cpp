@@ -75,6 +75,7 @@ void BasicGUI::render() {
 }
 
 //Do nothing since they are virtual functions
-void BasicGUI::handleMousePressEvent(int xp, int yp) {}
+void BasicGUI::handleLeftClickEvent(int xp, int yp) {}
+void BasicGUI::handleRightClickEvent(int xp, int yp) {}
 void BasicGUI::handleMouseMotionEvent(int xp, int yp) {}
 void BasicGUI::handleMouseWheelEvent(bool up) {}

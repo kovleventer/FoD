@@ -60,7 +60,7 @@ public:
 	Item* removeItem(int x, int y);
 	Item* removeItem(Point p);
 	
-	void handleMousePressEvent(int xp, int yp);
+	void handleLeftClickEvent(int xp, int yp);
 	void handleMouseMotionEvent(int xp, int yp);
 	void handleMouseWheelEvent(bool up);
 private:

@@ -147,7 +147,7 @@ void UnitInfo::setUnit(Unit* newUnit) {
 	selectedUnit = newUnit;
 }
 
-void UnitInfo::handleMousePressEvent(int xp, int yp) {
+void UnitInfo::handleLeftClickEvent(int xp, int yp) {
 	//On battle it does nothing
 	if (Global::guiHandler->isHardlocked()) return;
 	

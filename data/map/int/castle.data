@@ -1,6 +1,23 @@
 Red Castle
 castle
 Kov Lev
+1 1 1
+5 "sword" "ring" "staff" "mshield1" "boots"
+4 "Axeman" "Dog" "Bowman" "Axeman"
+"Axeman" "Bowman" "Bowman" "" "" "" "" "" "" ""
+4 1 2 0 0 0 0 0 0 0
+42 0 0 0 0 0 0 0 0 0
+26 0 0 0 0 0 0 0 0 0
+"sword" "shield" "" ""
+"bow" "" "" ""
+"amulet" "" "" ""
+"" "" "" ""
+"" "" "" ""
+"" "" "" ""
+"" "" "" ""
+"" "" "" ""
+"" "" "" ""
+"" "" "" ""
 7 7
 1 0 0
 1

@@ -48,6 +48,7 @@ Unit* UnitHandler::getUnit(std::string name, int level) {
 		newUnit->stats["currentNumberOfActions"] = newUnit->stats["numberOfActions"];
 		newUnit->stats["experience"] = (int)((double)unitTemplate->getExperience() * pow(levelMultipliersForEXP, level - 1));
 		newUnit->stats["currentExperience"] = 0;
+		newUnit->stats["price"] = (int)((double)unitTemplate->getPrice() * pow(levelMultipliers * levelMultipliersForNOA, level - 1));
 		newUnit->setLevel(level);
 		
 		newUnit->statsWithItems = newUnit->stats;
@@ -68,7 +69,7 @@ std::string UnitHandler::translateT(UnitType unitType) {
 }
 
 void UnitHandler::loadUnitData() {
-	std::vector<std::string> unitList = FilesystemHandler::getFilesInDir("data/unit/");
+	std::vector<std::string> unitList = FilesystemHandler::getFilesInDir(basePath);
 	
 	//NOTE uses file IO
 	std::fstream file;
@@ -112,10 +113,15 @@ void UnitHandler::loadUnitData() {
 		file >> currentUnit->speed;
 		file >> currentUnit->numberOfActions;
 		file >> currentUnit->experience;
+		file >> currentUnit->price;
 		
 		baseUnits[name] = currentUnit;
 		
 		file.close();
+		
+		if (!file) {
+			std::clog << "Error! Unit data might be corrupted (" << name << ")" << std::endl;
+		}
 	}
 	
 }

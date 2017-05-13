@@ -42,6 +42,8 @@ Game::Game(std::string aName, Version version) {
 	log.open(logFileName.str());
 	std::clog.rdbuf(log.rdbuf());
 	
+	std::clog << "Version: " << version.toString() << std::endl;
+	
 	try {
 		loadSettings();
 		

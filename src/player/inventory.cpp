@@ -137,7 +137,7 @@ Item* Inventory::removeItem(Point p) {
 	return removeItem(p.getX(), p.getY());
 }
 
-void Inventory::handleMousePressEvent(int xp, int yp) {
+void Inventory::handleLeftClickEvent(int xp, int yp) {
 	Point rel = Point(xp - x, yp - y);
 	rel /= slotSize;
 	rel += Point(0, currentHeightPosition);

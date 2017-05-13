@@ -7,6 +7,10 @@
 #include "../player/army.h"
 #include "../player/inventory.h"
 
+class InteractiveWorldObject; // Forward declaration
+
+#include "worldobject.h"
+
 /*!
  * @author kovlev
  */
@@ -37,6 +41,13 @@ public:
 	void setName(std::string newName);
 	void giveGold(int goldToGive);
 	void takeGold(int goldToTake);
+	
+	//Owned controllers
+	void addOwned(InteractiveWorldObject* interactiveToAdd);
+	void removeOwned(InteractiveWorldObject* interactiveToRemove);
+	
+	//Indicates if a structure is takeable by anyone
+	static Character* characterPlaceholderTakeable;
 protected:
 	//When we are rendering, we are using position+progressVector to get the actual position of the claracter
 	PointD progressVector;
@@ -55,4 +66,7 @@ protected:
 	
 	//The amount of gold that the caracter posess
 	int gold;
+	
+	//The interactive world objects owned by the character
+	std::vector<InteractiveWorldObject*> ownedBuildings;
 };

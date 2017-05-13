@@ -52,10 +52,12 @@ public:
 	std::vector<Button*> getButtons();
 	static ClickedEntry getClickedEntry();
 	SDL_Rect getDim();
+	bool getRenderDebugTickInfo();
 	
 	//Setters
 	void setUpperHeight(int newUH);
 	void setLowerHeight(int newLH);
+	void setRenderDebugTickInfo(bool newRenderTickInfo);
 private:
 	int upperHeight;
 	int lowerHeight;
@@ -67,6 +69,9 @@ private:
 	void init();
 	
 	std::vector<Button*> buttons;
+	
+	//Debug allowing boolean
+	bool renderDebugTickInfo;
 	
 	static void clickQuests();
 	static void clickArmy();

@@ -41,7 +41,8 @@ public:
 	bool contains(Point p);
 	
 	virtual void render();
-	virtual void handleMousePressEvent(int xp, int yp);
+	virtual void handleLeftClickEvent(int xp, int yp);
+	virtual void handleRightClickEvent(int xp, int yp);
 	virtual void handleMouseMotionEvent(int xp, int yp);
 	virtual void handleMouseWheelEvent(bool up);
 protected:

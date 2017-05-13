@@ -33,6 +33,7 @@ public:
 	int getSpeed();
 	int getNumberOfActions();
 	int getExperience();
+	int getPrice();
 	//No setters, stats are setted via friend classes
 private:
 	std::string name;
@@ -46,4 +47,5 @@ private:
 	int speed;
 	int numberOfActions;
 	int experience;
+	int price;
 };

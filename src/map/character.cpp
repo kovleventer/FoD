@@ -1,5 +1,7 @@
 #include "character.h"
 
+#include "../core/global.h"
+
 /*!
  * @author kovlev
  */
@@ -10,7 +12,20 @@ Character::Character(Point pos) : MapEntity(pos) {
 
 Character::Character(int x, int y) : Character(Point(x, y)) {}
 
-Character::~Character() {}
+Character::~Character() {
+	if (this != Global::player) {
+		//Setting building ownerships and resetting possible garrisons
+		for (unsigned int i = 0; i < ownedBuildings.size(); i++) {
+			ownedBuildings[i]->setOwner(Character::characterPlaceholderTakeable);
+			for (unsigned int j = 0; j < ownedBuildings[i]->getGUI()->getPartCount(); j++) {
+				GarrisonWrapper* possibleGarrisonWrapper = dynamic_cast<GarrisonWrapper*>(ownedBuildings[i]->getGUI()->getPart(j));
+				if (possibleGarrisonWrapper != NULL) {
+					possibleGarrisonWrapper->getGarrison()->recreateGarrisonArmy();
+				}
+			}
+		}
+	}
+}
 
 PointD Character::getProgressVector() {
 	return progressVector;
@@ -57,6 +72,16 @@ void Character::takeGold(int goldToTake) {
 	//NOTE no negative value checking
 	gold -= goldToTake;
 }
+
+void Character::addOwned(InteractiveWorldObject* interactiveToAdd) {
+	ownedBuildings.push_back(interactiveToAdd);
+}
+
+void Character::removeOwned(InteractiveWorldObject* interactiveToRemove) {
+	ownedBuildings.erase(std::remove(ownedBuildings.begin(), ownedBuildings.end(), interactiveToRemove), ownedBuildings.end());
+}
+
+Character* Character::characterPlaceholderTakeable = NULL;
 
 void Character::calcRotation(Point pRot) {
 	if (pRot == Point(1, -1)) {

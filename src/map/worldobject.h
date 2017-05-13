@@ -7,6 +7,10 @@
 #include "../util/point.h"
 #include "mapentity.h"
 #include "../gui/wholescreengui.h"
+
+class Character; // Forward declaration
+class InteractiveGUI; // Forward declaration
+
 #include "character.h"
 #include "../gui/interactivegui.h"
 

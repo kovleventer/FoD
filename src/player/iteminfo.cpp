@@ -19,7 +19,7 @@ void ItemInfo::render() {
 	if (selectedItem != NULL) {
 		//Renders the item on the right position
 		selectedItem->render(x + w / 2 - Global::player->getInventory()->getSlotSize() / 2,
-							 y + h / 4 - Global::player->getInventory()->getSlotSize() / 2,
+							 y + h / 5 - Global::player->getInventory()->getSlotSize() / 2,
 							 Global::player->getInventory()->getSlotSize(),
 							 Global::player->getInventory()->getSlotSize(),
 							 false);
@@ -30,7 +30,7 @@ void ItemInfo::render() {
 			d *= descriptionSize;
 			d /= Global::defaultFontSize;
 			destinationRect.x = x + w / 2 - d.W() / 2;
-			destinationRect.y = y + h / 2 - d.H() / 2 + i * d.H();
+			destinationRect.y = y + h / 3 - d.H() / 2 + i * d.H();
 			destinationRect.w = d.W();
 			destinationRect.h = d.H();
 			descText->render(destinationRect);

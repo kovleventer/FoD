@@ -6,7 +6,7 @@
  * @author kovlev
  */
 
-PermanentGUI::PermanentGUI() {
+PermanentGUI::PermanentGUI() { //TODO use constructor passing
 	upperHeight = 30;
 	lowerHeight = 100;
 	init();
@@ -49,7 +49,7 @@ void PermanentGUI::render() {
 	}
 	
 	//gold indicator for player
-	ATexture* goldText = Global::resourceHandler->getTextTexture(Text(std::to_string(Global::player->getGold()), Global::resourceHandler->colors["gold"]));
+	ATexture* goldText = Global::resourceHandler->getTextTexture(std::to_string(Global::player->getGold()), Global::resourceHandler->colors["gold"]);
 	Dimension d = goldText->getDimensions();
 	d *= upperHeight;
 	d /= Global::defaultFontSize;
@@ -65,6 +65,19 @@ void PermanentGUI::render() {
 	destinationRect.w = upperHeight;
 	destinationRect.h = upperHeight;
 	goldTexture->render(destinationRect);
+	
+	if (renderDebugTickInfo) {
+		ATexture* gameTicksText = Global::resourceHandler->getTextTexture(std::to_string(Global::animationHandler->getGameTicks()), Global::resourceHandler->colors["gold"]);
+		d = gameTicksText->getDimensions();
+		d *= upperHeight;
+		d /= Global::defaultFontSize;
+		destinationRect.x = 0;
+		//Small corrigation
+		destinationRect.y = -upperHeight / 5;
+		destinationRect.w = d.W();
+		destinationRect.h = d.H();
+		gameTicksText->render(destinationRect);
+	}
 }
 
 int PermanentGUI::getUpperHeight() {
@@ -91,6 +104,10 @@ SDL_Rect PermanentGUI::getDim() {
 	return possibleWholeScreenGUIDimensions;
 }
 
+bool PermanentGUI::getRenderDebugTickInfo() {
+	return renderDebugTickInfo;
+}
+
 void PermanentGUI::setUpperHeight(int newUH) {
 	upperHeight = newUH;
 }
@@ -99,10 +116,15 @@ void PermanentGUI::setLowerHeight(int newLH) {
 	lowerHeight = newLH;
 }
 
+void PermanentGUI::setRenderDebugTickInfo(bool newRenderTickInfo) {
+	renderDebugTickInfo = newRenderTickInfo;
+}
+
 void PermanentGUI::init() {
 	heightLeftForMap = Global::screenHeight - upperHeight - lowerHeight;
 	texture = Global::resourceHandler->getATexture(TT::GUI, "permabg");
 	goldTexture = Global::resourceHandler->getATexture(TT::GUI, "gold");
+	renderDebugTickInfo = false;
 	
 	int tempX, tempY, tempW, tempH;
 	if (heightLeftForMap > Global::screenWidth) {

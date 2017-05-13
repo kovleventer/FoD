@@ -6,10 +6,11 @@
  * @author kovlev
  */
 
-Item::Item(std::string n, ItemRarity r, ItemType t) {
+Item::Item(std::string n, ItemRarity r, ItemType t, int p) {
 	name = n;
 	itemRarity = r;
 	itemType = t;
+	price = p;
 }
 
 void Item::generateDescription() {
@@ -45,6 +46,10 @@ ItemRarity Item::getItemRarity() {
 
 ItemType Item::getItemType() {
 	return itemType;
+}
+
+int Item::getPrice() {
+	return price;
 }
 
 void Item::render(int x, int y, int w, int h, bool withIndicator) {

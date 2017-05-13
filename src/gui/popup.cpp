@@ -133,7 +133,7 @@ void Popup::addItem(Item* itemToAdd) {
 	items.push_back(itemToAdd);
 }
 
-void Popup::handleMousePressEvent(int xp, int yp) {
+void Popup::handleLeftClickEvent(int xp, int yp) {
 	if (popupType == PopupType::POPUP_OK) {
 		if (buttonOK->contains(xp, yp)) {
 			buttonOK->click();

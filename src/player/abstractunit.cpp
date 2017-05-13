@@ -49,3 +49,7 @@ int AbstractUnit::getNumberOfActions() {
 int AbstractUnit::getExperience() {
 	return experience;
 }
+
+int AbstractUnit::getPrice() {
+	return price;
+}

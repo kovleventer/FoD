@@ -33,7 +33,7 @@ public:
 	void setUnit(Unit* newUnit);
 	
 	//Implementations of virtual methods inherited form superclass
-	void handleMousePressEvent(int xp, int yp);
+	void handleLeftClickEvent(int xp, int yp);
 	void handleMouseMotionEvent(int xp, int yp);
 private:
 	Unit* selectedUnit;

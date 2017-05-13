@@ -20,7 +20,7 @@ ItemHandler::~ItemHandler() {
 }
 
 void ItemHandler::loadAll() {
-	std::vector<std::string> itemList = FilesystemHandler::getFilesInDir("data/item/");
+	std::vector<std::string> itemList = FilesystemHandler::getFilesInDir(basePath);
 	
 	//NOTE uses file IO
 	std::fstream file;
@@ -46,7 +46,10 @@ void ItemHandler::loadAll() {
 		ItemRarity itemRarity = translateR(itemRarityString);
 		ItemType itemType = translateT(itemTypeString);
 		
-		Item* currentItem = new Item(itemName, itemRarity, itemType);
+		int itemPrice;
+		file >> itemPrice;
+		
+		Item* currentItem = new Item(itemName, itemRarity, itemType, itemPrice);
 		
 		std::string key;
 		int value;

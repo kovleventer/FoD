@@ -13,6 +13,11 @@
 #include "../player/iteminfo.h"
 #include "../player/unit.h"
 #include "../player/army.h"
+#include "../player/inventory.h"
+
+class InteractiveWorldObject; // Forward declaration
+
+#include "../map/worldobject.h"
 
 /*!
  * @author kovlev
@@ -39,12 +44,21 @@ public:
 	//Getters
 	int getPartChooserWidth();
 	int getPadding();
+	unsigned int getCurrentPartIndex();
+	unsigned int getPartCount();
+	WholeScreenGUI* getPart(unsigned int index);
+	WholeScreenGUI* getCurrentPart();
 	SDL_Rect getRemainingDim();
+	InteractiveWorldObject* getParent();
+	
+	//Setters
+	void setParent(InteractiveWorldObject* newParent);
 	
 	void addPart(std::pair<std::string, WholeScreenGUI*> newPart);
 	
 	//Event handling
-	void handleMousePressEvent(int xp, int yp);
+	void handleLeftClickEvent(int xp, int yp);
+	void handleRightClickEvent(int xp, int yp);
 	void handleMouseMotionEvent(int xp, int yp);
 	void handleMouseWheelEvent(bool up);
 private:
@@ -53,33 +67,7 @@ private:
 	int partChooserWidth;
 	int padding;
 	unsigned int currentPartIndex;
-};
-
-
-/*!
- * @class TestGUIPart temporary gui class used on testing
- */
-class TestGUIPart : public WholeScreenGUI {
-public:
-	TestGUIPart(InteractiveGUI* parent);
-};
-
-
-/*!
- * @class TestGUIPart2 temporary gui class used on testing
- */
-class TestGUIPart2 : public WholeScreenGUI {
-public:
-	TestGUIPart2(InteractiveGUI* parent);
-};
-
-
-/*!
- * @class TestGUIPart3 temporary gui class used on testing
- */
-class TestGUIPart3 : public WholeScreenGUI {
-public:
-	TestGUIPart3(InteractiveGUI* parent);
+	InteractiveWorldObject* parent;
 };
 
 
@@ -87,7 +75,7 @@ class ItemCheckoutMenu; // Forward declaration
 
 
 /*!
- * @class ItemBuyingMenu WIP class
+ * @class ItemBuyingMenu
  * We will able to buy and sell items
  * Now it is only capable of displaying a list of items
  */
@@ -104,9 +92,10 @@ public:
 	
 	//Getters, setters for items
 	Item* getItem(unsigned int index);
-	int getItemPrice(unsigned int index);
 	void addItem(Item* itemToAdd);
 	void removeCurrentItem();
+	//Overwrites the current itemlist
+	void setItemList(std::vector<Item*> newList);
 	
 	//Getters
 	int getFontSize();
@@ -120,11 +109,11 @@ public:
 	void setItemCheckoutMenu(ItemCheckoutMenu* newItemCheckoutMenu);
 	
 	//Event handling
-	void handleMousePressEvent(int xp, int yp);
+	void handleLeftClickEvent(int xp, int yp);
 	void handleMouseWheelEvent(bool up);
 private:
-	//An item and its price are packed into the std::pair
-	std::vector< std::pair<Item*, int> > itemsToSell;
+	//An item contains its price value now
+	std::vector<Item*> itemsToSell;
 	
 	//Item's height is itemSlotHeight - 2 * padding
 	int padding;
@@ -141,7 +130,7 @@ private:
 
 
 /*!
- * @class ItemCheckoutMenu WIP class
+ * @class ItemCheckoutMenu
  * Allows the actual buxing and selling of items
  */
 class ItemCheckoutMenu : public BasicGUI {
@@ -158,9 +147,6 @@ public:
 	//Getters
 	Item* getCurrentItemToBuy();
 	Item* getCurrentItemToSell();
-	//NOTE Items and prices stored independently
-	int getItemToBuyPrice();
-	int getItemToSellPrice();
 	int getPaddingH();
 	int getPaddingV();
 	int getRowHeight();
@@ -169,12 +155,10 @@ public:
 	//Setters
 	void setCurrentItemToBuy(Item* newItemToBuy);
 	void setCurrentItemToSell(Item* newItemToSell);
-	void setItemToBuyPrice(int newItemToBuyPrice);
-	void setItemToSellPrice(int newItemToBuyPrice);
 	void setItemBuyingMenu(ItemBuyingMenu* newItemBuyingMenu);
 	
 	//Event handling
-	void handleMousePressEvent(int xp, int yp);
+	void handleLeftClickEvent(int xp, int yp);
 private:
 	Item* currentItemToBuy;
 	Item* currentItemToSell;
@@ -185,9 +169,6 @@ private:
 	int rowHeight;
 	int fontSize;
 	
-	int itemToBuyPrice;
-	int itemToSellPrice;
-	
 	Button* buyButton;
 	Button* sellButton;
 	
@@ -197,7 +178,7 @@ private:
 
 /*!
  * @class UnitBuyingMenu handles unit buying options
- * Does NOT have an UnitCheckoutMenu, like its counterparts related to items has
+ * Does NOT have an UnitCheckoutMenu, like its counterpart related to items has
  */
 class UnitBuyingMenu : public BasicGUI {
 public:
@@ -211,15 +192,15 @@ public:
 	
 	//Getters, setters for units
 	Unit* getUnit(unsigned int index);
-	int getUnitPrice(unsigned int index);
 	void addUnit(Unit* unitToAdd);
 	void removeUnit(unsigned int index);
+	void setUnitList(std::vector<Unit*> newList);
 	
 	//Event handling
-	void handleMousePressEvent(int xp, int yp);
+	void handleLeftClickEvent(int xp, int yp);
 	void handleMouseWheelEvent(bool up);
 private:
-	std::vector< std::pair<Unit*, int> > unitsToSell;
+	std::vector<Unit*> unitsToSell;
 	
 	//The first rendered unit's index
 	unsigned int currentUnitPosition;
@@ -254,9 +235,68 @@ public:
 	//Getters
 	Army* getArmy();
 	
+	//Used when the structure's owner changes without a battle
+	//In that case, the units in garrison are deleted
+	void recreateGarrisonArmy();
+	
 	//Event handling
-	void handleMousePressEvent(int xp, int yp);
+	void handleLeftClickEvent(int xp, int yp);
 	void handleMouseMotionEvent(int xp, int yp);
 private:
 	Army* garrisonArmy;
+};
+
+
+/*!
+ * @class ItemMarket holds all item buying related classes
+ */
+class ItemMarket : public WholeScreenGUI {
+public:
+	ItemMarket(InteractiveGUI* parent);
+	
+	//Getters
+	ItemBuyingMenu* getItemBuyingMenu();
+	ItemCheckoutMenu* getItemCheckoutMenu();
+	ItemInfo* getItemInfo();
+	Inventory* getInventory();
+private:
+	ItemBuyingMenu* itemBuyingMenu;
+	ItemCheckoutMenu* itemCheckoutMenu;
+	ItemInfo* itemInfo;
+	//Player's inventory
+	Inventory* inventory;
+};
+
+
+/*!
+ * @class Barracks holds all unit buying classes
+ */
+class Barracks : public WholeScreenGUI {
+public:
+	Barracks(InteractiveGUI* parent);
+	
+	//Getters
+	UnitBuyingMenu* getUnitBuyingMenu();
+	Army* getArmy();
+private:
+	UnitBuyingMenu* unitBuyingMenu;
+	//Player's army
+	Army* army;
+};
+
+
+/*!
+ * @class GarrisonWrapper holds the garrison and the player's army
+ */
+class GarrisonWrapper : public WholeScreenGUI {
+public:
+	GarrisonWrapper(InteractiveGUI* parent);
+	
+	//Getters
+	Garrison* getGarrison();
+	Army* getArmy();
+private:
+	Garrison* garrison;
+	//Player's army
+	Army* army;
 };

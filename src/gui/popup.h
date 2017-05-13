@@ -61,7 +61,7 @@ public:
 	Button* buttonNO;
 	
 	//Event handling
-	void handleMousePressEvent(int xp, int yp);
+	void handleLeftClickEvent(int xp, int yp);
 private:
 	//The width and the height of the used buttons
 	Point buttonDimensions;

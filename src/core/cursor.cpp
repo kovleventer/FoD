@@ -67,21 +67,34 @@ void Cursor::update() {
 			texture = Global::resourceHandler->getATexture(TT::CURSOR, "impassable");
 		} else {
 			Tile* currentTile = Global::map->getTile(Global::map->getTileFromCursorPosition(position));
-			//NOTE we should use switch-case
 			if (currentTile->getTileInfo() == TileInfo::FREE) {
-				if (Global::map->getNPCOnTile(currentTile) == NULL) {
+				NPC* currentNPC = Global::map->getNPCOnTile(currentTile);
+				if (currentNPC == NULL) {
 					texture = Global::resourceHandler->getATexture(TT::CURSOR, "move");
 				} else {
 					//If the tile contains any npcs
-					//NOTE it does not check wheter it is friendly or foe
-					texture = Global::resourceHandler->getATexture(TT::CURSOR, "npc");
+					if (currentNPC->isEnemy()) {
+						texture = Global::resourceHandler->getATexture(TT::CURSOR, "enemy");
+					} else {
+						texture = Global::resourceHandler->getATexture(TT::CURSOR, "npc");
+					}
 				}
 			} else if (currentTile->getTileInfo() == TileInfo::IMPASSABLE) {
 				//If tile is not passable
 				texture = Global::resourceHandler->getATexture(TT::CURSOR, "impassable");
-			} else {
-				//If the tile has a pointer to a friendly structure
-				texture = Global::resourceHandler->getATexture(TT::CURSOR, "friendly");
+			} else if (currentTile->getTileInfo() == TileInfo::INTERACTIVE) {
+				//If the tile has a pointer to a structure
+				InteractiveWorldObject* currentInteractive = Global::map->getInteractiveOnTile(currentTile);
+				NPC* currentInteractiveOwner = dynamic_cast<NPC*>(currentInteractive->getOwner());
+				if (currentInteractiveOwner == NULL) {
+					texture = Global::resourceHandler->getATexture(TT::CURSOR, "friendly");
+				} else {
+					if (currentInteractiveOwner->isEnemy()) {
+						texture = Global::resourceHandler->getATexture(TT::CURSOR, "enemy");
+					} else {
+						texture = Global::resourceHandler->getATexture(TT::CURSOR, "friendly");
+					}
+				}
 			}
 		}
 	}

@@ -118,7 +118,11 @@ void Army::render() {
 							//Cleaner this way, maybe we should look for a better solution
 							//attackableUnitTexture->render(destinationRect);
 						} else {
-							notAttackableUnitTexture->render(destinationRect);
+							if (Global::guiHandler->isHardlocked()) {
+								notAttackableUnitTexture->render(destinationRect);
+							} else {
+								hoveredUnitTexture->render(destinationRect);
+							}
 						}
 					} else {
 						hoveredUnitTexture->render(destinationRect);
@@ -274,7 +278,7 @@ void Army::switchUnits(Point unitPos1, Point unitPos2) {
 	setUnit(unitPos2, unitA);
 }
 
-void Army::handleMousePressEvent(int xp, int yp) {
+void Army::handleLeftClickEvent(int xp, int yp) {
 	Point clickPos = getUnitOnCursor(xp, yp);
 	if (clickPos != Point(-1, -1)) {
 		if (Global::guiHandler->isHardlocked()) {
@@ -313,31 +317,101 @@ void Army::handleMousePressEvent(int xp, int yp) {
 				}
 			}
 		} else {
+			
+			if (isInverted) {
+				//If garrison units are clicked
+				if (clickPos == selectedUnitPos) {
+					//When we click again on a selected unit, we remove the selection
+					selectedUnitPos = Point(-1, -1);
+					unitInfo->setUnit(NULL);
+				} else if (selectedUnitPos == Point(-1, -1)) {
+					if (Global::player->getArmy()->selectedUnitPos != Point(-1, -1)) {
+						//Switching the units
+						Unit* tempUnit = getUnit(clickPos);
+						setUnit(clickPos, Global::player->getArmy()->getUnit(Global::player->getArmy()->selectedUnitPos));
+						Global::player->getArmy()->setUnit(Global::player->getArmy()->selectedUnitPos, tempUnit);
+					} else {
+						selectedUnitPos = clickPos;
+					}
+				} else {
+					//Switching the units
+					Unit* tempUnit = getUnit(clickPos);
+					setUnit(clickPos, getUnit(selectedUnitPos));
+					setUnit(selectedUnitPos, tempUnit);
+					selectedUnitPos = Point(-1, -1);
+					unitInfo->setUnit(NULL);
+				}
+				Global::player->getArmy()->selectedUnitPos = Point(-1, -1);
+			} else if (dynamic_cast<GarrisonWrapper*>(dynamic_cast<InteractiveGUI*>(Global::guiHandler->getGUI()) == NULL
+				? NULL : ((InteractiveGUI*)Global::guiHandler->getGUI())->getCurrentPart()) != NULL) { //It works
+				Army* garrisonArmy = dynamic_cast<GarrisonWrapper*>(dynamic_cast<InteractiveGUI*>(Global::guiHandler->getGUI())->getCurrentPart())->getGarrison()->getArmy();
+				//If player units are clicked when in garrison
+				if (clickPos == selectedUnitPos) {
+					//When we click again on a selected unit, we remove the selection
+					selectedUnitPos = Point(-1, -1);
+					unitInfo->setUnit(NULL);
+				} else if (selectedUnitPos == Point(-1, -1)) {
+					if (garrisonArmy->selectedUnitPos != Point(-1, -1)) {
+						//Switching the units
+						Unit* tempUnit = getUnit(clickPos);
+						setUnit(clickPos, garrisonArmy->getUnit(garrisonArmy->selectedUnitPos));
+						garrisonArmy->setUnit(garrisonArmy->selectedUnitPos, tempUnit);
+					} else {
+						selectedUnitPos = clickPos;
+					}
+				} else {
+					//Switching the units
+					Unit* tempUnit = getUnit(clickPos);
+					setUnit(clickPos, getUnit(selectedUnitPos));
+					setUnit(selectedUnitPos, tempUnit);
+					selectedUnitPos = Point(-1, -1);
+					unitInfo->setUnit(NULL);
+				}
+				garrisonArmy->selectedUnitPos = Point(-1, -1);
+			} else {
+				//If player units are clicked
+				
+				if (getUnit(clickPos) != NULL && Global::cursor->getItem() != NULL) {
+					//If we are currently dragging an item and we click on a unit
+					if (getUnit(clickPos)->addItem(Global::cursor->getItem())) {
+						getUnit(clickPos)->recalculateInventory();
+						Global::cursor->setItem(NULL);
+					}
+				} else if (clickPos == selectedUnitPos) {
+					//When we click again on a selected unit, we remove the selection
+					selectedUnitPos = Point(-1, -1);
+					unitInfo->setUnit(NULL);
+				} else if (selectedUnitPos == Point(-1, -1)) {
+					//If we do not have any selected unit, and our current clicked unit is legit
+					if (getUnit(clickPos) != NULL) {
+						selectedUnitPos = clickPos;
+					}
+					unitInfo->setUnit(getUnit(clickPos));
+				} else {
+					//Switching the units
+					Unit* tempUnit = getUnit(clickPos);
+					setUnit(clickPos, getUnit(selectedUnitPos));
+					setUnit(selectedUnitPos, tempUnit);
+					selectedUnitPos = Point(-1, -1);
+					unitInfo->setUnit(NULL);
+				}
+			
+			}
+		}
+	}
+}
+
+void Army::handleRightClickEvent(int xp, int yp) {
+	Point clickPos = getUnitOnCursor(xp, yp);
+	if (clickPos != Point(-1, -1)) {
+		if (!Global::guiHandler->isHardlocked()) {
 			//If player's units are clikced
 			
-			if (getUnit(clickPos) != NULL && Global::cursor->getItem() != NULL) {
-				//If we are currently dragging an item and we click on a unit
-				if (getUnit(clickPos)->addItem(Global::cursor->getItem())) {
-					getUnit(clickPos)->recalculateInventory();
-					Global::cursor->setItem(NULL);
-				}
-			} else if (clickPos == selectedUnitPos) {
-				//When we click again on a selected unit, we remove the selection
-				selectedUnitPos = Point(-1, -1);
+			Unit* clickedUnit = getUnit(clickPos);
+			if (clickedUnit != NULL) {
 				unitInfo->setUnit(NULL);
-			} else if (selectedUnitPos == Point(-1, -1)) {
-				//If we do not have any selected unit, and our current clicked unit is legit
-				if (getUnit(clickPos) != NULL) {
-					selectedUnitPos = clickPos;
-				}
-				unitInfo->setUnit(getUnit(clickPos));
-			} else {
-				//Switching the units
-				Unit* tempUnit = getUnit(clickPos);
-				setUnit(clickPos, getUnit(selectedUnitPos));
-				setUnit(selectedUnitPos, tempUnit);
-				selectedUnitPos = Point(-1, -1);
-				unitInfo->setUnit(NULL);
+				delete clickedUnit;
+				setUnit(clickPos, NULL);
 			}
 		}
 	}

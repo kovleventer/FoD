@@ -95,7 +95,9 @@ public:
 	//Switches two units on the given positions
 	void switchUnits(Point unitPos1, Point unitPos2);
 	
-	void handleMousePressEvent(int xp, int yp);
+	//Event handling
+	void handleLeftClickEvent(int xp, int yp);
+	void handleRightClickEvent(int xp, int yp);
 	void handleMouseMotionEvent(int xp, int yp);
 	
 	void clearHovering();

@@ -36,13 +36,16 @@ public:
 	//Getters
 	std::string getHeaderText();
 	int getHeaderSize();
+	bool getIsRenderableWhenNotOwnedByPlayer();
 	
 	//Setters
 	void setHeaderText(std::string newHeaderText);
+	void setIsRenderableWhenNotOwnedByPlayer(bool newIsRenderableWhenNotOwnedByPlayer);
 	
 	//The coordinates are NOT based on the GUI's position
 	//0, 0 is at the top left corner of THE SCREEN
-	void handleMousePressEvent(int xp, int yp);
+	void handleLeftClickEvent(int xp, int yp);
+	void handleRightClickEvent(int xp, int yp);
 	void handleMouseMotionEvent(int xp, int yp);
 	void handleMouseWheelEvent(bool up);
 protected:
@@ -59,4 +62,7 @@ protected:
 	
 	//Name
 	std::string headerText;
+	
+	//Only used at interactive rendering
+	bool isRenderableWhenNotOwnedByPlayer;
 };

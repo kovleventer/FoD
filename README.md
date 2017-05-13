@@ -26,9 +26,9 @@ When you got all these, you can compile it with the *winmake.bat* script. Data a
 4. Patch *dirent.h*. I used [Tony Ronkko's one](http://softagalleria.net/dirent.php). To keep it simple, you need to overwrite the contents of C:/TDM-GCC/include/dirent.h with [this](https://github.com/tronkko/dirent/blob/master/include/dirent.h).
 5. Clone this project. Use git clone, or download as zip, it does not matter.
 6. Run winmake.bat with an argument ('32' or '64') for compilation. To add arguments, you likely need to have a cmd window opened here (shift-right click helps).
-7. Once the compilation is done, you can check the exe in build/. To make things work, you need to:
-..* Move the SDL .dlls (and the other needed ones, such as zlib or libpng) to the same directory as the exe. Be careful not to mix multi arch dlls and executables, my [script](test/windows_arch_checker.py) helps in integrity checking.
-..* Move the log and data folders to the exe's directory.
+7. Once compilation is done, you can check the exe in build/. To make things work, you need to:
+⋅⋅* Move SDL .dlls (and the other needed ones, such as zlib or libpng) to the same directory as the exe. Be careful not to mix 32 and 64 bit dlls and executables, my [script](test/windows_arch_checker.py) helps in integrity checking.
+⋅⋅* Move the log and data folders to the exe's directory.
 
 The game should run now.
 
@@ -36,11 +36,11 @@ The game should run now.
 Not tested yet.
 
 ## GNU/Linux
-Installing libraries is a lot more easier, also *dirent.h* actually works as intended. To get the SDL devel libs under Ubuntu using apt-get, just type
+Installing libraries is a lot more easier, also *dirent.h* actually works as intended. To get SDL devel libs under Ubuntu using apt-get, just type
 ```
 sudo apt-get install libsdl2*
 ```
-Under different distros you need different commands, but you already know that. Compilation should be easy now, just run the make script (not an actual makefile, just a shell script) with an 'm' or 'f' param. Uses g++.
+Under different distros and using different package managers you need different commands, but in that case I'm sure you already know that. Compilation should be easy now, just run the make script (not an actual makefile, just a shell script) with an 'm' or 'f' param. Uses g++.
 
 ## macOS
 Not tested yet

@@ -10,6 +10,7 @@ WholeScreenGUI::WholeScreenGUI(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp
 	headerSize = h / 10;
 	headerT = Global::resourceHandler->getATexture(TT::GUI, "guiheader");
 	headerText = "";
+	isRenderableWhenNotOwnedByPlayer = true;
 }
 
 WholeScreenGUI::WholeScreenGUI(SDL_Rect dimensionRect) : WholeScreenGUI(dimensionRect.x, dimensionRect.y, dimensionRect.w, dimensionRect.h) {}
@@ -71,21 +72,45 @@ int WholeScreenGUI::getHeaderSize() {
 	return headerSize;
 }
 
+bool WholeScreenGUI::getIsRenderableWhenNotOwnedByPlayer() {
+	return isRenderableWhenNotOwnedByPlayer;
+}
+
 void WholeScreenGUI::setHeaderText(std::string newHeaderText) {
 	headerText = newHeaderText;
 }
 
-void WholeScreenGUI::handleMousePressEvent(int xp, int yp) {
+void WholeScreenGUI::setIsRenderableWhenNotOwnedByPlayer(bool newIsRenderableWhenNotOwnedByPlayer) {
+	isRenderableWhenNotOwnedByPlayer = newIsRenderableWhenNotOwnedByPlayer;
+}
+
+void WholeScreenGUI::handleLeftClickEvent(int xp, int yp) {
 	//Events are passed to parts
 	for (unsigned int i = 0; i < parts.size(); i++) {
 		if (parts[i]->contains(xp, yp)) {
-			parts[i]->handleMousePressEvent(xp, yp);
+			parts[i]->handleLeftClickEvent(xp, yp);
 			break;
 		}
 	}
 	for (unsigned int i = 0; i < tempParts.size(); i++) {
 		if (tempParts[i]->contains(xp, yp)) {
-			tempParts[i]->handleMousePressEvent(xp, yp);
+			tempParts[i]->handleLeftClickEvent(xp, yp);
+			break;
+		}
+	}
+}
+
+void WholeScreenGUI::handleRightClickEvent(int xp, int yp) {
+	//Events are passed to parts
+	for (unsigned int i = 0; i < parts.size(); i++) {
+		if (parts[i]->contains(xp, yp)) {
+			parts[i]->handleRightClickEvent(xp, yp);
+			break;
+		}
+	}
+	for (unsigned int i = 0; i < tempParts.size(); i++) {
+		if (tempParts[i]->contains(xp, yp)) {
+			tempParts[i]->handleRightClickEvent(xp, yp);
 			break;
 		}
 	}

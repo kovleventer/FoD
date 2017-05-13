@@ -29,9 +29,11 @@ void InteractiveGUI::render() {
 	chooserText->render(destinationRect);
 	
 	for (unsigned int i = 0; i < parts.size(); i++) {
-		parts[i].first->render();
-		if (i == currentPartIndex) {
-			parts[i].second->render();
+		if (parts[i].second->getIsRenderableWhenNotOwnedByPlayer() || dynamic_cast<Player*>(parent->getOwner()) != NULL) {
+			parts[i].first->render();
+			if (i == currentPartIndex) {
+				parts[i].second->render();
+			}
 		}
 	}
 }
@@ -44,8 +46,36 @@ int InteractiveGUI::getPadding() {
 	return padding;
 }
 
+unsigned int InteractiveGUI::getCurrentPartIndex() {
+	return currentPartIndex;
+}
+
+unsigned int InteractiveGUI::getPartCount() {
+	return parts.size();
+}
+
+WholeScreenGUI* InteractiveGUI::getPart(unsigned int index) {
+	//NULL checking
+	if (parts.size() > index) {
+		return parts[index].second;
+	}
+	return NULL;
+}
+
+WholeScreenGUI* InteractiveGUI::getCurrentPart() {
+	return getPart(currentPartIndex);
+}
+
 SDL_Rect InteractiveGUI::getRemainingDim() {
 	return {x + partChooserWidth, y, w - partChooserWidth, h};
+}
+
+InteractiveWorldObject* InteractiveGUI::getParent() {
+	return parent;
+}
+
+void InteractiveGUI::setParent(InteractiveWorldObject* newParent) {
+	parent = newParent;
 }
 
 void InteractiveGUI::addPart(std::pair<std::string, WholeScreenGUI*> newPart) {
@@ -56,7 +86,7 @@ void InteractiveGUI::addPart(std::pair<std::string, WholeScreenGUI*> newPart) {
 	parts.push_back({currentButton, newPart.second});
 }
 
-void InteractiveGUI::handleMousePressEvent(int xp, int yp) {
+void InteractiveGUI::handleLeftClickEvent(int xp, int yp) {
 	if (partChooserWidth + x > xp) {
 		for (unsigned int i = 0; i < parts.size(); i++) {
 			if (parts[i].first->contains(xp, yp)) {
@@ -65,7 +95,20 @@ void InteractiveGUI::handleMousePressEvent(int xp, int yp) {
 			}
 		}
 	} else {
-		parts[currentPartIndex].second->handleMousePressEvent(xp, yp);
+		parts[currentPartIndex].second->handleLeftClickEvent(xp, yp);
+	}
+}
+
+void InteractiveGUI::handleRightClickEvent(int xp, int yp) {
+	if (partChooserWidth + x > xp) {
+		for (unsigned int i = 0; i < parts.size(); i++) {
+			if (parts[i].first->contains(xp, yp)) {
+				currentPartIndex = i;
+				break;
+			}
+		}
+	} else {
+		parts[currentPartIndex].second->handleRightClickEvent(xp, yp);
 	}
 }
 
@@ -78,51 +121,6 @@ void InteractiveGUI::handleMouseWheelEvent(bool up) {
 }
 
 // Specialized parts begins here
-
-TestGUIPart::TestGUIPart(InteractiveGUI* parent) : WholeScreenGUI(parent->getRemainingDim()) {
-	addPart(Global::player->getInventory());
-	ItemBuyingMenu* tempIBM = new ItemBuyingMenu(Global::player->getInventory()->getItemInfo()->getDimensionRect());
-	tempIBM->addItem(Global::itemHandler->getItem("sword"));
-	tempIBM->addItem(Global::itemHandler->getItem("sickle"));
-	tempIBM->addItem(Global::itemHandler->getItem("shield"));
-	tempIBM->addItem(Global::itemHandler->getItem("mshield1"));
-	tempIBM->addItem(Global::itemHandler->getItem("mshield2"));
-	tempIBM->addItem(Global::itemHandler->getItem("bow"));
-	ItemInfo* tempII = new ItemInfo(tempIBM->getX(), tempIBM->getY() + tempIBM->getH(), tempIBM->getW(), tempIBM->getH());
-	tempIBM->setItemInfo(tempII);
-	ItemCheckoutMenu* tempICM = new ItemCheckoutMenu(tempII->getX() - tempII->getW(), tempII->getY(), tempII->getW(), tempII->getH());
-	tempIBM->setItemCheckoutMenu(tempICM);
-	tempICM->setItemBuyingMenu(tempIBM);
-	
-	addTempPart(tempIBM);
-	addTempPart(tempII);
-	addTempPart(tempICM);
-}
-
-TestGUIPart2::TestGUIPart2(InteractiveGUI* parent) : WholeScreenGUI(parent->getRemainingDim()) {
-	addPart(Global::player->getArmy());
-	UnitBuyingMenu* tempUBM = new UnitBuyingMenu(Global::player->getInventory()->getX(), Global::player->getInventory()->getY(),
-												 Global::player->getInventory()->getW() * 2, Global::player->getInventory()->getH());
-	tempUBM->addUnit(Global::unitHandler->getUnit("Bowman", 1));
-	tempUBM->addUnit(Global::unitHandler->getUnit("Bowman", 1));
-	tempUBM->addUnit(Global::unitHandler->getUnit("Axeman", 1));
-	tempUBM->addUnit(Global::unitHandler->getUnit("Bowman", 1));
-	tempUBM->addUnit(Global::unitHandler->getUnit("Bowman", 1));
-	tempUBM->addUnit(Global::unitHandler->getUnit("Axeman", 1));
-	tempUBM->addUnit(Global::unitHandler->getUnit("Axeman", 1));
-	
-	addTempPart(tempUBM);
-}
-
-TestGUIPart3::TestGUIPart3(InteractiveGUI* parent) : WholeScreenGUI(parent->getRemainingDim()) {
-	addPart(Global::player->getArmy());
-	Garrison* tempG = new Garrison(Global::player->getArmy()->getX(),
-								   parent->getY() + headerSize,
-								   Global::player->getArmy()->getW(),
-								   Global::player->getArmy()->getY() - parent->getY() - headerSize);
-	tempG->getArmy()->addUnit(Global::unitHandler->getUnit("Bowman", 1), UnitAddingPreference::FRONTROWFIRST);
-	addTempPart(tempG);
-}
 
 ItemBuyingMenu::ItemBuyingMenu(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp, wp, hp) {
 	numberOfDisplayableItems = 5;
@@ -156,7 +154,6 @@ void ItemBuyingMenu::render() {
 		
 		//Rendering current item if possible
 		Item* currentRenderedItem = getItem(i + currentItemPosition);
-		int currentItemPrice = getItemPrice(i + currentItemPosition);
 		if (currentRenderedItem != NULL) {
 			//Rendering the item itself
 			SDL_Rect itemDestionationRect = destinationRect;
@@ -177,7 +174,7 @@ void ItemBuyingMenu::render() {
 			itemNameText->render(itemDestionationRect);
 			
 			//Rendering item price
-			ATexture* itemPriceText = Global::resourceHandler->getTextTexture(std::to_string(currentItemPrice), Global::resourceHandler->colors["whole-header"]);
+			ATexture* itemPriceText = Global::resourceHandler->getTextTexture(std::to_string(currentRenderedItem->getPrice()), Global::resourceHandler->colors["whole-header"]);
 			d = itemPriceText->getDimensions();
 			d *= fontSize;
 			d /= Global::defaultFontSize;
@@ -190,26 +187,24 @@ void ItemBuyingMenu::render() {
 }
 
 Item* ItemBuyingMenu::getItem(unsigned int index) {
+	//NULL checking
 	if (index < itemsToSell.size()) {
-		return itemsToSell[index].first;
+		return itemsToSell[index];
 	}
 	return NULL;
 }
 
-int ItemBuyingMenu::getItemPrice(unsigned int index) {
-	if (index < itemsToSell.size()) {
-		return itemsToSell[index].second;
-	}
-	return 0;
-}
-
 void ItemBuyingMenu::addItem(Item* itemToAdd) {
-	itemsToSell.push_back({itemToAdd, 5});
+	itemsToSell.push_back(itemToAdd);
 }
 
 void ItemBuyingMenu::removeCurrentItem() {
 	itemsToSell.erase(itemsToSell.begin() + selectedItemPosition);
 	selectedItemPosition = 0;
+}
+
+void ItemBuyingMenu::setItemList(std::vector<Item*> newList) {
+	itemsToSell = newList;
 }
 
 int ItemBuyingMenu::getFontSize() {
@@ -240,11 +235,10 @@ void ItemBuyingMenu::setItemCheckoutMenu(ItemCheckoutMenu* newItemCheckoutMenu) 
 	itemCheckoutMenu = newItemCheckoutMenu;
 }
 
-void ItemBuyingMenu::handleMousePressEvent(int xp, int yp) {
+void ItemBuyingMenu::handleLeftClickEvent(int xp, int yp) {
 	selectedItemPosition = (yp - y) / itemSlotHeight + currentItemPosition;
 	itemInfo->setItem(getItem(selectedItemPosition));
 	itemCheckoutMenu->setCurrentItemToBuy(getItem(selectedItemPosition));
-	itemCheckoutMenu->setItemToBuyPrice(getItemPrice(selectedItemPosition));
 }
 
 void ItemBuyingMenu::handleMouseWheelEvent(bool up) {
@@ -268,8 +262,6 @@ ItemCheckoutMenu::ItemCheckoutMenu(int xp, int yp, int wp, int hp) : BasicGUI(xp
 	fontSize = 30;
 	currentItemToBuy = NULL;
 	currentItemToSell = NULL;
-	itemToBuyPrice = 0;
-	itemToSellPrice = 10;
 	buyButton = new Button(x + w - horizontalPadding - rowHeight,
 							y + verticalPadding, rowHeight, rowHeight);
 	buyButton->setText("Buy");
@@ -293,6 +285,8 @@ void ItemCheckoutMenu::render() {
 	//Rendering background
 	bgText->render(destinationRect);
 	
+	int itemToBuyPrice, itemToSellPrice;
+	
 	//Rendering item to buy
 	destinationRect.x += horizontalPadding;
 	destinationRect.y += verticalPadding;
@@ -300,6 +294,7 @@ void ItemCheckoutMenu::render() {
 	destinationRect.h = rowHeight;
 	if (currentItemToBuy != NULL) {
 		currentItemToBuy->render(destinationRect, true);
+		itemToBuyPrice = currentItemToBuy->getPrice();
 	}
 	
 	//Rendering gold icon
@@ -310,6 +305,7 @@ void ItemCheckoutMenu::render() {
 	destinationRect.y += 2 * verticalPadding + rowHeight;
 	if (currentItemToSell != NULL) {
 		currentItemToSell->render(destinationRect, true);
+		itemToSellPrice = currentItemToSell->getPrice();
 	}
 	
 	Dimension d;
@@ -331,7 +327,7 @@ void ItemCheckoutMenu::render() {
 		itemPriceTextB->render(destinationRect);
 	}
 	
-	ATexture* goldValueText = Global::resourceHandler->getTextTexture(std::to_string(Global::player->getGold()), Global::resourceHandler->colors["whole-header"]);
+	ATexture* goldValueText = Global::resourceHandler->getTextTexture(std::to_string(Global::player->getGold()), Global::resourceHandler->colors["gold"]);
 	d = goldValueText->getDimensions();
 	d *= fontSize;
 	d /= Global::defaultFontSize;
@@ -365,14 +361,6 @@ Item* ItemCheckoutMenu::getCurrentItemToSell() {
 	return currentItemToSell;
 }
 
-int ItemCheckoutMenu::getItemToBuyPrice() {
-	return itemToBuyPrice;
-}
-
-int ItemCheckoutMenu::getItemToSellPrice() {
-	return itemToSellPrice;
-}
-
 int ItemCheckoutMenu::getPaddingH() {
 	return horizontalPadding;
 }
@@ -397,23 +385,16 @@ void ItemCheckoutMenu::setCurrentItemToSell(Item* newItemToSell) {
 	currentItemToSell = newItemToSell;
 }
 
-void ItemCheckoutMenu::setItemToBuyPrice(int newItemToBuyPrice) {
-	itemToBuyPrice = newItemToBuyPrice;
-}
-
-void ItemCheckoutMenu::setItemToSellPrice(int newItemToSellPrice) {
-	itemToSellPrice = newItemToSellPrice;
-}
-
 void ItemCheckoutMenu::setItemBuyingMenu(ItemBuyingMenu* newItemBuyingMenu) {
 	itemBuyingMenu = newItemBuyingMenu;
 }
 
-void ItemCheckoutMenu::handleMousePressEvent(int xp, int yp) {
+void ItemCheckoutMenu::handleLeftClickEvent(int xp, int yp) {
 	//Checing button clicking
 	//NOTE very ugly
 	if (buyButton->contains(xp, yp)) {
 		if (currentItemToBuy != NULL) {
+			int itemToBuyPrice = currentItemToBuy->getPrice();
 			if (Global::player->getGold() >= itemToBuyPrice) {
 				Global::player->takeGold(itemToBuyPrice);
 				Global::player->getInventory()->addItem(currentItemToBuy);
@@ -426,6 +407,7 @@ void ItemCheckoutMenu::handleMousePressEvent(int xp, int yp) {
 	
 	if (sellButton->contains(xp, yp)) {
 		if (currentItemToSell != NULL) {
+			int itemToSellPrice = currentItemToSell->getPrice();
 			Global::player->giveGold(itemToSellPrice);
 			itemToSellPrice = 0;
 			currentItemToSell = NULL;
@@ -463,7 +445,7 @@ UnitBuyingMenu::UnitBuyingMenu(SDL_Rect dimensionRect) : UnitBuyingMenu(dimensio
 UnitBuyingMenu::~UnitBuyingMenu() {
 	//Deleting remaining units
 	for (unsigned int i = 0; i < unitsToSell.size(); i++) {
-		delete unitsToSell[i].first;
+		delete unitsToSell[i];
 	}
 	
 	//Deleting buttons
@@ -484,11 +466,12 @@ void UnitBuyingMenu::render() {
 		destinationRect.w = unitSize;
 		destinationRect.h = unitSize;
 		
-		unitsToSell[i + currentUnitPosition].first->render(destinationRect);
+		unitsToSell[i + currentUnitPosition]->render(destinationRect);
 		
 		buyButtons[i]->render();
 		
-		ATexture* priceText = Global::resourceHandler->getTextTexture(std::to_string(unitsToSell[i + currentUnitPosition].second), Global::resourceHandler->colors["whole-header"]);
+		ATexture* priceText = Global::resourceHandler->getTextTexture(std::to_string(unitsToSell[i + currentUnitPosition]->statsWithItems["price"]),
+																	  Global::resourceHandler->colors["whole-header"]);
 		Dimension d = priceText->getDimensions();
 		d *= fontSize;
 		d /= Global::defaultFontSize;
@@ -504,21 +487,15 @@ void UnitBuyingMenu::render() {
 }
 
 Unit* UnitBuyingMenu::getUnit(unsigned int index) {
+	//NULL checking
 	if (index < unitsToSell.size()) {
-		return unitsToSell[index].first;
+		return unitsToSell[index];
 	}
 	return NULL;
 }
 
-int UnitBuyingMenu::getUnitPrice(unsigned int index) {
-	if (index < unitsToSell.size()) {
-		return unitsToSell[index].second;
-	}
-	return 0;
-}
-
 void UnitBuyingMenu::addUnit(Unit* unitToAdd) {
-	unitsToSell.push_back({unitToAdd, 50});
+	unitsToSell.push_back(unitToAdd);
 	if (unitsToSell.size() <= 5) {
 		recalcPositions();
 	}
@@ -541,20 +518,31 @@ void UnitBuyingMenu::removeUnit(unsigned int index) {
 	}
 }
 
-void UnitBuyingMenu::handleMousePressEvent(int xp, int yp) {
+void UnitBuyingMenu::setUnitList(std::vector<Unit*> newList) {
+	if (unitsToSell.size() == 0) {
+		unitsToSell = newList;
+		recalcPositions();
+	} else {
+		//FIXME handle this issue correctly tom make it work without memleaks
+		std::clog << "Warning: Trying to overwrite non empty unit list." << std::endl;
+	}
+}
+
+void UnitBuyingMenu::handleLeftClickEvent(int xp, int yp) {
 	for (int i = 0; i < visibleUnitCount; i++) {
 		//If we clicked on the buy button
 		if (buyButtons[i]->contains(xp, yp)) {
 			
 			//Price checking
-			if (getUnitPrice(currentUnitPosition + i) <= Global::player->getGold()) {
+			int price = getUnit(currentUnitPosition + i)->statsWithItems["price"];
+			if (price <= Global::player->getGold()) {
 				Unit* unitToAdd = getUnit(currentUnitPosition + i);
 				
 				//We do not purchase the unit if our army is full
 				if (Global::player->getArmy()->addUnit(unitToAdd, UnitAddingPreference::FRONTROWFIRST)) {
 					//TODO maybe different unit adding preferences based on unit type
 					removeUnit(currentUnitPosition + i);
-					Global::player->takeGold(getUnitPrice(currentUnitPosition + i));
+					Global::player->takeGold(price);
 				}
 			}
 			break;
@@ -563,6 +551,7 @@ void UnitBuyingMenu::handleMousePressEvent(int xp, int yp) {
 }
 
 void UnitBuyingMenu::handleMouseWheelEvent(bool up) {
+	//Scrolls the menu to show more units
 	if (unitsToSell.size() > 5) {
 		if (up) {
 			if (currentUnitPosition > 0) {
@@ -591,7 +580,8 @@ void UnitBuyingMenu::recalcPositions() {
 }
 
 Garrison::Garrison(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp, wp, hp) {
-	garrisonArmy = new Army(x, y, w, h, Global::player->getArmy()->getWidth(), Global::player->getArmy()->getHeight(), true);
+	garrisonArmy = NULL;
+	recreateGarrisonArmy();
 }
 
 Garrison::Garrison(SDL_Rect dimensionRect) : Garrison(dimensionRect.x, dimensionRect.y, dimensionRect.w, dimensionRect.h) {}
@@ -608,12 +598,63 @@ Army* Garrison::getArmy() {
 	return garrisonArmy;
 }
 
-void Garrison::handleMousePressEvent(int xp, int yp) {
+void Garrison::recreateGarrisonArmy() {
+	if (garrisonArmy != NULL) {
+		delete garrisonArmy;
+	}
+	garrisonArmy = new Army(x, y, w, h, Global::player->getArmy()->getWidth(), Global::player->getArmy()->getHeight(), true);
+}
+
+void Garrison::handleLeftClickEvent(int xp, int yp) {
 	//Simple passthrough
-	garrisonArmy->handleMousePressEvent(xp, yp);
+	garrisonArmy->handleLeftClickEvent(xp, yp);
 }
 
 void Garrison::handleMouseMotionEvent(int xp, int yp) {
 	//Simple passthrough
 	garrisonArmy->handleMouseMotionEvent(xp, yp);
 }
+
+ItemMarket::ItemMarket(InteractiveGUI* parent) : WholeScreenGUI(parent->getRemainingDim()) {
+	inventory = Global::player->getInventory();
+	itemBuyingMenu = new ItemBuyingMenu(inventory->getItemInfo()->getDimensionRect());
+	itemInfo = new ItemInfo(itemBuyingMenu->getX(), itemBuyingMenu->getY() + itemBuyingMenu->getH(), itemBuyingMenu->getW(), itemBuyingMenu->getH());
+	itemBuyingMenu->setItemInfo(itemInfo);
+	itemCheckoutMenu = new ItemCheckoutMenu(itemInfo->getX() - itemInfo->getW(), itemInfo->getY(), itemInfo->getW(), itemInfo->getH());
+	itemBuyingMenu->setItemCheckoutMenu(itemCheckoutMenu);
+	itemCheckoutMenu->setItemBuyingMenu(itemBuyingMenu);
+	
+	addTempPart(itemBuyingMenu);
+	addTempPart(itemCheckoutMenu);
+	addTempPart(itemInfo);
+	addPart(inventory);
+}
+
+ItemBuyingMenu* ItemMarket::getItemBuyingMenu() {return itemBuyingMenu;}
+ItemCheckoutMenu* ItemMarket::getItemCheckoutMenu() {return itemCheckoutMenu;}
+ItemInfo* ItemMarket::getItemInfo() {return itemInfo;}
+Inventory* ItemMarket::getInventory() {return inventory;}
+
+Barracks::Barracks(InteractiveGUI* parent) : WholeScreenGUI(parent->getRemainingDim()) {
+	army = Global::player->getArmy();
+	unitBuyingMenu = new UnitBuyingMenu(Global::player->getInventory()->getX(), Global::player->getInventory()->getY(),
+												 Global::player->getInventory()->getW() * 2, Global::player->getInventory()->getH());
+	
+	addTempPart(unitBuyingMenu);
+	addPart(army);
+}
+
+UnitBuyingMenu* Barracks::getUnitBuyingMenu() {return unitBuyingMenu;}
+Army* Barracks::getArmy() {return army;}
+
+GarrisonWrapper::GarrisonWrapper(InteractiveGUI* parent) : WholeScreenGUI(parent->getRemainingDim()) {
+	army = Global::player->getArmy();
+	garrison = new Garrison(army->getX(), parent->getY() + headerSize,
+							army->getW(), army->getY() - parent->getY() - headerSize);
+	
+	addTempPart(garrison);
+	addPart(army);
+}
+
+Garrison* GarrisonWrapper::getGarrison() {return garrison;}
+Army* GarrisonWrapper::getArmy() {return army;}

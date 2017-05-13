@@ -53,7 +53,7 @@ enum class ItemType {
  */
 class Item {
 public:
-	Item(std::string n, ItemRarity r, ItemType t);
+	Item(std::string n, ItemRarity r, ItemType t, int p);
 	
 	void generateDescription();
 	
@@ -62,6 +62,7 @@ public:
 	std::vector<std::string> getDescription();
 	ItemRarity getItemRarity();
 	ItemType getItemType();
+	int getPrice();
 	
 	ATexture* texture;
 	
@@ -80,4 +81,6 @@ private:
 	
 	ItemRarity itemRarity;
 	ItemType itemType;
+	
+	int price;
 };
