@@ -213,7 +213,7 @@ void ResourceHandler::loadTerrainImages() {
 	for (unsigned int i = 0; i < directoryNames.size(); i++) {
 		std::vector< std::pair<SDL_Texture*, int> > animationParts;
 		//Gets all files in subdirectory
-		std::vector<std::string> textureNamesInSubdir = FilesystemHandler::getFilesInDir(terrainImagePath + "/" + directoryNames[i]);
+		std::vector<std::string> textureNamesInSubdir = FilesystemHandler::getFilesInDir(terrainImagePath + directoryNames[i]);
 		for (unsigned int j = 0; j < textureNamesInSubdir.size(); j++) {
 			animationParts.push_back({loadTexture(terrainImagePath + directoryNames[i] + "/" + textureNamesInSubdir[j]),
 							/* string to int*/	std::stoi(textureNamesInSubdir[j], NULL)});
@@ -234,7 +234,7 @@ void ResourceHandler::loadWorldObjectImages() {
 	for (unsigned int i = 0; i < directoryNames.size(); i++) {
 		std::vector< std::pair<SDL_Texture*, int> > animationParts;
 		//Gets all files in subdirectory
-		std::vector<std::string> textureNamesInSubdir = FilesystemHandler::getFilesInDir(worldObjectImagePath + "/" + directoryNames[i]);
+		std::vector<std::string> textureNamesInSubdir = FilesystemHandler::getFilesInDir(worldObjectImagePath + directoryNames[i]);
 		for (unsigned int j = 0; j < textureNamesInSubdir.size(); j++) {
 			animationParts.push_back({loadTexture(worldObjectImagePath + directoryNames[i] + "/" + textureNamesInSubdir[j]),
 							/* string to int*/	std::stoi(textureNamesInSubdir[j], NULL)});

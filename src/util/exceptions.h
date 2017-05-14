@@ -7,6 +7,7 @@
  * @author kovlev
  * All classes are inherited from exceptions
  * Their names are self-explanatory hopefully
+ * TODO remove this all; makes no sense
  */
 
 //My exceptions for further use

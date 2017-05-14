@@ -31,82 +31,93 @@ Game::Game(std::string aName, Version version) {
 	
 	Global::ticks = 64;
 	
-	//Redirecting the default clog to file
-	//https://stackoverflow.com/questions/34618916/moving-stdclog-in-source-to-output-file
-	//Gets current time
-	time_t t = time(0);
-	struct tm* now = localtime(&t);
-	std::stringstream logFileName;
-	logFileName << "log/";
-	logFileName << std::put_time(now, "%Y-%m-%d-%H-%M-%S");
-	logFileName << ".log";
-	log.open(logFileName.str());
-	std::clog.rdbuf(log.rdbuf());
-	
-	std::clog << "Version: " << version.toString() << std::endl;
-	
 	try {
-		loadSettings();
+		//Creating log folder
+		FilesystemHandler::createDirectory("log");
 		
-		init();
+		//Redirecting the default clog to file
+		//https://stackoverflow.com/questions/34618916/moving-stdclog-in-source-to-output-file
+		//Gets current time
+		time_t t = time(0);
+		struct tm* now = localtime(&t);
+		std::stringstream logFileName;
+		logFileName << "log/";
+		logFileName << std::put_time(now, "%Y-%m-%d-%H-%M-%S");
+		logFileName << ".log";
+		log.open(logFileName.str());
+		std::clog.rdbuf(log.rdbuf());
 		
-		Global::camera = new Camera();
+		std::clog << "Version: " << version.toString() << std::endl;
 		
-		Global::animationHandler = new AnimationHandler();
-	
-		Global::resourceHandler = new ResourceHandler();
-		Global::resourceHandler->loadAll();
+		try {
+			loadSettings();
+			
+			init();
+			
+			Global::camera = new Camera();
+			
+			Global::animationHandler = new AnimationHandler();
 		
-		Global::audioHandler = new AudioHandler();
+			Global::resourceHandler = new ResourceHandler();
+			Global::resourceHandler->loadAll();
+			
+			Global::audioHandler = new AudioHandler();
+			
+			Global::itemHandler = new ItemHandler();
+			Global::itemHandler->loadAll();
+			
+			Global::unitHandler = new UnitHandler();
+			
+			Global::player = new Player("player", 0, 0);
+			
+			Global::permaGUI = new PermanentGUI();
+			
+			Global::guiHandler = new GUIHandler();
+			
+			//Generate map stuff
+			//NOTE this must run after the media has been loaded
+			Global::map = new Map();
+			Global::minimap->regenerateMinimap();
+			
+			Global::worldObjectHandler = new WorldObjectHandler();
+			Global::worldObjectHandler->loadAll();
+			
+			//This must run after we loaded the world objects but before we loaded the npcs
+			Global::map->createPassabilityMap();
+			
+			Global::npcHandler = new NPCHandler();
+			Global::npcHandler->loadAll();
+			
+			Global::worldObjectHandler->setOwnershipRelations();
+			
+			Global::cursor = new Cursor("impassable");
+			
+			
+			//60 fps (or not)
+			frameID = SDL_AddTimer(1000 / Global::fps, timer, (char*)1);
+			tickID = SDL_AddTimer(1000 / Global::ticks, timer, (char*)2);
+			
+			
+			//Contains a while loop
+			mainLoop();
+			
+			
+			//Deletes all variables
+			cleanup();
+			
+			
+		} catch (std::runtime_error& e) {
+			//Catchng standard errors
+			std::clog << "Fatal error : " << e.what() << std::endl;
+		}
 		
-		Global::itemHandler = new ItemHandler();
-		Global::itemHandler->loadAll();
-		
-		Global::unitHandler = new UnitHandler();
-		
-		Global::player = new Player("player", 0, 0);
-		
-		Global::permaGUI = new PermanentGUI();
-		
-		Global::guiHandler = new GUIHandler();
-		
-		//Generate map stuff
-		//NOTE this must run after the media has been loaded
-		Global::map = new Map();
-		Global::minimap->regenerateMinimap();
-		
-		Global::worldObjectHandler = new WorldObjectHandler();
-		Global::worldObjectHandler->loadAll();
-		
-		//This must run after we loaded the world objects but before we loaded the npcs
-		Global::map->createPassabilityMap();
-		
-		Global::npcHandler = new NPCHandler();
-		Global::npcHandler->loadAll();
-		
-		Global::worldObjectHandler->setOwnershipRelations();
-		
-		Global::cursor = new Cursor("impassable");
-		
-		
-		//60 fps (or not)
-		frameID = SDL_AddTimer(1000 / Global::fps, timer, (char*)1);
-		tickID = SDL_AddTimer(1000 / Global::ticks, timer, (char*)2);
-		
-		
-		//Contains a while loop
-		mainLoop();
-		
-		
-		//Deletes all variables
-		cleanup();
-		
-		
-	} catch (std::runtime_error& e) {
-		std::clog << "Fatal error : " << e.what() << std::endl;
-		return;
+		//Resetting clog
+		log.close();
+		std::clog.rdbuf(NULL);
+	} catch (...) {
+		//Not using the redirected clog since it is not safe this case
+		std::cout << "Logger fatal error or unhandled exception" << std::endl;
 	}
-	
 }
 
 void Game::loadSettings() {
@@ -220,8 +231,11 @@ void Game::init() {
 	
 	//Mixer module opening
 	std::clog << " SDL_MIXER";
-	//TODO maybe use Mix_Init() too, or remove Mix_Quit() 
-	if(Mix_OpenAudio( MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 2048 ) < 0) { 
+	int mixFlags = MIX_INIT_OGG;
+	if((Mix_Init(mixFlags) & mixFlags) != mixFlags) {
+		throw SDLMixerInitError();
+	}
+	if(Mix_OpenAudio( MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 2048 ) < 0) {
 		throw SDLMixerInitError();
 	}
 	
@@ -346,16 +360,13 @@ void Game::cleanup() {
 	SDL_RemoveTimer(tickID);
 	
 	//Quits SDL subsystems
+	Mix_CloseAudio();
 	Mix_Quit();
 	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
 	
 	std::clog << " done" << std::endl;
-	
-	//Resetting clog
-	log.close();
-	std::clog.rdbuf(NULL);
 }
 
 void Game::quit() {

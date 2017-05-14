@@ -12,6 +12,11 @@ ATexture::ATexture(SDL_Texture* staticTexture) {
 }
 
 ATexture::ATexture(std::vector< std::pair<SDL_Texture*, int> > textParts) {
+	if (textParts.size() == 0) {
+		throw std::runtime_error("Error! invalid texture count (0)");
+		return;
+	}
+	
 	textureParts = textParts;
 	sortTextureParts();
 	totalAnimationCycleDuration = textureParts[textureParts.size() - 1].second;
@@ -23,7 +28,7 @@ ATexture::ATexture(std::vector< std::pair<SDL_Texture*, int> > textParts) {
 
 ATexture::ATexture(std::vector<SDL_Texture*> textParts) {
 	if (textParts.size() != 8) {
-		std::clog << "Error! invalid texture count" << std::endl;
+		throw std::runtime_error("Error! invalid texture count (not 8)");
 		return;
 	}
 	

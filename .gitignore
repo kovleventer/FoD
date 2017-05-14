@@ -1,6 +1,8 @@
 #Object folders
 o
 o_win
+*.o
+*.obj
 
 #Possible executables
 FallOfDyrangor
@@ -15,3 +17,7 @@ settings.txt
 #Text editor swaps
 *.kate-swp
 *.swp
+
+#Log files
+log
+*.log
