@@ -13,6 +13,7 @@
 #include "worldobjecthandler.h"
 #include "../map/player.h"
 #include "../gui/popup.h"
+#include "audiohandler.h"
 
 /*!
  * @author kovlev
@@ -55,6 +56,8 @@ Game::Game(std::string aName, Version version) {
 	
 		Global::resourceHandler = new ResourceHandler();
 		Global::resourceHandler->loadAll();
+		
+		Global::audioHandler = new AudioHandler();
 		
 		Global::itemHandler = new ItemHandler();
 		Global::itemHandler->loadAll();
@@ -217,7 +220,8 @@ void Game::init() {
 	
 	//Mixer module opening
 	std::clog << " SDL_MIXER";
-	if(Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0) {
+	//TODO maybe use Mix_Init() too, or remove Mix_Quit() 
+	if(Mix_OpenAudio( MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 2048 ) < 0) { 
 		throw SDLMixerInitError();
 	}
 	
@@ -320,6 +324,8 @@ void Game::cleanup() {
 	Global::unitHandler = NULL;
 	delete Global::itemHandler;
 	Global::itemHandler = NULL;
+	delete Global::audioHandler;
+	Global::audioHandler = NULL;
 	delete Global::resourceHandler;
 	Global::resourceHandler = NULL;
 	delete Global::animationHandler;

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
+#include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_ttf.h>
+#include <SDL_mixer.h>
 #include <map>
 #include <string>
 #include <iterator>
@@ -22,7 +22,7 @@
 
 /*!
  * @enum TT Stands for texturetype
- * Used on texture-getting
+ * Used at texture-getting
  */
 enum class TT {
 	TILE,
@@ -36,12 +36,19 @@ enum class TT {
 	UNIT
 };
 
+
+/*!
+ * @class ResourceHandler responisble for handling textures, fonts, audio and colors
+ */
 class ResourceHandler {
 public:
 	ResourceHandler();
 	~ResourceHandler();
 	
 	void loadAll();
+	
+	
+	//Getters
 	
 	ATexture* getATexture(TT tType, std::string name);
 	
@@ -50,13 +57,13 @@ public:
 	//Clears all rendered text textures thus clearing memory
 	void clearTextTextures();
 	
+	Mix_Chunk* getSound(std::string name);
+	Mix_Music* getMusic(std::string name);
+	
 	
 	//Stores the colors that can be later referenced
+	//TODO use getters if for consistency
 	std::map<std::string, SDL_Color> colors;
-	
-	
-	//NOTE might need better sound and music types
-	std::map<std::string, Mix_Chunk*> sounds;
 private:
 	//***IMAGES***
 	void loadImages();
@@ -101,8 +108,16 @@ private:
 	//***AUDIO***
 	//Loads the given audio files
 	void loadAudio();
-	//This method does the exact Mix_LoadWAV
-	Mix_Chunk* loadSound(std::string path);
+	void loadChunkFiles();
+	void loadMusicFiles();
+	
+	//This method does the exact Mix_LoadWAV or something similar
+	Mix_Chunk* loadChunk(std::string path);
+	Mix_Music* loadMusic(std::string path);
+	
+	//We are storing the audio data in maps
+	std::map<std::string, Mix_Chunk*> chunks;
+	std::map<std::string, Mix_Music*> music;
 	
 	
 	
@@ -119,5 +134,6 @@ private:
 	
 	std::string fontPath;
 	
-	std::string audioPath;
+	std::string chunkPath;
+	std::string musicPath;
 };

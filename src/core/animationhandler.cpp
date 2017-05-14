@@ -25,6 +25,10 @@ void AnimationHandler::nextTick(bool isGameTickToo) {
 		}
 	}
 	
+	if (!Global::audioHandler->isPlayingMusic()) {
+		Global::audioHandler->playMusic("testmusic");
+	}
+	
 	if (allowAnimatingBattle) {
 		Global::guiHandler->getBattle()->setAttackTexturePosition(Global::guiHandler->getBattle()->getAttackTexturePosition() + moveVector);
 	}

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <string>
 #include <map>
 
@@ -18,6 +18,7 @@
 #include "npchandler.h"
 #include "worldobjecthandler.h"
 #include "animationhandler.h"
+#include "audiohandler.h"
 
 /*!
  * @author kovlev
@@ -47,6 +48,7 @@ public:
 	static SDL_Window* window;
 	
 	static ResourceHandler* resourceHandler;
+	static AudioHandler* audioHandler;
 	static ItemHandler* itemHandler;
 	static UnitHandler* unitHandler;
 	static NPCHandler* npcHandler;

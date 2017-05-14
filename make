@@ -18,6 +18,7 @@ SOURCES=(
 	"core/animatabletexture.cpp"
 	"core/unithandler.cpp"
 	"core/itemhandler.cpp"
+	"core/audiohandler.cpp"
 	
 	"gui/permanentgui.cpp"
 	"gui/button.cpp"
@@ -63,8 +64,8 @@ LINKER=(
 	"-lpthread"
 )
 
-FLAGS="-O3 -Wall -std=c++14 -c"
-DEBUGFLAGS="-O0 -g -Wall -std=c++14 -c"
+FLAGS="-O3 -Wall `sdl2-config --cflags` -std=c++14 -c"
+DEBUGFLAGS="-O0 -g -Wall `sdl2-config --cflags` -std=c++14 -c"
 
 if [[ $1 == "R" || $1 == "r" ]]; then
 	if [ -a $EXECUTABLE ]; then

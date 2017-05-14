@@ -58,6 +58,7 @@ void NPC::updateNPCPosition() {
 
 void NPC::activate() {
 	if (enemy) {
+		Global::audioHandler->playSoundEffect("test");
 		Battle* battle = new Battle(this);
 		Global::player->setState(PlayerState::BATTLING);
 		std::thread t([battle] {

@@ -20,6 +20,7 @@ SDL_Renderer* Global::renderer = NULL;
 SDL_Window* Global::window = NULL;
 
 ResourceHandler* Global::resourceHandler = NULL;
+AudioHandler* Global::audioHandler = NULL;
 ItemHandler* Global::itemHandler = NULL;
 UnitHandler* Global::unitHandler = NULL;
 NPCHandler* Global::npcHandler = NULL;

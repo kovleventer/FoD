@@ -20,7 +20,8 @@ ResourceHandler::ResourceHandler() {
 	
 	fontPath = "data/MerriweatherSans-Regular.ttf";
 	
-	audioPath = "data/audio/";
+	chunkPath = "data/audio/sound/";
+	musicPath = "data/audio/music/";
 }
 
 ResourceHandler::~ResourceHandler() {
@@ -70,15 +71,22 @@ ResourceHandler::~ResourceHandler() {
 	}
 	unitTextures.erase(unitTextures.begin(), unitTextures.end());
 	
+	
 	clearTextTextures();
 	
 	TTF_CloseFont(font);
 	
+	
 	//Free all the sounds
-	for(std::map<std::string, Mix_Chunk*>::const_iterator it = sounds.begin(); it != sounds.end(); ++it) {
+	for(std::map<std::string, Mix_Chunk*>::const_iterator it = chunks.begin(); it != chunks.end(); ++it) {
 		Mix_FreeChunk(it->second);
 	}
-	sounds.erase(sounds.begin(), sounds.end());
+	chunks.erase(chunks.begin(), chunks.end());
+	
+	for(std::map<std::string, Mix_Music*>::const_iterator it = music.begin(); it != music.end(); ++it) {
+		Mix_FreeMusic(it->second);
+	}
+	music.erase(music.begin(), music.end());
 }
 
 void ResourceHandler::loadAll() {
@@ -165,6 +173,20 @@ void ResourceHandler::clearTextTextures() {
 		delete it->second;
 	}
 	renderedTexts.erase(renderedTexts.begin(), renderedTexts.end());
+}
+
+Mix_Chunk* ResourceHandler::getSound(std::string name) {
+	if (chunks.find(name) == chunks.end()) {
+		throw MediaNotFoundError(name);
+	}
+	return chunks[name];
+}
+
+Mix_Music* ResourceHandler::getMusic(std::string name) {
+	if (music.find(name) == music.end()) {
+		throw MediaNotFoundError(name);
+	}
+	return music[name];
 }
 
 void ResourceHandler::loadImages() {
@@ -326,19 +348,41 @@ void ResourceHandler::loadColors() {
 }
 
 void ResourceHandler::loadAudio() {
-	//http://lazyfoo.net/tutorials/SDL/21_sound_effects_and_music/index.php
-	std::vector<std::string> soundNames = {"test"};
+	loadChunkFiles();
+	loadMusicFiles();
+}
+
+void ResourceHandler::loadChunkFiles() {
+	std::vector<std::string> chunkNames = FilesystemHandler::getFilesInDir(chunkPath);
 	
-	for (unsigned int i = 0; i < soundNames.size(); i++) {
-		sounds[soundNames[i]] = loadSound(audioPath + soundNames[i] + ".wav");
+	for (unsigned int i = 0; i < chunkNames.size(); i++) {
+		chunks[FilesystemHandler::removeExtension(chunkNames[i])] = loadChunk(chunkPath + chunkNames[i]);
 	}
 }
 
-Mix_Chunk* ResourceHandler::loadSound(std::string path) {
+void ResourceHandler::loadMusicFiles() {
+	std::vector<std::string> musicNames = FilesystemHandler::getFilesInDir(musicPath);
+	
+	for (unsigned int i = 0; i < musicNames.size(); i++) {
+		music[FilesystemHandler::removeExtension(musicNames[i])] = loadMusic(musicPath + musicNames[i]);
+	}
+}
+
+Mix_Chunk* ResourceHandler::loadChunk(std::string path) {
 	//LoadWAV needs a c-type string (char*)
+	//TODO add support for other formats
 	Mix_Chunk* newChunk = Mix_LoadWAV(path.c_str());
 	if (newChunk == NULL) {
 		throw MediaNotFoundError(path);
 	}
 	return newChunk;
+}
+
+Mix_Music* ResourceHandler::loadMusic(std::string path) {
+	//LoadWAV needs a c-type string (char*)
+	Mix_Music* newMusic = Mix_LoadMUS(path.c_str());
+	if (newMusic == NULL) {
+		throw MediaNotFoundError(path);
+	}
+	return newMusic;
 }

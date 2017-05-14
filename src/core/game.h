@@ -1,9 +1,9 @@
 #pragma once
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
+#include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_ttf.h>
+#include <SDL_mixer.h>
 #include <iostream>
 #include <map>
 #include <stdexcept>
@@ -58,5 +58,6 @@ private:
 	//Redirects the clog to a file
 	std::ofstream log;
 	
+	//Do we ned to generate settings or there is an existing file? 
 	bool generateDefaultSettings;
 };
