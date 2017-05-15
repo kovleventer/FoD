@@ -3,7 +3,6 @@
 /*!
  * @author kovlev
  */
-//TODO check for unicode support and possibly add it
 
 std::vector<std::string> FilesystemHandler::getFilesInDir(std::string path) {
 	//The list which we are going to return
@@ -15,11 +14,23 @@ std::vector<std::string> FilesystemHandler::getFilesInDir(std::string path) {
 	HANDLE hFind;
 	WIN32_FIND_DATA data;
 	
+	#ifdef UNICODE
+	hFind = FindFirstFile(toLPCWSTR(toWindowsPath(path).c_str()), &data);
+	#else
 	hFind = FindFirstFile(toWindowsPath(path).c_str(), &data);
+	#endif
 	if (hFind != INVALID_HANDLE_VALUE) {
 		do {
 			if (data.cFileName[0] != '.') {
-				std::string entryName = data.cFileName;
+				//Magical code snippet which works
+				#ifdef UNICODE
+				using convert_typeX = std::codecvt_utf8<wchar_t>;
+				std::wstring_convert<convert_typeX, wchar_t> converterX;
+				std::string entryName = converterX.to_bytes(std::wstring(data.cFileName));
+				#else
+				std::string entryName = std::string(data.cFileName);
+				#endif
+				
 				if (!(data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
 					//Does not check for specific files. It assumes everything is a file which is not a directory
 					fileList.push_back(entryName);
@@ -56,7 +67,7 @@ std::vector<std::string> FilesystemHandler::getFilesInDir(std::string path) {
 		}
 		closedir(directory);
 	} else {
-		 throw FilesystemError();
+		 throw std::runtime_error("Filesystem error");
 	}
 	
 #endif
@@ -74,11 +85,23 @@ std::vector<std::string> FilesystemHandler::getDirsInDir(std::string path) {
 	HANDLE hFind;
 	WIN32_FIND_DATA data;
 	
+	#ifdef UNICODE
+	hFind = FindFirstFile(toLPCWSTR(toWindowsPath(path).c_str()), &data);
+	#else
 	hFind = FindFirstFile(toWindowsPath(path).c_str(), &data);
+	#endif
 	if (hFind != INVALID_HANDLE_VALUE) {
 		do {
 			if (data.cFileName[0] != '.') {
-				std::string entryName = data.cFileName;
+				//Magical code snippet which works
+				#ifdef UNICODE
+				using convert_typeX = std::codecvt_utf8<wchar_t>;
+				std::wstring_convert<convert_typeX, wchar_t> converterX;
+				std::string entryName = converterX.to_bytes(std::wstring(data.cFileName));
+				#else
+				std::string entryName = std::string(data.cFileName);
+				#endif
+				
 				if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 					dirList.push_back(entryName);
 				}
@@ -114,7 +137,7 @@ std::vector<std::string> FilesystemHandler::getDirsInDir(std::string path) {
 		}
 		closedir(directory);
 	} else {
-		 throw FilesystemError();
+		 throw std::runtime_error("Filesystem error");
 	}
 	
 #endif
@@ -133,11 +156,23 @@ std::pair< std::vector<std::string>, std::vector<std::string> > FilesystemHandle
 	HANDLE hFind;
 	WIN32_FIND_DATA data;
 	
+	#ifdef UNICODE
+	hFind = FindFirstFile(toLPCWSTR(toWindowsPath(path).c_str()), &data);
+	#else
 	hFind = FindFirstFile(toWindowsPath(path).c_str(), &data);
+	#endif
 	if (hFind != INVALID_HANDLE_VALUE) {
 		do {
 			if (data.cFileName[0] != '.') {
+				//Magical code snippet which works
+				#ifdef UNICODE
+				using convert_typeX = std::codecvt_utf8<wchar_t>;
+				std::wstring_convert<convert_typeX, wchar_t> converterX;
+				std::string entryName = converterX.to_bytes(std::wstring(data.cFileName));
+				#else
 				std::string entryName = std::string(data.cFileName);
+				#endif
+				
 				if (data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 					directoryList.push_back(entryName);
 				} else {
@@ -174,7 +209,7 @@ std::pair< std::vector<std::string>, std::vector<std::string> > FilesystemHandle
 		}
 		closedir(directory);
 	} else {
-		 throw FilesystemError();
+		 throw std::runtime_error("Filesystem error");
 	}
 	
 #endif
@@ -203,7 +238,12 @@ std::string FilesystemHandler::getExtension(std::string filename) {
 void FilesystemHandler::createDirectory(std::string path) {
 #if (defined(WIN32) || defined(_WIN32) ||defined (__WIN32__))
 	//Windows implementation
-	if (!(CreateDirectory(path.c_str(), NULL) || ERROR_ALREADY_EXISTS == GetLastError())) {
+	#ifdef UNICODE
+	bool result = CreateDirectory(toLPCWSTR(path.c_str()), NULL);
+	#else
+	bool result = CreateDirectory(path.c_str(), NULL);
+	#endif
+	if (!(result || ERROR_ALREADY_EXISTS == GetLastError())) {
 		throw std::runtime_error("File creation unsuccessful");
 	}
 #else
@@ -223,4 +263,13 @@ std::string FilesystemHandler::toWindowsPath(std::string path) {
 		return path.append("/*");
 	}
 }
+
+#ifdef UNICODE
+wchar_t* FilesystemHandler::toLPCWSTR(const char* charArray) {
+	//https://stackoverflow.com/questions/19715144/how-to-convert-char-to-lpcwstr
+	wchar_t* wString = new wchar_t[4096];
+	MultiByteToWideChar(CP_ACP, 0, charArray, -1, wString, 4096);
+	return wString;
+}
+#endif
 #endif

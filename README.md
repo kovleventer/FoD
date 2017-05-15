@@ -23,13 +23,11 @@ When you got all these, you can compile it with the *winmake.bat* script. Data a
 1. Download and install a gcc compiler. I personally use [this](http://tdm-gcc.tdragon.net/) due to the pthread support. You can get either the 32 or the 64 bit version.
 2. Download the SDL development libraries ([SDL][SDL], [SDL_image][SDL_image], [SDL_mixer][SDL_mixer], [SDL_ttf][SDL_ttf]). You are going to need the mingw ones.
 3. Extract the downloaded files into your compiler. The source folder depends on the architecture, while the destination is always C:/TDM-GCC/mingw32 (sometimes there is a prefix before mingw). Either way, the folder structures (include, lib, (maybe share or bin)) should match. The .h files must not be in the SDL2 subdirectory, since the includation changed.
-5. Clone this project. Use git clone, or download as zip, it does not matter.
-6. Run winmake.bat with an argument ('32' or '64') for compilation. To add arguments, you likely need to have a cmd window opened here (shift-right click helps).
-7. Once compilation is done, you can check the exe in build/. To make things work, you need to:
-
-⋅⋅* Move SDL .dlls (and the other needed ones, such as zlib or libpng) to the same directory as the exe. Be careful not to mix 32 and 64 bit dlls and executables, my [script](test/windows_arch_checker.py) helps in integrity checking.
-
-⋅⋅* Move the log and data folders to the exe's directory.
+4. Clone this project. Use git clone, or download as zip, it does not matter.
+5. Run winmake.bat with an argument ('32' or '64') for compilation. To add arguments, you likely need to have a cmd window opened here (shift-right click helps).
+6. Once compilation is done, you can check the exe in build/. To make things work, you need to:
+	* Move SDL .dlls (and the other needed ones, such as zlib or libpng) to the same directory as the exe. Be careful not to mix 32 and 64 bit dlls and executables, my [script](test/windows_arch_checker.py) helps in integrity checking.
+	* Move the log and data folders to the exe's directory.
 
 The game should run now.
 

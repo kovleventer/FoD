@@ -35,9 +35,11 @@ public:
 	
 	//Getters
 	std::string getText();
+	int getFontSize();
 	
 	//Setters
 	void setText(std::string newText);
+	void setFontSize(int newFontSize);
 	
 	//Callback function
 	void click();
@@ -47,5 +49,9 @@ public:
 private:
 	eventFunction functionPointer;
 	
+	//The string to display on button
 	std::string text;
+	
+	//The text's fontsize
+	int fontSize;
 };

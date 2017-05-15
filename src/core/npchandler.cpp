@@ -30,7 +30,6 @@ void NPCHandler::loadAll() {
 	
 	for (unsigned int i = 0; i < npcNames.size(); i++) {
 		file.open(basePath + npcNames[i], std::ios::in);
-		//TODO update this
 		//File pattern
 		//Name
 		//Texture Name
@@ -38,6 +37,7 @@ void NPCHandler::loadAll() {
 		//Armys unit unit levels
 		//Armys unit hps lost
 		//Armys unit xp gained
+		//4*10 rectangle containig unit inventory as quoted strings
 		//Number of items (items listed with "")
 		//Gold
 		// a [b c (a times)]

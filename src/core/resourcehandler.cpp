@@ -1,7 +1,6 @@
 #include "resourcehandler.h"
 
 #include "global.h"
-#include "../util/exceptions.h"
 
 /*!
  * @author kovlev
@@ -100,47 +99,47 @@ ATexture* ResourceHandler::getATexture(TT tType, std::string name) {
 	switch(tType) {
 		case TT::TILE:
 			if (tileTextures.find(name) == tileTextures.end()) {
-				throw MediaNotFoundError(name);
+				throw std::runtime_error("Image data missing: " + name);
 			}
 			return tileTextures[name];
 		case TT::WORLDOBJECT:
 			if (worldObjectTextures.find(name) == worldObjectTextures.end()) {
-				throw MediaNotFoundError(name);
+				throw std::runtime_error("Image data missing: " + name);
 			}
 			return worldObjectTextures[name];
 		case TT::CURSOR:
 			if (cursorTextures.find(name) == cursorTextures.end()) {
-				throw MediaNotFoundError(name);
+				throw std::runtime_error("Image data missing: " + name);
 			}
 			return cursorTextures[name];
 		case TT::PATH:
 			if (pathTextures.find(name) == pathTextures.end()) {
-				throw MediaNotFoundError(name);
+				throw std::runtime_error("Image data missing: " + name);
 			}
 			return pathTextures[name];
 		case TT::NPC:
 			if (npcTextures.find(name) == npcTextures.end()) {
-				throw MediaNotFoundError(name);
+				throw std::runtime_error("Image data missing: " + name);
 			}
 			return npcTextures[name];
 		case TT::GUI:
 			if (guiTextures.find(name) == guiTextures.end()) {
-				throw MediaNotFoundError(name);
+				throw std::runtime_error("Image data missing: " + name);
 			}
 			return guiTextures[name];
 		case TT::ITEM:
 			if (itemTextures.find(name) == itemTextures.end()) {
-				throw MediaNotFoundError(name);
+				throw std::runtime_error("Image data missing: " + name);
 			}
 			return itemTextures[name];
 		case TT::ITRAIN:
 			if (itemRarityIndicatorTextures.find(name) == itemRarityIndicatorTextures.end()) {
-				throw MediaNotFoundError(name);
+				throw std::runtime_error("Image data missing: " + name);
 			}
 			return itemRarityIndicatorTextures[name];
 		case TT::UNIT:
 			if (unitTextures.find(name) == unitTextures.end()) {
-				throw MediaNotFoundError(name);
+				throw std::runtime_error("Image data missing: " + name);
 			}
 			return unitTextures[name];
 	}
@@ -177,14 +176,14 @@ void ResourceHandler::clearTextTextures() {
 
 Mix_Chunk* ResourceHandler::getSound(std::string name) {
 	if (chunks.find(name) == chunks.end()) {
-		throw MediaNotFoundError(name);
+		throw std::runtime_error("Audio data missing: " + name);
 	}
 	return chunks[name];
 }
 
 Mix_Music* ResourceHandler::getMusic(std::string name) {
 	if (music.find(name) == music.end()) {
-		throw MediaNotFoundError(name);
+		throw std::runtime_error("Audio data missing: " + name);
 	}
 	return music[name];
 }
@@ -319,7 +318,7 @@ SDL_Texture* ResourceHandler::loadTexture(std::string path) {
 	
 	newTexture = SDL_CreateTextureFromSurface(Global::renderer, loadedSurface);
 	if (newTexture == NULL) {
-		throw TextureConvertError();
+		std::clog << "Texture conversion failed at " << path << std::endl;
 	}
 	
 	SDL_FreeSurface(loadedSurface);
@@ -330,7 +329,7 @@ SDL_Texture* ResourceHandler::loadTexture(std::string path) {
 void ResourceHandler::loadFont() {
 	font = TTF_OpenFont(fontPath.c_str(), Global::defaultFontSize);
 	if (font == NULL) {
-		throw MediaNotFoundError(fontPath);
+		throw std::runtime_error("Font data missing: " + fontPath);
 	}
 }
 
@@ -373,7 +372,7 @@ Mix_Chunk* ResourceHandler::loadChunk(std::string path) {
 	//TODO add support for other formats
 	Mix_Chunk* newChunk = Mix_LoadWAV(path.c_str());
 	if (newChunk == NULL) {
-		throw MediaNotFoundError(path);
+		std::clog << "Error: Audio loading failed at " << path << std::endl;
 	}
 	return newChunk;
 }
@@ -382,7 +381,7 @@ Mix_Music* ResourceHandler::loadMusic(std::string path) {
 	//LoadWAV needs a c-type string (char*)
 	Mix_Music* newMusic = Mix_LoadMUS(path.c_str());
 	if (newMusic == NULL) {
-		throw MediaNotFoundError(path);
+		std::clog << "Error: Audio loading failed at " << path << std::endl;
 	}
 	return newMusic;
 }

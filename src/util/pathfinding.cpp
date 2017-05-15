@@ -69,7 +69,10 @@ std::vector<Point> Pathfinding::getNeighbours(Point p) {
 	//NOTE it does not check if the tiles are passable or not
 	std::vector<Point> neighbours;
 	
-	//ALERT segfault if the gameboard's width or height is only 1 tile
+	//Would be segfault if the gameboard's width or height is only 1 tile
+	if (Global::gameBoardWidth == 1 || Global::gameBoardHeight == 1) {
+		throw std::runtime_error("Game board dimension can not be 1");
+	}
 	if (p.getX() == 0) {
 		if (p.getY() == 0) {
 			//Top left corner

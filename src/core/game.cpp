@@ -5,7 +5,6 @@
 #include "itemhandler.h"
 #include "unithandler.h"
 #include "global.h"
-#include "../util/exceptions.h"
 #include "userinputhandler.h"
 #include "../map/camera.h"
 #include "npchandler.h"
@@ -143,19 +142,19 @@ void Game::loadSettings() {
 	if (settings.find("width") != settings.end()) {
 		Global::screenWidth = settings["width"];
 	} else {
-		throw SettingsLoadError();
+		throw std::runtime_error("Settings loading failed");
 	}
 	
 	if (settings.find("height") != settings.end()) {
 		Global::screenHeight = settings["height"];
 	} else {
-		throw SettingsLoadError();
+		throw std::runtime_error("Settings loading failed");
 	}
 	
 	if (settings.find("fps") != settings.end()) {
 		Global::fps = settings["fps"];
 	} else {
-		throw SettingsLoadError();
+		throw std::runtime_error("Settings loading failed");
 	}
 }
 
@@ -165,7 +164,7 @@ void Game::init() {
 	//SDL init
 	std::clog << " SDL";
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-		throw SDLInitError();
+		throw std::runtime_error("SDL Init failed");
 	}
 	
 	if (generateDefaultSettings) {
@@ -196,7 +195,7 @@ void Game::init() {
 							Global::screenHeight,
 							0);
 	if (Global::window == NULL) {
-		throw SDLWindowError();
+		throw std::runtime_error("SDL window creation failed");
 	}
 	SDL_SetWindowFullscreen(Global::window, SDL_WINDOW_FULLSCREEN);
 	
@@ -207,7 +206,7 @@ void Game::init() {
 	//Renderer init
 	Global::renderer = SDL_CreateRenderer(Global::window, -1, SDL_RENDERER_ACCELERATED);
 	if (Global::renderer == NULL) {
-		throw SDLRendererError();
+		throw std::runtime_error("SDL renderer creation failed");
 	}
 	SDL_SetRenderDrawColor(Global::renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	//Setting blending mode
@@ -218,14 +217,14 @@ void Game::init() {
 	std::clog << " SDL_IMG";
 	int imgFlags = IMG_INIT_PNG;
 	if( !( IMG_Init( imgFlags ) & imgFlags ) ) {
-		throw SDLImageInitError();
+		throw std::runtime_error("SDL_image init failed");
 	}
 	
 	
 	//TTF module init
 	std::clog << " TTF";
 	if (TTF_Init() == -1) {
-		throw TTFInitError();
+		throw std::runtime_error("SDL_ttf init failed");
 	}
 	
 	
@@ -233,10 +232,10 @@ void Game::init() {
 	std::clog << " SDL_MIXER";
 	int mixFlags = MIX_INIT_OGG;
 	if((Mix_Init(mixFlags) & mixFlags) != mixFlags) {
-		throw SDLMixerInitError();
+		throw std::runtime_error("SDL_mixer init failed");
 	}
 	if(Mix_OpenAudio( MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 2048 ) < 0) {
-		throw SDLMixerInitError();
+		throw std::runtime_error("Mixer open audio failed");
 	}
 	
 	

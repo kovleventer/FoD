@@ -523,8 +523,13 @@ void UnitBuyingMenu::setUnitList(std::vector<Unit*> newList) {
 		unitsToSell = newList;
 		recalcPositions();
 	} else {
-		//FIXME handle this issue correctly tom make it work without memleaks
-		std::clog << "Warning: Trying to overwrite non empty unit list." << std::endl;
+		//When we are overwriting units
+		std::clog << "Warning: Trying to overwrite non empty unit list. Overwritten units are deleted." << std::endl;
+		for (unsigned int i = 0; i < unitsToSell.size(); i++) {
+			delete unitsToSell[i];
+		}
+		unitsToSell = newList;
+		recalcPositions();
 	}
 }
 
@@ -539,8 +544,8 @@ void UnitBuyingMenu::handleLeftClickEvent(int xp, int yp) {
 				Unit* unitToAdd = getUnit(currentUnitPosition + i);
 				
 				//We do not purchase the unit if our army is full
-				if (Global::player->getArmy()->addUnit(unitToAdd, UnitAddingPreference::FRONTROWFIRST)) {
-					//TODO maybe different unit adding preferences based on unit type
+				UnitAddingPreference whereToAdd = unitToAdd->isMelee() ? UnitAddingPreference::FRONTROWFIRST : UnitAddingPreference::BACKROWFIRST;
+				if (Global::player->getArmy()->addUnit(unitToAdd, whereToAdd)) {
 					removeUnit(currentUnitPosition + i);
 					Global::player->takeGold(price);
 				}

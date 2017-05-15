@@ -47,7 +47,6 @@ SOURCES=(
 	"player/abstractunit.cpp"
 	"player/unitinventoryhandler.cpp"
 	
-	"util/exceptions.cpp"
 	"util/pathfinding.cpp"
 	"util/circularpath.cpp"
 	"util/point.cpp"

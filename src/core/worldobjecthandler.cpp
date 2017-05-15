@@ -65,6 +65,8 @@ void WorldObjectHandler::loadWorldObjects() {
 		
 		WorldObject* loaded = new WorldObject(textureName, posX, posY);
 		loaded->setScale(scale);
+		//Error checking for position
+		if (Global::map->getTile(posX, posY) == NULL) throw std::runtime_error("Invalid world object position (" + worldObjectNames[i] + ", (" + std::to_string(posX) + ";" + std::to_string(posY) + "))");
 		Global::map->getTile(posX, posY)->backgroundEntities.push_back(loaded);
 		worldObjects.push_back(loaded);
 		
@@ -109,6 +111,8 @@ void WorldObjectHandler::loadImpassableWorldObjects() {
 		
 		ImpassableWorldObject* loaded = new ImpassableWorldObject(textureName, posX, posY, impassableTiles);
 		loaded->setScale(scale);
+		//Error checking for position
+		if (Global::map->getTile(posX, posY) == NULL) throw std::runtime_error("Invalid world object position (" + impassableNames[i] + ", (" + std::to_string(posX) + ";" + std::to_string(posY) + "))");
 		Global::map->getTile(posX, posY)->entities.push_back(loaded);
 		impassables.push_back(loaded);
 		
@@ -280,6 +284,8 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 		}
 		
 		loaded->setScale(scale);
+		//Error checking for position
+		if (Global::map->getTile(posX, posY) == NULL) throw std::runtime_error("Invalid world object position (" + interactiveNames[i] + ", (" + std::to_string(posX) + ";" + std::to_string(posY) + "))");
 		Global::map->getTile(posX, posY)->entities.push_back(loaded);
 		interactives.push_back(loaded);
 	}

@@ -12,6 +12,7 @@ Button::Button(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp, wp, hp) {
 	texture = Global::resourceHandler->getATexture(TT::GUI, "button");
 	functionPointer = NULL;
 	text = "";
+	fontSize = 16;
 }
 
 void Button::render() {
@@ -22,9 +23,7 @@ void Button::render() {
 	if (text != "") {
 		ATexture* textTexture = Global::resourceHandler->getTextTexture(Text(text, Global::resourceHandler->colors["button-text"]));
 		Dimension d = textTexture->getDimensions();
-		//TODO change this
-		int textSize = 16;
-		d *= textSize;
+		d *= fontSize;
 		d /= Global::defaultFontSize;
 		//Setting rectangle
 		destinationRect.x = x + w / 2 - d.W() / 2;
@@ -39,8 +38,16 @@ std::string Button::getText() {
 	return text;
 }
 
+int Button::getFontSize() {
+	return fontSize;
+}
+
 void Button::setText(std::string newText) {
 	text = newText;
+}
+
+void Button::setFontSize(int newFontSize) {
+	fontSize = newFontSize;
 }
 
 void Button::click() {
