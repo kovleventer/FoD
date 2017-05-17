@@ -29,7 +29,7 @@ In the case of different distros that are using different package managers, you 
 6. To start the compilation process, run *winmake.bat* with an argument ('32' or '64', depending on which architecture you want to compile it for). In order to run it with said arguments, you will most likely require a cmd window that is pointing here (which you can easily achieve by shift-right clicking in the explorer window, and then choosing "Open Command Line here").
 7. If everything succeeds, a .exe file will be generated in build/. In order to run it, you will have to do the followings:
 	* Copy the required .dlls (*SDL2.dll*, *SDL2_image.dll*, *SDL2_mixer.dll*, *SDL2_ttf.dll* as well as the other needed ones, such as zlib and libpng) to the same directory as the executable is in. If you accidentally mixed up x86 and x64 .dlls, you can use [this script](test/windows_arch_checker.py) which helps with integrity checking.
-	* Move the *log* and *data* folders to the directory the executable is in.
+	* Move the *data* folder to the directory the executable is in.
 8. You should be able to run the game now.
 
 ### Visual studio 2017 using Microsoft's C++ compiler
@@ -61,3 +61,5 @@ Not tested yet
 
 # Notes and specs
 This section will be added later.
+
+[//]: # (authors: kovlev, Bobobot)

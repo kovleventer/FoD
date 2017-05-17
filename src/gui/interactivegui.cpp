@@ -544,8 +544,7 @@ void UnitBuyingMenu::handleLeftClickEvent(int xp, int yp) {
 				Unit* unitToAdd = getUnit(currentUnitPosition + i);
 				
 				//We do not purchase the unit if our army is full
-				UnitAddingPreference whereToAdd = unitToAdd->isMelee() ? UnitAddingPreference::FRONTROWFIRST : UnitAddingPreference::BACKROWFIRST;
-				if (Global::player->getArmy()->addUnit(unitToAdd, whereToAdd)) {
+				if (Global::player->getArmy()->addUnit(unitToAdd)) {
 					removeUnit(currentUnitPosition + i);
 					Global::player->takeGold(price);
 				}

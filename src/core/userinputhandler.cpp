@@ -14,6 +14,14 @@ void UserInputHandler::handleKeyPressEvent(SDL_Event e) {
 	//Useful:
 	//https://wiki.libsdl.org/SDL_Keycode
 	switch (e.key.keysym.sym) {
+		case SDLK_F4:
+			//Press F4 for auido muting/unmuting
+			if (Global::audioHandler->isSoundMuted() || Global::audioHandler->isMusicMuted()) {
+				Global::audioHandler->unmuteAll();
+			} else {
+				Global::audioHandler->muteAll();
+			}
+			break;
 		case SDLK_F5:
 			//Press F5 for displaying game ticks
 			Global::permaGUI->setRenderDebugTickInfo(!Global::permaGUI->getRenderDebugTickInfo());

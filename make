@@ -19,6 +19,7 @@ SOURCES=(
 	"core/unithandler.cpp"
 	"core/itemhandler.cpp"
 	"core/audiohandler.cpp"
+	"core/questhandler.cpp"
 	
 	"gui/permanentgui.cpp"
 	"gui/button.cpp"
@@ -46,6 +47,7 @@ SOURCES=(
 	"player/unitinfo.cpp"
 	"player/abstractunit.cpp"
 	"player/unitinventoryhandler.cpp"
+	"player/quest.cpp"
 	
 	"util/pathfinding.cpp"
 	"util/circularpath.cpp"

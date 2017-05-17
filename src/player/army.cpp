@@ -201,6 +201,18 @@ Unit* Army::getUnit(Point p) {
 	return getUnit(p.getX(), p.getY());
 }
 
+bool Army::addUnit(Unit* unitToAdd) {
+	if (unitToAdd != NULL) {
+		if (unitToAdd->isMelee()) {
+			return addUnit(unitToAdd, UnitAddingPreference::FRONTROWFIRST);
+		} else {
+			return addUnit(unitToAdd, UnitAddingPreference::BACKROWFIRST);
+		}
+	} else {
+		return false;
+	}
+}
+
 bool Army::addUnit(Unit* unitToAdd, UnitAddingPreference unitAddingPreference) {
 	//We try to add th unit to the given preferred place
 	//If that is impossible we are searching for other solutions

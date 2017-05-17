@@ -60,4 +60,12 @@ private:
 	
 	//Do we ned to generate settings or there is an existing file? 
 	bool generateDefaultSettings;
+	
+	//Initializer boundaries
+	const static int MIN_WIDTH;
+	const static int MAX_WIDTH;
+	const static int MIN_HEIGHT;
+	const static int MAX_HEIGHT;
+	const static int MIN_FPS;
+	const static int MAX_FPS;
 };

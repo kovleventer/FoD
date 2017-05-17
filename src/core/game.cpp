@@ -49,6 +49,8 @@ Game::Game(std::string aName, Version version) {
 		std::clog << "Version: " << version.toString() << std::endl;
 		
 		try {
+			Global::audioHandler = new AudioHandler(16);
+			
 			loadSettings();
 			
 			init();
@@ -59,8 +61,6 @@ Game::Game(std::string aName, Version version) {
 		
 			Global::resourceHandler = new ResourceHandler();
 			Global::resourceHandler->loadAll();
-			
-			Global::audioHandler = new AudioHandler();
 			
 			Global::itemHandler = new ItemHandler();
 			Global::itemHandler->loadAll();
@@ -81,7 +81,7 @@ Game::Game(std::string aName, Version version) {
 			Global::worldObjectHandler = new WorldObjectHandler();
 			Global::worldObjectHandler->loadAll();
 			
-			//This must run after we loaded the world objects but before we loaded the npcs
+			//This must run after we load the world objects but before we load the npcs
 			Global::map->createPassabilityMap();
 			
 			Global::npcHandler = new NPCHandler();
@@ -132,30 +132,73 @@ void Game::loadSettings() {
 	
 	std::string key;
 	int value;
+	//Reading settings form file
 	while (file >> key && file >> value) {
 		settings[key] = value;
 	}
 	file.close();
 	
-	//TODO check degeneracies in width & height
-	
 	if (settings.find("width") != settings.end()) {
-		Global::screenWidth = settings["width"];
+		if (settings["width"] < MIN_WIDTH || settings["width"] > MAX_WIDTH) {
+			std::clog << "Invalid width: " << settings["width"] << " Regenerating settings.txt." << std::endl;
+			generateDefaultSettings = true;
+		} else {
+			Global::screenWidth = settings["width"];
+		}
 	} else {
-		throw std::runtime_error("Settings loading failed");
+		std::clog << "Error: Settings loading failed: no width value. Regenerating settings.txt." << std::endl;
+		generateDefaultSettings = true;
 	}
 	
 	if (settings.find("height") != settings.end()) {
-		Global::screenHeight = settings["height"];
+		if (settings["height"] < MIN_HEIGHT || settings["height"] > MAX_HEIGHT) {
+			std::clog << "Invalid height: " << settings["height"] << " Regenerating settings.txt." << std::endl;
+			generateDefaultSettings = true;
+		} else {
+			Global::screenHeight = settings["height"];
+		}
 	} else {
-		throw std::runtime_error("Settings loading failed");
+		std::clog << "Error: Settings loading failed: no height value. Regenerating settings.txt." << std::endl;
+		generateDefaultSettings = true;
 	}
 	
 	if (settings.find("fps") != settings.end()) {
-		Global::fps = settings["fps"];
+		if (settings["fps"] < MIN_FPS || settings["fps"] > MAX_FPS) {
+			std::clog << "Invalid fps: " << settings["fps"] << " Regenerating settings.txt." << std::endl;
+			generateDefaultSettings = true;
+		} else {
+			Global::fps = settings["fps"];
+		}
 	} else {
-		throw std::runtime_error("Settings loading failed");
+		std::clog << "Error: Settings loading failed: no fps value. Regenerating settings.txt." << std::endl;
+		generateDefaultSettings = true;
 	}
+	
+	if (settings.find("music_volume") != settings.end()) {
+		if (settings["music_volume"] < 0 || settings["music_volume"] > MIX_MAX_VOLUME) {
+			std::clog << "Invalid music volume: " << settings["music_volume"] << " Regenerating settings.txt." << std::endl;
+			generateDefaultSettings = true;
+		} else {
+			Global::audioHandler->setMusicVolume(settings["music_volume"]);
+		}
+	} else {
+		std::clog << "Error: Settings loading failed: no music_volume value. Regenerating settings.txt." << std::endl;
+		generateDefaultSettings = true;
+	}
+	
+	if (settings.find("sound_volume") != settings.end()) {
+		if (settings["sound_volume"] < 0 || settings["sound_volume"] > MIX_MAX_VOLUME) {
+			std::clog << "Invalid sound volume: " << settings["music_volume"] << " Regenerating settings.txt." << std::endl;
+			generateDefaultSettings = true;
+		} else {
+			Global::audioHandler->setSoundVolume(settings["sound_volume"]);
+		}
+	} else {
+		std::clog << "Error: Settings loading failed: no sound_volume value. Regenerating settings.txt." << std::endl;
+		generateDefaultSettings = true;
+	}
+	
+	
 }
 
 void Game::init() {
@@ -164,7 +207,7 @@ void Game::init() {
 	//SDL init
 	std::clog << " SDL";
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-		throw std::runtime_error("SDL Init failed");
+		throw std::runtime_error("SDL Init failed: " + std::string(SDL_GetError()));
 	}
 	
 	if (generateDefaultSettings) {
@@ -174,6 +217,8 @@ void Game::init() {
 		Global::screenWidth = displayRect.w;
 		Global::screenHeight = displayRect.h;
 		Global::fps = 60;
+		Global::audioHandler->setSoundVolume(MIX_MAX_VOLUME);
+		Global::audioHandler->setMusicVolume(MIX_MAX_VOLUME);
 		std::fstream file;
 		file.open("settings.txt", std::ios::out);
 		if (!file.good()) {
@@ -183,6 +228,8 @@ void Game::init() {
 		file << "width" << "\t" << Global::screenWidth << std::endl;
 		file << "height" << "\t" << Global::screenHeight << std::endl;
 		file << "fps" << "\t" << Global::fps << std::endl;
+		file << "music_volume" << "\t" << Global::audioHandler->getMusicVolume() << std::endl;
+		file << "sound_volume" << "\t" << Global::audioHandler->getSoundVolume() << std::endl;
 		
 		file.close();
 	}
@@ -195,7 +242,7 @@ void Game::init() {
 							Global::screenHeight,
 							0);
 	if (Global::window == NULL) {
-		throw std::runtime_error("SDL window creation failed");
+		throw std::runtime_error("SDL window creation failed: " + std::string(SDL_GetError()));
 	}
 	SDL_SetWindowFullscreen(Global::window, SDL_WINDOW_FULLSCREEN);
 	
@@ -206,7 +253,7 @@ void Game::init() {
 	//Renderer init
 	Global::renderer = SDL_CreateRenderer(Global::window, -1, SDL_RENDERER_ACCELERATED);
 	if (Global::renderer == NULL) {
-		throw std::runtime_error("SDL renderer creation failed");
+		throw std::runtime_error("SDL renderer creation failed: " + std::string(SDL_GetError()));
 	}
 	SDL_SetRenderDrawColor(Global::renderer, 0xFF, 0xFF, 0xFF, 0xFF);
 	//Setting blending mode
@@ -217,14 +264,14 @@ void Game::init() {
 	std::clog << " SDL_IMG";
 	int imgFlags = IMG_INIT_PNG;
 	if( !( IMG_Init( imgFlags ) & imgFlags ) ) {
-		throw std::runtime_error("SDL_image init failed");
+		throw std::runtime_error("SDL_image init failed: " + std::string(IMG_GetError()));
 	}
 	
 	
 	//TTF module init
 	std::clog << " TTF";
 	if (TTF_Init() == -1) {
-		throw std::runtime_error("SDL_ttf init failed");
+		throw std::runtime_error("SDL_ttf init failed: " + std::string(TTF_GetError()));
 	}
 	
 	
@@ -232,10 +279,7 @@ void Game::init() {
 	std::clog << " SDL_MIXER";
 	int mixFlags = MIX_INIT_OGG;
 	if((Mix_Init(mixFlags) & mixFlags) != mixFlags) {
-		throw std::runtime_error("SDL_mixer init failed");
-	}
-	if(Mix_OpenAudio( MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 2048 ) < 0) {
-		throw std::runtime_error("Mixer open audio failed");
+		throw std::runtime_error("SDL_mixer init failed: " + std::string(Mix_GetError()));
 	}
 	
 	
@@ -359,7 +403,6 @@ void Game::cleanup() {
 	SDL_RemoveTimer(tickID);
 	
 	//Quits SDL subsystems
-	Mix_CloseAudio();
 	Mix_Quit();
 	TTF_Quit();
 	IMG_Quit();
@@ -373,3 +416,10 @@ void Game::quit() {
 	ev.type = SDL_QUIT;
 	SDL_PushEvent(&ev);
 }
+
+const int Game::MIN_WIDTH = 200;
+const int Game::MAX_WIDTH = 8000;
+const int Game::MIN_HEIGHT = 200;
+const int Game::MAX_HEIGHT = 8000;
+const int Game::MIN_FPS = 10;
+const int Game::MAX_FPS = 500;

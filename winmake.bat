@@ -21,7 +21,11 @@ For /f %%a in ('dir /b /s "src\*.cpp"') do (
 		if /I "%1" == "64" (
 			g++ -m64 !flags! -o !start!!folder!!file! -c %%a
 		) else (
-			g++ !flags! -o !start!!folder!!file! -c %%a
+			if /I "%processor_architecture%" == "x86" (
+				g++ -m32 !flags! -o !start!!folder!!file! -c %%a
+			) else (
+				g++ -m64 !flags! -o !start!!folder!!file! -c %%a
+			)
 		)
 	)
 )

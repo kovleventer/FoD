@@ -1,0 +1,108 @@
+#pragma once
+
+#include <string>
+#include <vector>
+#include <iostream>
+
+#include "../map/npc.h"
+#include "../map/worldobject.h"
+#include "item.h"
+
+/*!
+ * @author kovlev
+ */
+
+
+/*!
+ * @enum QuestTrigger
+ * Which way is the quest triggered (started)
+ */
+enum class QuestTrigger {
+	TALK_WITH_NPC,
+	STRUCTURE_CAPTURE,
+	TIME,
+	QUEST_COMLETION
+};
+
+
+/*!
+ * @enum QuestObjective
+ * What needs to be done
+ */
+enum class QuestObjective {
+	TALK_WITH_NPC,
+	KILL_NPC,
+	VISIT_STRUCTURE
+};
+
+
+/*!
+ * @enum QuestState
+ * The state of the quest
+ */
+enum class QuestState {
+	NOT_YET_STARTED,
+	IN_PROGRESS,
+	COMPLETED
+};
+
+
+/*!
+ * @class Quest
+ * Represents a quest
+ * A quest is triggerable, has different objectives and rewards
+ */
+class Quest {
+public:
+	Quest(std::string n, std::string d, QuestTrigger qt, QuestObjective qo);
+	
+	//Getters
+	std::string getName();
+	std::string getDescription();
+	QuestTrigger getQuestTrigger();
+	QuestObjective getQuestObjective();
+	QuestState getQuestState();
+	NPC* getQTTalkTarget();
+	InteractiveWorldObject* getQTStructTarget();
+	int getQTTimeInTicks();
+	Quest* getQTPreviousQuest();
+	NPC* getQOTalkTarget();
+	NPC* getQOKillTarget();
+	InteractiveWorldObject* getQOStructTarget();
+	int getRewardGold();
+	unsigned int getRewardItemsSize();
+	Item* getRewardItem(unsigned int index);
+	
+	//Setters
+	void setQuestState(QuestState newQuestState);
+	void setQTTalkTarget(NPC* newQTTalkTarget);
+	void setQTStructTarget(InteractiveWorldObject* newQTStructTarget);
+	void setQTTimeInTicks(int newQTTimeInTicks);
+	void setQTPreviousQuest(Quest* newQTPreviousQuest);
+	void setQOTalkTarget(NPC* newQOTalkTarget);
+	void setQOKillTarget(NPC* newQOKillTarget);
+	void setQOStructTarget(InteractiveWorldObject* newQOStructTarget);
+	void setRewardGold(int newRewardGold);
+	void addRewardItem(Item* rewardItemToAdd);
+private:
+	std::string name;
+	std::string description;
+	
+	QuestTrigger questTrigger;
+	QuestObjective questObjective;
+	QuestState questState;
+	
+	//Different quest trigger informations
+	NPC* qtTalkTarget;
+	InteractiveWorldObject* qtStructTarget;
+	int qtTimeInTicks;
+	Quest* qtPreviousQuest;
+	
+	//Different quest objective informations
+	NPC* qoTalkTarget;
+	NPC* qoKillTarget;
+	InteractiveWorldObject* qoStructTarget;
+	
+	int rewardGold;
+	std::vector<Item*> rewardItems;
+};

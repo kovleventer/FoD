@@ -81,6 +81,7 @@ public:
 	Unit* getUnit(int x, int y);
 	Unit* getUnit(Point p);
 	
+	bool addUnit(Unit* unitToAdd);
 	bool addUnit(Unit* unitToAdd, UnitAddingPreference unitAddingPreference);
 	
 	void setUnit(int x, int y, Unit* unitToSet);
