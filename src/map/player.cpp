@@ -13,7 +13,7 @@ Player::Player(std::string text, Point pos) : Character(pos) {
 	hasPlannedPath = false;
 	state = PlayerState::STANDING;
 	texture = Global::resourceHandler->getATexture(TT::NPC, text);
-	speed = 0.1 / Global::fps * 60;
+	speed = 0.1 / Global::ticks * 64;
 	tileProgress = 0;
 	follow = NULL;
 	inventory = NULL;
@@ -27,6 +27,7 @@ Player::~Player() {
 	delete army;
 	delete inventory->getItemInfo();
 	delete inventory;
+	delete questLister;
 }
 
 void Player::updatePlayerPosition() {
@@ -89,6 +90,10 @@ NPC* Player::getFollow() {
 	return follow;
 }
 
+QuestLister* Player::getQuestLister() {
+	return questLister;
+}
+
 void Player::setHasPlannedPath(bool newHasPlannedPath) {
 	hasPlannedPath = newHasPlannedPath;
 }
@@ -115,6 +120,10 @@ void Player::setInventory(Inventory* newInventory) {
 
 void Player::setArmy(Army* newArmy) {
 	army = newArmy;
+}
+
+void Player::setQuestLister(QuestLister* newQuestLister) {
+	questLister = newQuestLister;
 }
 
 void Player::clearPath() {

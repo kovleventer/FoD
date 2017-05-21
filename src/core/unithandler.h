@@ -38,8 +38,8 @@ private:
 	//Unit templates for generating real units
 	std::map<std::string, AbstractUnit*> baseUnits;
 	
-	std::map<std::string, UnitType> translaterSIT;
-	std::map<UnitType, std::string> translaterITS;
+	std::map<std::string, UnitType> translaterSUT;
+	std::map<UnitType, std::string> translaterUTS;
 	
 	double levelMultipliers;
 	double levelMultipliersForEXP;

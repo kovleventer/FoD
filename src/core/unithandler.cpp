@@ -61,11 +61,11 @@ Unit* UnitHandler::getUnit(std::string name, int level) {
 }
 
 UnitType UnitHandler::translateT(std::string unitTypeString) {
-	return translaterSIT[unitTypeString];
+	return translaterSUT[unitTypeString];
 }
 
 std::string UnitHandler::translateT(UnitType unitType) {
-	return translaterITS[unitType];
+	return translaterUTS[unitType];
 }
 
 void UnitHandler::loadUnitData() {
@@ -128,13 +128,13 @@ void UnitHandler::loadUnitData() {
 
 void UnitHandler::translaterInit() {
 	//NOTE not compatible with each other
-	translaterSIT["FIGHTER"] = UnitType::FIGHTER;
-	translaterSIT["ARCHER"] = UnitType::ARCHER;
-	translaterSIT["MAGE"] = UnitType::MAGE;
-	translaterSIT["OTHER"] = UnitType::OTHER;
+	translaterSUT["FIGHTER"] = UnitType::FIGHTER;
+	translaterSUT["ARCHER"] = UnitType::ARCHER;
+	translaterSUT["MAGE"] = UnitType::MAGE;
+	translaterSUT["OTHER"] = UnitType::OTHER;
 	
-	translaterITS[UnitType::FIGHTER] = "Fighter";
-	translaterITS[UnitType::ARCHER] = "Archer";
-	translaterITS[UnitType::MAGE] = "Mage";
-	translaterITS[UnitType::OTHER] = "Other";
+	translaterUTS[UnitType::FIGHTER] = "Fighter";
+	translaterUTS[UnitType::ARCHER] = "Archer";
+	translaterUTS[UnitType::MAGE] = "Mage";
+	translaterUTS[UnitType::OTHER] = "Other";
 }

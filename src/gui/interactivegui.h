@@ -17,8 +17,6 @@
 
 class InteractiveWorldObject; // Forward declaration
 
-#include "../map/worldobject.h"
-
 /*!
  * @author kovlev
  */
@@ -173,6 +171,9 @@ private:
 	Button* sellButton;
 	
 	ItemBuyingMenu* itemBuyingMenu;
+	
+	//You ain't gonna sell the itemfor the same price as you bougth it
+	double taxRatio;
 };
 
 

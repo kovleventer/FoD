@@ -1,15 +1,20 @@
 #include "quest.h"
 
+#include "../core/global.h"
+#include "../core/questhandler.h"
+#include "../map/npc.h"
+#include "../map/worldobject.h"
+
 /*!
  * @author kovlev
  */
 
-Quest::Quest(std::string n, std::string d, QuestTrigger qt, QuestObjective qo) {
+Quest::Quest(std::string n, std::string d, QuestTrigger qt, QuestObjective qo, QuestState qs) {
 	name = n;
 	description = d;
 	questTrigger = qt;
 	questObjective = qo;
-	questState = QuestState::NOT_YET_STARTED;
+	questState = qs;
 	
 	qtTalkTarget = NULL;
 	qtStructTarget = NULL;
@@ -66,7 +71,7 @@ int Quest::getQTTimeInTicks() {
 }
 
 Quest* Quest::getQTPreviousQuest() {
-	if (questTrigger == QuestTrigger::QUEST_COMLETION) {
+	if (questTrigger == QuestTrigger::QUEST_COMPLETION) {
 		return qtPreviousQuest;
 	}
 	std::clog << "Warning: Tried to access invalid trigger at " << name << std::endl;
@@ -116,66 +121,32 @@ void Quest::setQuestState(QuestState newQuestState) {
 	questState = newQuestState;
 }
 
-void Quest::setQTTalkTarget(NPC* newQTTalkTarget) {
-	if (questTrigger == QuestTrigger::TALK_WITH_NPC) {
-		qtTalkTarget = newQTTalkTarget;
-	} else {
-		std::clog << "Warning: Tried to modify invalid trigger at " << name << std::endl;
-	}
-}
-
-void Quest::setQTStructTarget(InteractiveWorldObject* newQTStructTarget) {
-	if (questTrigger == QuestTrigger::STRUCTURE_CAPTURE) {
-		qtStructTarget = newQTStructTarget;
-	} else {
-		std::clog << "Warning: Tried to modify invalid trigger at " << name << std::endl;
-	}
-}
-
-void Quest::setQTTimeInTicks(int newQTTimeInTicks) {
-	if (questTrigger == QuestTrigger::TIME) {
-		qtTimeInTicks = newQTTimeInTicks;
-	} else {
-		std::clog << "Warning: Tried to modify invalid trigger at " << name << std::endl;
-	}
-}
-
-void Quest::setQTPreviousQuest(Quest* newQTPreviousQuest) {
-	if (questTrigger == QuestTrigger::QUEST_COMLETION) {
-		qtPreviousQuest = newQTPreviousQuest;
-	} else {
-		std::clog << "Warning: Tried to modify invalid trigger at " << name << std::endl;
-	}
-}
-
-void Quest::setQOTalkTarget(NPC* newQOTalkTarget) {
-	if (questObjective == QuestObjective::TALK_WITH_NPC) {
-		qoTalkTarget = newQOTalkTarget;
-	} else {
-		std::clog << "Warning: Tried to modify invalid objective at " << name << std::endl;
-	}
-}
-
-void Quest::setQOKillTarget(NPC* newQOKillTarget) {
-	if (questObjective == QuestObjective::KILL_NPC) {
-		qoKillTarget = newQOKillTarget;
-	} else {
-		std::clog << "Warning: Tried to modify invalid objective at " << name << std::endl;
-	}
-}
-
-void Quest::setQOStructTarget(InteractiveWorldObject* newQOStructTarget) {
-	if (questObjective == QuestObjective::VISIT_STRUCTURE) {
-		qoStructTarget = newQOStructTarget;
-	} else {
-		std::clog << "Warning: Tried to modify invalid objective at " << name << std::endl;
-	}
-}
-
 void Quest::setRewardGold(int newRewardGold) {
 	rewardGold = newRewardGold;
 }
 
 void Quest::addRewardItem(Item* rewardItemToAdd) {
 	rewardItems.push_back(rewardItemToAdd);
+}
+
+void Quest::start() {
+	if (questState == QuestState::NOT_YET_STARTED) {
+		Popup* popup = new Popup(800, 400, PopupType::POPUP_OK);
+		popup->setText(description);
+		Global::guiHandler->addPopup(popup);
+		questState = QuestState::IN_PROGRESS;
+	}
+}
+
+void Quest::complete() {
+	if (questState == QuestState::IN_PROGRESS) {
+		Popup* popup = new Popup(800, 400, PopupType::POPUP_OK);
+		popup->setItemList(rewardItems);
+		Global::guiHandler->addPopup(popup);
+		Global::player->giveGold(rewardGold);
+		for (unsigned int i = 0; i < rewardItems.size(); i++) {
+			Global::player->getInventory()->addItem(rewardItems[i]);
+		}
+		questState = QuestState::COMPLETED;
+	}
 }

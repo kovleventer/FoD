@@ -1,6 +1,7 @@
 #include "interactivegui.h"
 
 #include "../core/global.h"
+#include "../map/worldobject.h"
 
 /*!
  * @author kovlev
@@ -269,6 +270,7 @@ ItemCheckoutMenu::ItemCheckoutMenu(int xp, int yp, int wp, int hp) : BasicGUI(xp
 							y + verticalPadding * 5 + rowHeight * 2, rowHeight, rowHeight);
 	sellButton->setText("Sell");
 	itemBuyingMenu = NULL;
+	taxRatio = 0.9;
 }
 
 ItemCheckoutMenu::ItemCheckoutMenu(SDL_Rect dimensionRect) : ItemCheckoutMenu(dimensionRect.x, dimensionRect.y, dimensionRect.w, dimensionRect.h) {}
@@ -305,7 +307,7 @@ void ItemCheckoutMenu::render() {
 	destinationRect.y += 2 * verticalPadding + rowHeight;
 	if (currentItemToSell != NULL) {
 		currentItemToSell->render(destinationRect, true);
-		itemToSellPrice = currentItemToSell->getPrice();
+		itemToSellPrice = currentItemToSell->getPrice() * taxRatio;
 	}
 	
 	Dimension d;
@@ -407,9 +409,8 @@ void ItemCheckoutMenu::handleLeftClickEvent(int xp, int yp) {
 	
 	if (sellButton->contains(xp, yp)) {
 		if (currentItemToSell != NULL) {
-			int itemToSellPrice = currentItemToSell->getPrice();
+			int itemToSellPrice = currentItemToSell->getPrice() * taxRatio;
 			Global::player->giveGold(itemToSellPrice);
-			itemToSellPrice = 0;
 			currentItemToSell = NULL;
 		}
 		return;
@@ -421,7 +422,7 @@ void ItemCheckoutMenu::handleLeftClickEvent(int xp, int yp) {
 }
 
 UnitBuyingMenu::UnitBuyingMenu(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp, wp, hp) {
-	bgText = Global::resourceHandler->getATexture(TT::GUI, "marketcheckoutbg"); // TODO Change this
+	bgText = Global::resourceHandler->getATexture(TT::GUI, "unitbuyingbg");
 	currentUnitPosition = 0;
 	numberOfDisplayableUnits = Global::player->getArmy()->getWidth();
 	

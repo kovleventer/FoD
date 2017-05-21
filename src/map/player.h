@@ -10,6 +10,7 @@
 #include "../player/inventory.h"
 #include "../player/army.h"
 #include "character.h"
+#include "../player/questdisplay.h"
 
 /*!
  * @author kovlev
@@ -47,6 +48,7 @@ public:
 	std::vector<Point> getPath();
 	int getTileProgress();
 	NPC* getFollow();
+	QuestLister* getQuestLister();
 	
 	//Setters
 	void setHasPlannedPath(bool newHasPlannedPath);
@@ -56,6 +58,7 @@ public:
 	void setFollow(NPC* toFollow);
 	void setInventory(Inventory* newInventory);
 	void setArmy(Army* newArmy);
+	void setQuestLister(QuestLister* newQuestLister);
 	
 	//Clears player path
 	void clearPath();
@@ -72,4 +75,6 @@ private:
 	
 	//Pointer to the NPC, that the player follows
 	NPC* follow;
+	
+	QuestLister* questLister;
 };

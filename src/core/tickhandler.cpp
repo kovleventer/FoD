@@ -1,4 +1,4 @@
-#include "animationhandler.h"
+#include "tickhandler.h"
 
 #include "global.h"
 
@@ -6,15 +6,15 @@
  * @author kovlev
  */
 
-AnimationHandler::AnimationHandler() {
+TickHandler::TickHandler() {
 	totalTicks = 0;
 	gameTicks = 0;
 	allowAnimatingBattle = false;
 }
 
-AnimationHandler::~AnimationHandler() {}
+TickHandler::~TickHandler() {}
 
-void AnimationHandler::nextTick(bool isGameTickToo) {
+void TickHandler::nextTick(bool isGameTickToo) {
 	for (unsigned int i = 0; i < animatedTextures.size(); i++) {
 		int currentRelativeTick = totalTicks % animatedTextures[i]->getAnimCycleDur() == 0 ?
 									animatedTextures[i]->getAnimCycleDur() :
@@ -35,26 +35,27 @@ void AnimationHandler::nextTick(bool isGameTickToo) {
 	
 	totalTicks++;
 	if (isGameTickToo) {
+		//FIXME probably error when more quests exist with the same time value
+		if (!Global::questHandler->qtTimePQ.empty()) {
+			Quest* currentQuest = Global::questHandler->qtTimePQ.top();
+			if (currentQuest->getQTTimeInTicks() == gameTicks) {
+				currentQuest->start();
+				Global::questHandler->qtTimePQ.pop();
+			}
+		}
 		gameTicks++;
-		//Small quest stuff
-		/*if (gameTicks % 10 == 0 && gameTicks >= 100) {
-			Popup* popup = new Popup(800, 400, PopupType::POPUP_OK);
-			popup->setText("Trial version expired");
-			Global::guiHandler->clear();
-			Global::guiHandler->setGUI(popup);
-		}*/
 	}
 }
 
-void AnimationHandler::addAnimatedTexture(ATexture* animText) {
+void TickHandler::addAnimatedTexture(ATexture* animText) {
 	animatedTextures.push_back(animText);
 }
 
-void AnimationHandler::removeAnimatedTexture(ATexture* animText) {
+void TickHandler::removeAnimatedTexture(ATexture* animText) {
 	animatedTextures.erase(std::remove(animatedTextures.begin(), animatedTextures.end(), animText));
 }
 
-void AnimationHandler::animateBattleAction(Point startCoord, Point endCoord) {
+void TickHandler::animateBattleAction(Point startCoord, Point endCoord) {
 	//t = s / v
 	double s = startCoord.distanceTo(endCoord);
 	int v = Global::guiHandler->getBattle()->getAnimSpeed();
@@ -74,10 +75,10 @@ void AnimationHandler::animateBattleAction(Point startCoord, Point endCoord) {
 	allowAnimatingBattle = false;
 }
 
-int AnimationHandler::getTotalTicks() {
+int TickHandler::getTotalTicks() {
 	return totalTicks;
 }
 
-int AnimationHandler::getGameTicks() {
+int TickHandler::getGameTicks() {
 	return gameTicks;
 }

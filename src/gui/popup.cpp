@@ -29,8 +29,6 @@ Popup::Popup(int xp, int yp, int wp, int hp, PopupType type) : BasicGUI(xp, yp, 
 		buttonNO = NULL;
 		buttonYES = NULL;
 	} else if (popupType == PopupType::POPUP_YESNO) {
-		buttonOK = NULL;
-		
 		buttonNO = new Button(
 			x + w - padding * 2 - buttonDimensions.getX() * 2,
 			y + h - padding - buttonDimensions.getY(),
@@ -43,6 +41,8 @@ Popup::Popup(int xp, int yp, int wp, int hp, PopupType type) : BasicGUI(xp, yp, 
 			buttonDimensions.getX(), buttonDimensions.getY()
 		);
 		buttonYES->setText("YES");
+		
+		buttonOK = NULL;
 	}
 }
 
@@ -131,6 +131,10 @@ void Popup::setText(std::string newText) {
 
 void Popup::addItem(Item* itemToAdd) {
 	items.push_back(itemToAdd);
+}
+
+void Popup::setItemList(std::vector<Item*> newItemList) {
+	items = newItemList;
 }
 
 void Popup::handleLeftClickEvent(int xp, int yp) {

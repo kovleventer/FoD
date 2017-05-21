@@ -54,6 +54,7 @@ public:
 	void setPopupType(PopupType newPopupType);
 	void setText(std::string newText);
 	void addItem(Item* itemToAdd);
+	void setItemList(std::vector<Item*> newItemList);
 	
 	//Never use all of them
 	Button* buttonOK;

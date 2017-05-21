@@ -3,6 +3,7 @@
 #include "../core/resourcehandler.h"
 #include "../core/global.h"
 #include "../core/battle.h"
+#include "../player/quest.h"
 
 /*!
  * @author kovlev
@@ -20,20 +21,15 @@ NPC::NPC(std::string text, Point pos) : Character(pos) {
 NPC::NPC(std::string text, std::vector<Point> pathPoints) : Character(pathPoints[0]) {
 	texture = Global::resourceHandler->getATexture(TT::NPC, text);
 	isStanding = false;
-	speed = 0.07 / Global::fps * 60;
+	speed = 0.07 / Global::ticks * 64;
 	temporaryContainer = pathPoints;
 	init();
 }
 
 NPC::~NPC() {
-	//Check is NOT done by the delete operation
-	if (path != NULL)
-		delete path;
-	
-	Global::npcHandler->npcs.erase(std::remove(Global::npcHandler->npcs.begin(), Global::npcHandler->npcs.end(), this));
-	
-	delete army;
-	delete inventory;
+	if (!this->dead) {
+		kill();
+	}
 }
 
 void NPC::updateNPCPosition() {
@@ -57,14 +53,19 @@ void NPC::updateNPCPosition() {
 }
 
 void NPC::activate() {
+	//Handling quests
+	for (unsigned int i = 0; i < questObjectiveTalks.size(); i++) {
+		questObjectiveTalks[i]->complete();
+	}
+	for (unsigned int i = 0; i < questTriggerTalks.size(); i++) {
+		questTriggerTalks[i]->start();
+	}
+	
 	if (enemy) {
 		Global::audioHandler->playSoundEffect("test");
-		Battle* battle = new Battle(this);
+		//The battle handles itself
+		new Battle(this);
 		Global::player->setState(PlayerState::BATTLING);
-		std::thread t([battle] {
-			battle->start();
-		});
-		t.detach();
 	}
 }
 
@@ -84,12 +85,45 @@ bool NPC::isEnemy() {
 	return enemy;
 }
 
+bool NPC::isDead() {
+	return dead;
+}
+
 void NPC::setPath(CircularPath* newPath) {
 	path = newPath;
 }
 
 void NPC::setIsEnemy(bool newIsEnemy) {
 	enemy = newIsEnemy;
+}
+
+void NPC::kill() {
+	for (unsigned int i = 0; i < questObjectiveKills.size(); i++) {
+		questObjectiveKills[i]->complete();
+	}
+	
+	//Check is NOT done by the delete operation
+	if (path != NULL)
+		delete path;
+	
+	Global::npcHandler->npcs.erase(std::remove(Global::npcHandler->npcs.begin(), Global::npcHandler->npcs.end(), this));
+	
+	delete army;
+	delete inventory;
+	
+	dead = true;
+}
+
+void NPC::addQuestTriggerTalk(Quest* questTriggerTalkToAdd) {
+	questTriggerTalks.push_back(questTriggerTalkToAdd);
+}
+
+void NPC::addQuestObjectiveTalk(Quest* questObjectiveTalkToAdd) {
+	questObjectiveTalks.push_back(questObjectiveTalkToAdd);
+}
+
+void NPC::addQuestObjectiveKill(Quest* questObjectiveKillToAdd) {
+	questObjectiveKills.push_back(questObjectiveKillToAdd);
 }
 
 void NPC::init() {
@@ -101,4 +135,5 @@ void NPC::init() {
 	enemy = true;
 	atBackground = false;
 	inventory = new Inventory(20);
+	dead = false;
 }

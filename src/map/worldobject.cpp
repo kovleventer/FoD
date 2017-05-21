@@ -1,6 +1,9 @@
 #include "worldobject.h"
 
 #include "../core/global.h"
+#include "character.h"
+#include "../gui/interactivegui.h"
+#include "../player/quest.h"
 
 /*!
  * @author kovlev
@@ -75,11 +78,15 @@ void InteractiveWorldObject::setName(std::string newName) {
 }
 
 void InteractiveWorldObject::setOwner(Character* newOwner) {
+	for (unsigned int i = 0; i < questTriggerCaptures.size(); i++) {
+		questTriggerCaptures[i]->start();
+	}
+	
 	owner = newOwner;
 }
 
 void InteractiveWorldObject::activate() {
-	//TODO implementation
+	//TODO finish implementation
 	std::cout << name << " (owned by " << owner->getName() << ") activated" << std::endl;
 	if (owner->getName() == "__takeable__") {
 		owner = Global::player;
@@ -88,6 +95,18 @@ void InteractiveWorldObject::activate() {
 	if (dynamic_cast<NPC*>(owner) != NULL && dynamic_cast<NPC*>(owner)->isEnemy()) {
 		std::cout << "Battle with structures is not yet implemented" << std::endl;
 	} else {
+		for (unsigned int i = 0; i < questObjectiveVisits.size(); i++) {
+			questObjectiveVisits[i]->complete();
+		}
+		
 		Global::guiHandler->setGUI(gui);
 	}
+}
+
+void InteractiveWorldObject::addQuestTriggerCapture(Quest* questTriggerCaptureToAdd) {
+	questTriggerCaptures.push_back(questTriggerCaptureToAdd);
+}
+
+void InteractiveWorldObject::addQuestObjectiveVisit(Quest* questObjectiveVisitToAdd) {
+	questObjectiveVisits.push_back(questObjectiveVisitToAdd);
 }

@@ -23,7 +23,7 @@ ATexture::ATexture(std::vector< std::pair<SDL_Texture*, int> > textParts) {
 	textureType = TextureType::ANIMATED;
 	currentIndex = 0;
 	currentTexture = textureParts[currentIndex].first;
-	Global::animationHandler->addAnimatedTexture(this);
+	Global::tickHandler->addAnimatedTexture(this);
 }
 
 ATexture::ATexture(std::vector<SDL_Texture*> textParts) {
@@ -48,7 +48,7 @@ ATexture::~ATexture() {
 			SDL_DestroyTexture(currentTexture);
 			break;
 		case TextureType::ANIMATED:
-			Global::animationHandler->removeAnimatedTexture(this);
+			Global::tickHandler->removeAnimatedTexture(this);
 			for (unsigned int i = 0; i < textureParts.size(); i++) {
 				SDL_DestroyTexture(textureParts[i].first);
 			}

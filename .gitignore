@@ -9,14 +9,16 @@ FallOfDyrangor
 FoD_DEBUG
 *.exe
 *.dll
+*.so
 build
 
 #Settings file
 settings.txt
 
-#Text editor swaps
+#Text editor stuff
 *.kate-swp
 *.swp
+*.kdev4
 
 #Log files
 log

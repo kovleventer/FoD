@@ -37,10 +37,12 @@ public:
 	std::string getHeaderText();
 	int getHeaderSize();
 	bool getIsRenderableWhenNotOwnedByPlayer();
+	bool getBelongsToBattle();
 	
 	//Setters
 	void setHeaderText(std::string newHeaderText);
 	void setIsRenderableWhenNotOwnedByPlayer(bool newIsRenderableWhenNotOwnedByPlayer);
+	void setBelongsToBattle(bool newBelongsToBattle);
 	
 	//The coordinates are NOT based on the GUI's position
 	//0, 0 is at the top left corner of THE SCREEN
@@ -65,4 +67,8 @@ protected:
 	
 	//Only used at interactive rendering
 	bool isRenderableWhenNotOwnedByPlayer;
+	
+	//If it is a battle's gui
+	//We treat it differently on gui rendering
+	bool belongsToBattle;
 };

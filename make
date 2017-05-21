@@ -14,7 +14,7 @@ SOURCES=(
 	"core/battle.cpp"
 	"core/npchandler.cpp"
 	"core/worldobjecthandler.cpp"
-	"core/animationhandler.cpp"
+	"core/tickhandler.cpp"
 	"core/animatabletexture.cpp"
 	"core/unithandler.cpp"
 	"core/itemhandler.cpp"
@@ -48,6 +48,7 @@ SOURCES=(
 	"player/abstractunit.cpp"
 	"player/unitinventoryhandler.cpp"
 	"player/quest.cpp"
+	"player/questdisplay.cpp"
 	
 	"util/pathfinding.cpp"
 	"util/circularpath.cpp"
@@ -173,6 +174,7 @@ elif [[ $1 == "C" || $1 == "c" ]]; then
 	echo "Clearing..."
 	#TODO clearing should handle build folder
 	rm -rf o
+	rm -rf log
 	rm $EXECUTABLE
 	rm $EXECUTABLE_DEBUG
 	echo "Clearing done"

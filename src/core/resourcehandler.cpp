@@ -25,51 +25,15 @@ ResourceHandler::ResourceHandler() {
 
 ResourceHandler::~ResourceHandler() {
 	//Free all the textures
-	for(std::map<std::string, ATexture*>::const_iterator it = tileTextures.begin(); it != tileTextures.end(); ++it) {
-		delete it->second;
-	}
-	tileTextures.erase(tileTextures.begin(), tileTextures.end());
-	
-	for(std::map<std::string, ATexture*>::const_iterator it = worldObjectTextures.begin(); it != worldObjectTextures.end(); ++it) {
-		delete it->second;
-	}
-	worldObjectTextures.erase(worldObjectTextures.begin(), worldObjectTextures.end());
-	
-	for(std::map<std::string, ATexture*>::const_iterator it = cursorTextures.begin(); it != cursorTextures.end(); ++it) {
-		delete it->second;
-	}
-	cursorTextures.erase(cursorTextures.begin(), cursorTextures.end());
-	
-	for(std::map<std::string, ATexture*>::const_iterator it = pathTextures.begin(); it != pathTextures.end(); ++it) {
-		delete it->second;
-	}
-	pathTextures.erase(pathTextures.begin(), pathTextures.end());
-	
-	for(std::map<std::string, ATexture*>::const_iterator it = npcTextures.begin(); it != npcTextures.end(); ++it) {
-		delete it->second;
-	}
-	npcTextures.erase(npcTextures.begin(), npcTextures.end());
-	
-	for(std::map<std::string, ATexture*>::const_iterator it = guiTextures.begin(); it != guiTextures.end(); ++it) {
-		delete it->second;
-	}
-	guiTextures.erase(guiTextures.begin(), guiTextures.end());
-	
-	for(std::map<std::string, ATexture*>::const_iterator it = itemTextures.begin(); it != itemTextures.end(); ++it) {
-		delete it->second;
-	}
-	itemTextures.erase(itemTextures.begin(), itemTextures.end());
-	
-	for(std::map<std::string, ATexture*>::const_iterator it = itemRarityIndicatorTextures.begin(); it != itemRarityIndicatorTextures.end(); ++it) {
-		delete it->second;
-	}
-	itemRarityIndicatorTextures.erase(itemRarityIndicatorTextures.begin(), itemRarityIndicatorTextures.end());
-	
-	for(std::map<std::string, ATexture*>::const_iterator it = unitTextures.begin(); it != unitTextures.end(); ++it) {
-		delete it->second;
-	}
-	unitTextures.erase(unitTextures.begin(), unitTextures.end());
-	
+	stdex::clear_ptr_map(tileTextures);
+	stdex::clear_ptr_map(worldObjectTextures);
+	stdex::clear_ptr_map(cursorTextures);
+	stdex::clear_ptr_map(pathTextures);
+	stdex::clear_ptr_map(npcTextures);
+	stdex::clear_ptr_map(guiTextures);
+	stdex::clear_ptr_map(itemTextures);
+	stdex::clear_ptr_map(itemRarityIndicatorTextures);
+	stdex::clear_ptr_map(unitTextures);
 	
 	clearTextTextures();
 	
@@ -77,12 +41,12 @@ ResourceHandler::~ResourceHandler() {
 	
 	
 	//Free all the sounds
-	for(std::map<std::string, Mix_Chunk*>::const_iterator it = chunks.begin(); it != chunks.end(); ++it) {
+	for(auto it = chunks.begin(); it != chunks.end(); ++it) {
 		Mix_FreeChunk(it->second);
 	}
 	chunks.erase(chunks.begin(), chunks.end());
 	
-	for(std::map<std::string, Mix_Music*>::const_iterator it = music.begin(); it != music.end(); ++it) {
+	for(auto it = music.begin(); it != music.end(); ++it) {
 		Mix_FreeMusic(it->second);
 	}
 	music.erase(music.begin(), music.end());
@@ -168,10 +132,7 @@ ATexture* ResourceHandler::getTextTexture(Text text) {
 }
 
 void ResourceHandler::clearTextTextures() {
-	for(std::map<Text, ATexture*>::const_iterator it = renderedTexts.begin(); it != renderedTexts.end(); ++it) {
-		delete it->second;
-	}
-	renderedTexts.erase(renderedTexts.begin(), renderedTexts.end());
+	stdex::clear_ptr_map(renderedTexts);
 }
 
 Mix_Chunk* ResourceHandler::getSound(std::string name) {

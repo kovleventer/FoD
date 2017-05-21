@@ -11,6 +11,7 @@ WholeScreenGUI::WholeScreenGUI(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp
 	headerT = Global::resourceHandler->getATexture(TT::GUI, "guiheader");
 	headerText = "";
 	isRenderableWhenNotOwnedByPlayer = true;
+	belongsToBattle = false;
 }
 
 WholeScreenGUI::WholeScreenGUI(SDL_Rect dimensionRect) : WholeScreenGUI(dimensionRect.x, dimensionRect.y, dimensionRect.w, dimensionRect.h) {}
@@ -76,12 +77,20 @@ bool WholeScreenGUI::getIsRenderableWhenNotOwnedByPlayer() {
 	return isRenderableWhenNotOwnedByPlayer;
 }
 
+bool WholeScreenGUI::getBelongsToBattle() {
+	return belongsToBattle;
+}
+
 void WholeScreenGUI::setHeaderText(std::string newHeaderText) {
 	headerText = newHeaderText;
 }
 
 void WholeScreenGUI::setIsRenderableWhenNotOwnedByPlayer(bool newIsRenderableWhenNotOwnedByPlayer) {
 	isRenderableWhenNotOwnedByPlayer = newIsRenderableWhenNotOwnedByPlayer;
+}
+
+void WholeScreenGUI::setBelongsToBattle(bool newBelongsToBattle) {
+	belongsToBattle = newBelongsToBattle;
 }
 
 void WholeScreenGUI::handleLeftClickEvent(int xp, int yp) {

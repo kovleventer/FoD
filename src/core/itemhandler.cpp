@@ -14,9 +14,7 @@ ItemHandler::ItemHandler() {
 
 ItemHandler::~ItemHandler() {
 	//Frees all textures
-	for(std::map<std::string, Item*>::const_iterator it = items.begin(); it != items.end(); ++it) {
-		delete it->second;
-	}
+	stdex::clear_ptr_map(items);
 }
 
 void ItemHandler::loadAll() {

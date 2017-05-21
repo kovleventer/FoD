@@ -19,37 +19,11 @@ Battle::Battle(NPC* e) {
 	attackTexture = NULL;
 	attackTexturePosition = Point(0, 0);
 	animSpeed = Global::ticks / 4;
-}
-
-Battle::~Battle() {
-	//Deleting the gui is now safe
-	delete gui;
-	gui = NULL;
 	
-	Global::player->getArmy()->getUnitInfo()->setUnit(NULL);
-}
-
-void Battle::render() {
-	if (this == NULL) {
-		return;
-	}
-	gui->render();
 	
-	if (attackTexture != NULL) {
-		//Setting rectangle
-		SDL_Rect destinationRect;
-		int dimParam = Global::player->getArmy()->getUnitSize();
-		destinationRect.x = attackTexturePosition.getX() - dimParam / 2;
-		destinationRect.y = attackTexturePosition.getY() - dimParam / 2;
-		destinationRect.w = dimParam;
-		destinationRect.h = dimParam;
-		attackTexture->render(destinationRect);
-	}
-}
-
-void Battle::start() {
 	//Intializing the battle
 	gui = new WholeScreenGUI(Global::permaGUI->getDim());
+	gui->setBelongsToBattle(true);
 	gui->addPart(player->getArmy());
 	gui->addPart(enemy->getArmy());
 	gui->addPart(player->getArmy()->getUnitInfo());
@@ -92,7 +66,35 @@ void Battle::start() {
 	
 	playerUnitCount = 0;
 	enemyUnitCount = 0;
+}
+
+Battle::~Battle() {
+	//Deleting the gui is now safe
+	delete gui;
+	gui = NULL;
 	
+	Global::player->getArmy()->getUnitInfo()->setUnit(NULL);
+}
+
+void Battle::render() {
+	if (this == NULL) {
+		return;
+	}
+	gui->render();
+	
+	if (attackTexture != NULL) {
+		//Setting rectangle
+		SDL_Rect destinationRect;
+		int dimParam = Global::player->getArmy()->getUnitSize();
+		destinationRect.x = attackTexturePosition.getX() - dimParam / 2;
+		destinationRect.y = attackTexturePosition.getY() - dimParam / 2;
+		destinationRect.w = dimParam;
+		destinationRect.h = dimParam;
+		attackTexture->render(destinationRect);
+	}
+}
+
+void Battle::start() {
 	continueBattle();
 }
 
@@ -136,7 +138,7 @@ void Battle::continueBattle() {
 			popup->setText("You died");
 			popup->buttonOK->setOnClick(Game::quit);
 			Global::guiHandler->clear();
-			Global::guiHandler->setGUI(popup);
+			Global::guiHandler->addPopup(popup);
 			
 			delete this;
 			return;
@@ -186,10 +188,10 @@ void Battle::continueBattle() {
 			
 			
 			Global::guiHandler->clear();
-			Global::guiHandler->setGUI(popup);
+			Global::guiHandler->addPopup(popup);
+			Global::guiHandler->setBattle(NULL);
 			
-			delete enemy;
-			enemy = NULL;
+			enemy->kill();
 			
 			delete this;
 			return;
@@ -450,7 +452,7 @@ void Battle::dealDamage(Unit* unitToAttack, int damage, bool isContinuation) {
 			break;
 	}
 	
-	Global::animationHandler->animateBattleAction(startCoord, endCoord);
+	Global::tickHandler->animateBattleAction(startCoord, endCoord);
 	
 	
 	

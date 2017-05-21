@@ -13,6 +13,7 @@
 #include "../map/player.h"
 #include "../gui/popup.h"
 #include "audiohandler.h"
+#include "questhandler.h"
 
 /*!
  * @author kovlev
@@ -57,7 +58,7 @@ Game::Game(std::string aName, Version version) {
 			
 			Global::camera = new Camera();
 			
-			Global::animationHandler = new AnimationHandler();
+			Global::tickHandler = new TickHandler();
 		
 			Global::resourceHandler = new ResourceHandler();
 			Global::resourceHandler->loadAll();
@@ -70,6 +71,7 @@ Game::Game(std::string aName, Version version) {
 			Global::player = new Player("player", 0, 0);
 			
 			Global::permaGUI = new PermanentGUI();
+			Global::permaGUI->initButtonCallbacks();
 			
 			Global::guiHandler = new GUIHandler();
 			
@@ -88,6 +90,9 @@ Game::Game(std::string aName, Version version) {
 			Global::npcHandler->loadAll();
 			
 			Global::worldObjectHandler->setOwnershipRelations();
+			
+			Global::questHandler = new QuestHandler();
+			Global::questHandler->loadAll();
 			
 			Global::cursor = new Cursor("impassable");
 			
@@ -321,16 +326,15 @@ void Game::mainLoop() {
 				break;
 			case SDL_USEREVENT:
 				if (e.user.code == 1) {
-					//Runs every frame
-					if (Global::player->getState() == PlayerState::MOVING) {
-						Global::player->updatePlayerPosition();
-						Global::npcHandler->updateNPCsPosition();
-					}
 					UserInputHandler::handleKeyDownEvent(keyboardState);
 					Global::cursor->update();
 					renderGame();
 				} else if (e.user.code == 2) {
-					Global::animationHandler->nextTick(Global::player->getState() == PlayerState::MOVING);
+					Global::tickHandler->nextTick(Global::player->getState() == PlayerState::MOVING);
+					if (Global::player->getState() == PlayerState::MOVING) {
+						Global::player->updatePlayerPosition();
+						Global::npcHandler->updateNPCsPosition();
+					}
 				}
 				break;
 			case SDL_MOUSEBUTTONDOWN:
@@ -385,8 +389,8 @@ void Game::cleanup() {
 	Global::audioHandler = NULL;
 	delete Global::resourceHandler;
 	Global::resourceHandler = NULL;
-	delete Global::animationHandler;
-	Global::animationHandler = NULL;
+	delete Global::tickHandler;
+	Global::tickHandler = NULL;
 	delete Global::camera;
 	Global::camera = NULL;
 	delete Global::player;
@@ -417,9 +421,44 @@ void Game::quit() {
 	SDL_PushEvent(&ev);
 }
 
+void Game::checkPerformance() {
+	clock_t begin, end;
+	std::clog << "Performance test started (" << TESTCOUNT << " cycles)" << std::endl;
+	
+	begin = clock();
+	for (int i = 0; i < TESTCOUNT; i++) {
+		Global::map->render();
+	}
+	end = clock();
+	std::clog << "\tMap rendering took " << double(end - begin) / CLOCKS_PER_SEC << " seconds" << std::endl;
+	
+	begin = clock();
+	for (int i = 0; i < TESTCOUNT; i++) {
+		Global::permaGUI->render();
+	}
+	end = clock();
+	std::clog << "\tHUD rendering took " << double(end - begin) / CLOCKS_PER_SEC << " seconds" << std::endl;
+	
+	begin = clock();
+	for (int i = 0; i < TESTCOUNT; i++) {
+		Global::guiHandler->render();
+	}
+	end = clock();
+	std::clog << "\tGUI rendering took " << double(end - begin) / CLOCKS_PER_SEC << " seconds" << std::endl;
+	
+	begin = clock();
+	for (int i = 0; i < TESTCOUNT; i++) {
+		Global::cursor->render();
+	}
+	end = clock();
+	std::clog << "\tCursor rendering took " << double(end - begin) / CLOCKS_PER_SEC << " seconds" << std::endl;
+}
+
 const int Game::MIN_WIDTH = 200;
 const int Game::MAX_WIDTH = 8000;
 const int Game::MIN_HEIGHT = 200;
 const int Game::MAX_HEIGHT = 8000;
 const int Game::MIN_FPS = 10;
 const int Game::MAX_FPS = 500;
+const int Game::TESTCOUNT = 10000;
+

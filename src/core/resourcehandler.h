@@ -14,6 +14,7 @@
 #include "../util/text.h"
 #include "../util/filesystemhandler.h"
 #include "animatabletexture.h"
+#include "../util/stdextension.h"
 
 /*!
  * @author kovlev
@@ -62,7 +63,7 @@ public:
 	
 	
 	//Stores the colors that can be later referenced
-	//TODO use getters if for consistency
+	//TODO use getters for consistency
 	std::map<std::string, SDL_Color> colors;
 private:
 	//***IMAGES***

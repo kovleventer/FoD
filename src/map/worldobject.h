@@ -10,9 +10,7 @@
 
 class Character; // Forward declaration
 class InteractiveGUI; // Forward declaration
-
-#include "character.h"
-#include "../gui/interactivegui.h"
+class Quest;
 
 /*!
  * @author kovlev
@@ -72,6 +70,10 @@ public:
 	
 	//NOTE temporary variable
 	std::string tempOwnerHolder;
+	
+	//Quest stuff
+	void addQuestTriggerCapture(Quest* questTriggerCaptureToAdd);
+	void addQuestObjectiveVisit(Quest* questObjectiveVisitToAdd);
 protected:
 	//Impassable tiles are relative; (0, 0) means the positionTile
 	std::vector<Point> interactiveTiles;
@@ -79,9 +81,15 @@ protected:
 	//Is the worldobject neutral, or it has an owner?
 	bool neutral;
 	
+	//The structure's name
 	std::string name;
 	
+	//Either player or an npc
 	Character* owner;
 	
 	InteractiveGUI* gui;
+	
+	//Quest stuff
+	std::vector<Quest*> questTriggerCaptures;
+	std::vector<Quest*> questObjectiveVisits;
 };

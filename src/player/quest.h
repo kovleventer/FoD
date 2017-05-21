@@ -4,9 +4,13 @@
 #include <vector>
 #include <iostream>
 
-#include "../map/npc.h"
-#include "../map/worldobject.h"
 #include "item.h"
+#include "../gui/popup.h"
+
+//Ugliest fwd declaration I've ever made
+class Quest;
+class NPC;
+class InteractiveWorldObject;
 
 /*!
  * @author kovlev
@@ -21,7 +25,7 @@ enum class QuestTrigger {
 	TALK_WITH_NPC,
 	STRUCTURE_CAPTURE,
 	TIME,
-	QUEST_COMLETION
+	QUEST_COMPLETION
 };
 
 
@@ -53,8 +57,9 @@ enum class QuestState {
  * A quest is triggerable, has different objectives and rewards
  */
 class Quest {
+	friend class QuestHandler;
 public:
-	Quest(std::string n, std::string d, QuestTrigger qt, QuestObjective qo);
+	Quest(std::string n, std::string d, QuestTrigger qt, QuestObjective qo, QuestState qs);
 	
 	//Getters
 	std::string getName();
@@ -75,15 +80,12 @@ public:
 	
 	//Setters
 	void setQuestState(QuestState newQuestState);
-	void setQTTalkTarget(NPC* newQTTalkTarget);
-	void setQTStructTarget(InteractiveWorldObject* newQTStructTarget);
-	void setQTTimeInTicks(int newQTTimeInTicks);
-	void setQTPreviousQuest(Quest* newQTPreviousQuest);
-	void setQOTalkTarget(NPC* newQOTalkTarget);
-	void setQOKillTarget(NPC* newQOKillTarget);
-	void setQOStructTarget(InteractiveWorldObject* newQOStructTarget);
 	void setRewardGold(int newRewardGold);
 	void addRewardItem(Item* rewardItemToAdd);
+	
+	//Checks whether the queststate is correct
+	void start();
+	void complete();
 private:
 	std::string name;
 	std::string description;

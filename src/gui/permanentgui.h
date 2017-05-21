@@ -11,6 +11,7 @@
 #include "../player/army.h"
 #include "../map/minimap.h"
 #include "../core/animatabletexture.h"
+#include "../util/stdextension.h"
 
 
 /*!
@@ -35,6 +36,9 @@ public:
 	PermanentGUI();
 	PermanentGUI(int uH, int lH);
 	
+	//Must run after the constructor is done
+	void initButtonCallbacks();
+	
 	//Deletes the buttons
 	~PermanentGUI();
 	
@@ -50,13 +54,17 @@ public:
 	int getLowerHeight();
 	int getHeightLeftForMap();
 	std::vector<Button*> getButtons();
-	static ClickedEntry getClickedEntry();
+	ClickedEntry getClickedEntry();
 	SDL_Rect getDim();
 	bool getRenderDebugTickInfo();
+	WholeScreenGUI* getGuiQuests();
+	WholeScreenGUI* getGuiArmy();
+	WholeScreenGUI* getGuiMinimap();
 	
 	//Setters
 	void setUpperHeight(int newUH);
 	void setLowerHeight(int newLH);
+	void setClickedEntry(ClickedEntry newClickedEntry);
 	void setRenderDebugTickInfo(bool newRenderTickInfo);
 private:
 	int upperHeight;
@@ -64,9 +72,6 @@ private:
 	
 	int heightLeftForMap;
 	SDL_Rect possibleWholeScreenGUIDimensions;
-	
-	//Initializes everything
-	void init();
 	
 	std::vector<Button*> buttons;
 	
@@ -77,9 +82,9 @@ private:
 	static void clickArmy();
 	static void clickMinimap();
 	
-	static WholeScreenGUI* guiQuests;
-	static WholeScreenGUI* guiArmy;
-	static WholeScreenGUI* guiMinimap;
+	WholeScreenGUI* guiQuests;
+	WholeScreenGUI* guiArmy;
+	WholeScreenGUI* guiMinimap;
 	
-	static ClickedEntry clickedEntry;
+	ClickedEntry clickedEntry;
 };

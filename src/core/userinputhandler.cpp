@@ -14,6 +14,9 @@ void UserInputHandler::handleKeyPressEvent(SDL_Event e) {
 	//Useful:
 	//https://wiki.libsdl.org/SDL_Keycode
 	switch (e.key.keysym.sym) {
+		case SDLK_F3:
+			Game::checkPerformance();
+			break;
 		case SDLK_F4:
 			//Press F4 for auido muting/unmuting
 			if (Global::audioHandler->isSoundMuted() || Global::audioHandler->isMusicMuted()) {

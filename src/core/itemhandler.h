@@ -7,6 +7,7 @@
 
 #include "../player/item.h"
 #include "../util/filesystemhandler.h"
+#include "../util/stdextension.h"
 
 /*!
  * @author kovlev

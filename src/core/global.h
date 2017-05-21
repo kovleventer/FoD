@@ -17,8 +17,9 @@
 #include "../map/minimap.h"
 #include "npchandler.h"
 #include "worldobjecthandler.h"
-#include "animationhandler.h"
+#include "tickhandler.h"
 #include "audiohandler.h"
+#include "questhandler.h"
 
 /*!
  * @author kovlev
@@ -53,6 +54,7 @@ public:
 	static UnitHandler* unitHandler;
 	static NPCHandler* npcHandler;
 	static WorldObjectHandler* worldObjectHandler;
+	static QuestHandler* questHandler;
 	static Map* map;
 	static Minimap* minimap;
 	static Cursor* cursor;
@@ -62,5 +64,5 @@ public:
 	static PermanentGUI* permaGUI;
 	static GUIHandler* guiHandler;
 	
-	static AnimationHandler* animationHandler;
+	static TickHandler* tickHandler;
 };

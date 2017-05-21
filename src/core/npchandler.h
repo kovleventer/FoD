@@ -37,4 +37,7 @@ public:
 	std::vector<NPC*> npcs;
 private:
 	std::string basePath;
+	
+	//Map for faster character searching
+	std::map<std::string, NPC*> npcsByName;
 };

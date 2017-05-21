@@ -11,6 +11,7 @@ NPCHandler::NPCHandler() {
 }
 
 NPCHandler::~NPCHandler() {
+	//Can NOT use stdex here
 	for (unsigned int i = 0; i < npcs.size(); i++) {
 		delete npcs[i];
 	}
@@ -218,6 +219,7 @@ void NPCHandler::loadAll() {
 			}
 			
 			npcs.push_back(loaded);
+			npcsByName[name] = loaded;
 		}
 	}
 }
@@ -229,14 +231,12 @@ void NPCHandler::updateNPCsPosition() {
 }
 
 Character* NPCHandler::getCharacterByName(std::string characterName) {
-	//Sum python like player-checking
+	//Some python like player-checking
 	if (characterName == "__player__") {
 		return Global::player;
 	}
-	for (unsigned int i = 0; i < npcs.size(); i++) {
-		if (npcs[i]->getName() == characterName) {
-			return npcs[i];
-		}
+	if (npcsByName.find(characterName) == npcsByName.end()) {
+		return NULL;
 	}
-	return NULL;
+	return npcsByName[characterName];
 }

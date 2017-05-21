@@ -9,8 +9,6 @@
 
 class InteractiveWorldObject; // Forward declaration
 
-#include "worldobject.h"
-
 /*!
  * @author kovlev
  */

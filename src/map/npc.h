@@ -11,6 +11,8 @@
 #include "../player/inventory.h"
 #include "character.h"
 
+class Quest;
+
 /*!
  * @author kovlev
  */
@@ -45,11 +47,20 @@ public:
 	std::vector<Point> getTempCont();
 	CircularPath* getPath();
 	bool isEnemy();
+	bool isDead();
 	
 	//Setters
 	void setSpeed(double newSpeed);
 	void setPath(CircularPath* newPath);
 	void setIsEnemy(bool newIsEnemy);
+	
+	//This kills the npc
+	void kill();
+	
+	//Quest stuff
+	void addQuestTriggerTalk(Quest* questTriggerTalkToAdd);
+	void addQuestObjectiveTalk(Quest* questObjectiveTalkToAdd);
+	void addQuestObjectiveKill(Quest* questObjectiveKillToAdd);
 private:
 	void init();
 	
@@ -61,4 +72,12 @@ private:
 	
 	//TODO factions
 	bool enemy;
+	
+	//Is npc dead
+	bool dead;
+	
+	//Storing data dor quests
+	std::vector<Quest*> questTriggerTalks;
+	std::vector<Quest*> questObjectiveTalks;
+	std::vector<Quest*> questObjectiveKills;
 };

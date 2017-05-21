@@ -12,6 +12,7 @@
 #include <sstream>
 #include <iomanip>
 #include <thread>
+#include <ctime>
 
 #include "../util/point.h"
 #include "../util/version.h"
@@ -33,6 +34,9 @@ public:
 	
 	//Pushes an SDL_QUIT event to the event list
 	static void quit();
+	
+	//Renders the screen a bunch of times
+	static void checkPerformance();
 private:
 	//Loads the external settings stored in settings.txt
 	void loadSettings();
@@ -68,4 +72,6 @@ private:
 	const static int MAX_HEIGHT;
 	const static int MIN_FPS;
 	const static int MAX_FPS;
+	
+	const static int TESTCOUNT;
 };

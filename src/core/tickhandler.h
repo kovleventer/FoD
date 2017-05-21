@@ -13,15 +13,14 @@
 
 
 /*!
- * @class AnimationHandler handles game ticks
+ * @class TickHandler
  * Changes animation phases
- * Handles game ticks and events too, so it should not be called AnimationHandler
- * TODO change name
+ * Handles game ticks and events too
  */
-class AnimationHandler {
+class TickHandler {
 public:
-	AnimationHandler();
-	~AnimationHandler();
+	TickHandler();
+	~TickHandler();
 	
 	void nextTick(bool isGameTickToo);
 	

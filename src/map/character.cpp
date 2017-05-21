@@ -1,6 +1,7 @@
 #include "character.h"
 
 #include "../core/global.h"
+#include "worldobject.h"
 
 /*!
  * @author kovlev
@@ -15,6 +16,7 @@ Character::Character(int x, int y) : Character(Point(x, y)) {}
 Character::~Character() {
 	if (this != Global::player) {
 		//Setting building ownerships and resetting possible garrisons
+		//DEPRECATED possibly
 		for (unsigned int i = 0; i < ownedBuildings.size(); i++) {
 			ownedBuildings[i]->setOwner(Character::characterPlaceholderTakeable);
 			for (unsigned int j = 0; j < ownedBuildings[i]->getGUI()->getPartCount(); j++) {

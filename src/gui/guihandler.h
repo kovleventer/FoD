@@ -1,7 +1,10 @@
 #pragma once
 
+#include <queue>
+
 #include "basicgui.h"
 #include "../core/battle.h"
+#include "../util/stdextension.h"
 
 /*!
  * @author kovlev
@@ -17,6 +20,7 @@
 class GUIHandler {
 public:
 	GUIHandler();
+	~GUIHandler();
 	
 	//Getters
 	bool isLocked();
@@ -28,11 +32,15 @@ public:
 	void setGUI(BasicGUI* newGUI);
 	void setBattle(Battle* newBattle);
 	
-	//Removes all current persisting gui elements
+	//Clears persisiting gui elements if we do not have any popups left
 	void clear();
+	//Removes all current persisting gui elements
+	void hardClear();
 	
 	//Renders the current GUI
 	void render();
+	
+	void addPopup(Popup* popupToAdd);
 private:
 	BasicGUI* currentGUI;
 	Battle* currentBattle;
@@ -41,4 +49,9 @@ private:
 	bool hasGUI;
 	//If we can not leave the current gui (for example on battle)
 	bool hardlocked;
+	
+	//Do we have current non popup gui in the guiqueue
+	bool hasGUIInQueue;
+	
+	std::queue<BasicGUI*> popups;
 };

@@ -276,6 +276,7 @@ void Map::renderMapEntities() {
 						}
 						NPC* possibleNPC = dynamic_cast<NPC*>(currEnt);
 						if (possibleNPC != NULL && !possibleNPC->getStanding()) {
+							if (possibleNPC->isDead()) continue; // Temporary fix TODO proper fix
 							PointD corrigation = (possibleNPC->getPath()->current() - possibleNPC->getPosition()) * Global::tileSize;
 							
 							destinationRect.x += possibleNPC->getProgressVector().getX() * Global::tileSize;

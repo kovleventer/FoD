@@ -25,6 +25,7 @@ ItemHandler* Global::itemHandler = NULL;
 UnitHandler* Global::unitHandler = NULL;
 NPCHandler* Global::npcHandler = NULL;
 WorldObjectHandler* Global::worldObjectHandler = NULL;
+QuestHandler* Global::questHandler = NULL;
 Map* Global::map = NULL;
 Minimap* Global::minimap = NULL;
 Cursor* Global::cursor = NULL;
@@ -34,4 +35,4 @@ Player* Global::player = NULL;
 PermanentGUI* Global::permaGUI = NULL;
 GUIHandler* Global::guiHandler = NULL;
 
-AnimationHandler* Global::animationHandler = NULL;
+TickHandler* Global::tickHandler = NULL;

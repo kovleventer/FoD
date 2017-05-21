@@ -14,19 +14,13 @@ WorldObjectHandler::WorldObjectHandler() {
 
 WorldObjectHandler::~WorldObjectHandler() {
 	//Deleting WorldObjects
-	for (unsigned int i = 0; i < worldObjects.size(); i++) {
-		delete worldObjects[i];
-	}
+	stdex::clear_ptr_vec(worldObjects);
 	
 	//Deleting ImpassableWorldObjects
-	for (unsigned int i = 0; i < impassables.size(); i++) {
-		delete impassables[i];
-	}
+	stdex::clear_ptr_vec(impassables);
 	
 	//Deleting InteractiveWorldObjects
-	for (unsigned int i = 0; i < interactives.size(); i++) {
-		delete interactives[i];
-	}
+	stdex::clear_ptr_vec(interactives);
 }
 
 void WorldObjectHandler::loadAll() {
@@ -40,6 +34,13 @@ void WorldObjectHandler::setOwnershipRelations() {
 		interactives[i]->setOwner(Global::npcHandler->getCharacterByName(interactives[i]->tempOwnerHolder));
 		Global::npcHandler->getCharacterByName(interactives[i]->tempOwnerHolder)->addOwned(interactives[i]);
 	}
+}
+
+InteractiveWorldObject* WorldObjectHandler::getInteractiveByName(std::string interactiveName) {
+	if (interactivesByName.find(interactiveName) == interactivesByName.end()) {
+		return NULL;
+	}
+	return interactivesByName[interactiveName];
 }
 
 void WorldObjectHandler::loadWorldObjects() {
@@ -63,14 +64,20 @@ void WorldObjectHandler::loadWorldObjects() {
 		double scale;
 		file >> scale;
 		
+		file.close();
+		
+		if (!file) {
+			//If the file pattern is wrong
+			std::clog << "Error! Skipping " << worldObjectNames[i] << std::endl;
+			continue;
+		}
+		
 		WorldObject* loaded = new WorldObject(textureName, posX, posY);
 		loaded->setScale(scale);
 		//Error checking for position
 		if (Global::map->getTile(posX, posY) == NULL) throw std::runtime_error("Invalid world object position (" + worldObjectNames[i] + ", (" + std::to_string(posX) + ";" + std::to_string(posY) + "))");
 		Global::map->getTile(posX, posY)->backgroundEntities.push_back(loaded);
 		worldObjects.push_back(loaded);
-		
-		file.close();
 	}
 }
 
@@ -90,7 +97,7 @@ void WorldObjectHandler::loadImpassableWorldObjects() {
 		// c: the x coordinate of current impassable tile (relative, so (0,0) means the position tile itself)
 		//Scale
 		std::string textureName;
-		file >> textureName;
+		std::getline(file, textureName);
 		
 		int posX, posY;
 		file >> posX;
@@ -109,14 +116,20 @@ void WorldObjectHandler::loadImpassableWorldObjects() {
 		double scale;
 		file >> scale;
 		
+		file.close();
+		
+		if (!file) {
+			//If the file pattern is wrong
+			std::clog << "Error! Skipping " << impassableNames[i] << std::endl;
+			continue;
+		}
+		
 		ImpassableWorldObject* loaded = new ImpassableWorldObject(textureName, posX, posY, impassableTiles);
 		loaded->setScale(scale);
 		//Error checking for position
 		if (Global::map->getTile(posX, posY) == NULL) throw std::runtime_error("Invalid world object position (" + impassableNames[i] + ", (" + std::to_string(posX) + ";" + std::to_string(posY) + "))");
 		Global::map->getTile(posX, posY)->entities.push_back(loaded);
 		impassables.push_back(loaded);
-		
-		file.close();
 	}
 }
 
@@ -288,5 +301,6 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 		if (Global::map->getTile(posX, posY) == NULL) throw std::runtime_error("Invalid world object position (" + interactiveNames[i] + ", (" + std::to_string(posX) + ";" + std::to_string(posY) + "))");
 		Global::map->getTile(posX, posY)->entities.push_back(loaded);
 		interactives.push_back(loaded);
+		interactivesByName[name] = loaded;
 	}
 }
