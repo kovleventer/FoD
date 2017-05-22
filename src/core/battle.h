@@ -12,6 +12,16 @@
  * @author kovlev
  */
 
+/*!
+ * @enum BattleType the type of battle
+ */
+enum class BattleType {
+	PLAYER_NPC,
+	PLAYER_STRUCT,
+	NPC_NPC,
+	NPC_STRUCT
+};
+
 
 /*!
  * @class Battle a battle is between two characters
@@ -21,10 +31,13 @@
 class Battle {
 public:
 	//Quick Battle
-	Battle(NPC* npc1, NPC* npc2);
+	Battle(NPC* n1, NPC* n2);
 	
 	//Interactive Battle with player
 	Battle(NPC* e);
+	
+	//Interactive Battle with Structure
+	Battle(InteractiveWorldObject* iwo);
 	
 	~Battle();
 	
@@ -48,6 +61,7 @@ public:
 	int getCurrentTurn();
 	Point getAttackTexturePosition();
 	int getAnimSpeed();
+	BattleType getBattleType();
 	
 	//Setters
 	void setAttackTexturePosition(Point newAttackTexturePosition);
@@ -56,11 +70,16 @@ public:
 	ATexture* attackTexture;
 private:
 	WholeScreenGUI* gui;
+	BattleType battleType;
+	
+	void initGUIBattle();
 	
 	//If the player is participating in the battle
 	NPC* enemy;
+	InteractiveWorldObject* enemyStruct;
 	Player* player;
 	int playerUnitCount, enemyUnitCount;
+	Army* enemyArmy;
 	
 	//If the battle is between two npcs
 	//A valuable lesson was learned here

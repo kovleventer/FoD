@@ -65,6 +65,7 @@ void NPC::activate() {
 		Global::audioHandler->playSoundEffect("test");
 		//The battle handles itself
 		new Battle(this);
+		Global::player->clearPath();
 		Global::player->setState(PlayerState::BATTLING);
 	}
 }

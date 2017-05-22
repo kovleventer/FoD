@@ -7,73 +7,39 @@
  * @author kovlev
  */
 
-Battle::Battle(NPC* npc1, NPC* npc2) {
+Battle::Battle(NPC* n1, NPC* n2) {
 	//TODO implementation of battle between two npcs
 	gui = NULL;
+	npc1 = n1;
+	npc2 = n2;
+	battleType = BattleType::NPC_NPC;
 }
 
 Battle::Battle(NPC* e) {
 	player = Global::player;
 	enemy = e;
-	currentAttackingUnit = NULL;
-	attackTexture = NULL;
-	attackTexturePosition = Point(0, 0);
-	animSpeed = Global::ticks / 4;
+	enemyArmy = enemy->getArmy();
+	battleType = BattleType::PLAYER_NPC;
 	
+	initGUIBattle();
+}
+
+Battle::Battle(InteractiveWorldObject* iwo) {
+	player = Global::player;
+	enemyStruct = iwo;
+	enemyArmy = enemyStruct->getGarrisonArmy();
+	battleType = BattleType::PLAYER_STRUCT;
 	
-	//Intializing the battle
-	gui = new WholeScreenGUI(Global::permaGUI->getDim());
-	gui->setBelongsToBattle(true);
-	gui->addPart(player->getArmy());
-	gui->addPart(enemy->getArmy());
-	gui->addPart(player->getArmy()->getUnitInfo());
-	
-	maxTurns = 100;
-	currentTurn = 0;
-	
-	//Displayes the current turn
-	class TurnCounter : public BasicGUI {
-	public:
-		TurnCounter(int xp, int yp, int wp, int hp, int& tC) : BasicGUI(xp, yp, wp, hp), turnCounter(tC) {}
-		
-		void render() {
-			SDL_Rect destinationRect = {x, y, w, h};
-			Global::resourceHandler->getATexture(TT::GUI, "guiheader")->render(destinationRect);
-			
-			ATexture* turnCounterTexture = Global::resourceHandler->getTextTexture(std::to_string(turnCounter), Global::resourceHandler->colors["whole-header"]);
-			Dimension d = turnCounterTexture->getDimensions();
-			d *= 64;
-			d /= Global::defaultFontSize;
-			destinationRect.x = x + w / 2 - d.W() / 2;
-			destinationRect.y = y + h / 2 - d.H() / 2;
-			destinationRect.w = d.W();
-			destinationRect.h = d.H();
-			turnCounterTexture->render(destinationRect);
-		}
-	private:
-		int& turnCounter;
-	};
-	
-	gui->addTempPart(new TurnCounter(player->getArmy()->getUnitInfo()->getX(),
-								 enemy->getArmy()->getY(),
-								 player->getArmy()->getUnitInfo()->getW(),
-								 gui->getHeaderSize(),
-								 currentTurn));
-	
-	//Setting this battle as current gui
-	Global::guiHandler->setGUI(gui);
-	Global::guiHandler->setBattle(this);
-	
-	playerUnitCount = 0;
-	enemyUnitCount = 0;
+	initGUIBattle();
 }
 
 Battle::~Battle() {
-	//Deleting the gui is now safe
-	delete gui;
-	gui = NULL;
-	
-	Global::player->getArmy()->getUnitInfo()->setUnit(NULL);
+	if (battleType == BattleType::PLAYER_NPC || battleType == BattleType::PLAYER_STRUCT) {
+		//Deleting the gui is now safe
+		delete gui;
+		gui = NULL;
+		Global::player->getArmy()->getUnitInfo()->setUnit(NULL);
+	}
 }
 
 void Battle::render() {
@@ -114,7 +80,7 @@ void Battle::continueBattle() {
 			for (int j = 0; j < player->getArmy()->getWidth(); j++) {
 				for (int k = 0; k < player->getArmy()->getHeight(); k++) {
 					Unit* tempPlayerUnit = player->getArmy()->getUnit(j, k);
-					Unit* tempEnemyUnit = enemy->getArmy()->getUnit(j, k);
+					Unit* tempEnemyUnit = enemyArmy->getUnit(j, k);
 					
 					if (tempPlayerUnit != NULL && !tempPlayerUnit->isDead()) {
 						tempPlayerUnit->setTeamOne(true);
@@ -133,7 +99,7 @@ void Battle::continueBattle() {
 		}
 		
 		if (playerUnitCount == 0) {
-			enemy->getArmy()->finalizeUnitExperiences();
+			enemyArmy->finalizeUnitExperiences();
 			Popup* popup = new Popup(800, 400, PopupType::POPUP_OK);
 			popup->setText("You died");
 			popup->buttonOK->setOnClick(Game::quit);
@@ -151,17 +117,21 @@ void Battle::continueBattle() {
 			Popup* popup = new Popup(800, 400, PopupType::POPUP_OK);
 			int acquiredItems = 0;
 			//Adding enemy inventory
-			for (unsigned int i = 0; i < enemy->getInventory()->getInventorySize(); i++) {
-				Item* currentItem = enemy->getInventory()->getItem(i);
-				if (currentItem != NULL) {
-					popup->addItem(currentItem);
-					acquiredItems++;
+			if (battleType == BattleType::PLAYER_NPC) {
+				//Adding gold
+				player->giveGold(enemy->getGold());
+				for (unsigned int i = 0; i < enemy->getInventory()->getInventorySize(); i++) {
+					Item* currentItem = enemy->getInventory()->getItem(i);
+					if (currentItem != NULL) {
+						popup->addItem(currentItem);
+						acquiredItems++;
+					}
 				}
 			}
 			
-			for (int i = 0; i < enemy->getArmy()->getWidth(); i++) {
-				for (int j = 0; j < enemy->getArmy()->getHeight(); j++) {
-					Unit* tempEnemyUnit = enemy->getArmy()->getUnit(i, j);
+			for (int i = 0; i < enemyArmy->getWidth(); i++) {
+				for (int j = 0; j < enemyArmy->getHeight(); j++) {
+					Unit* tempEnemyUnit = enemyArmy->getUnit(i, j);
 					if (tempEnemyUnit != NULL) {
 						for (int k = 0; k < tempEnemyUnit->getUnitInventorySize(); k++) {
 							Item* currentItem = tempEnemyUnit->getItem(k);
@@ -184,14 +154,19 @@ void Battle::continueBattle() {
 				player->getInventory()->addItem(popup->getItem(i));
 			}
 			
-			player->giveGold(enemy->getGold());
+			
 			
 			
 			Global::guiHandler->clear();
 			Global::guiHandler->addPopup(popup);
 			Global::guiHandler->setBattle(NULL);
 			
-			enemy->kill();
+			if (battleType == BattleType::PLAYER_NPC) {
+				enemy->kill();
+			}
+			if (battleType == BattleType::PLAYER_STRUCT) {
+				enemyStruct->setOwner(Global::player);
+			}
 			
 			delete this;
 			return;
@@ -210,11 +185,11 @@ void Battle::continueBattle() {
 				player->getArmy()->setSelectedUnitPos(currentUnit->getPosition());
 				
 				player->getArmy()->setAllowAttack(true);
-				enemy->getArmy()->setAllowAttack(true);
+				enemyArmy->setAllowAttack(true);
 				
 				//Setting flags based on enemy
 				unsigned char flags = Army::ALLOW_FRONTLINE;
-				if (enemy->getArmy()->isFrontRowEmpty()) {
+				if (enemyArmy->isFrontRowEmpty()) {
 					flags |= Army::ALLOW_BACKLINE;
 				}
 				
@@ -236,25 +211,25 @@ void Battle::continueBattle() {
 						break;
 				}
 				
-				enemy->getArmy()->setAttackRestrictionFlags(flags);
+				enemyArmy->setAttackRestrictionFlags(flags);
 				
-				enemy->getArmy()->setAllowAttack(true);
+				enemyArmy->setAllowAttack(true);
 				currentAttackingUnit = currentUnit;
 				return;
 			} else {
 				//If the enemy attacks
 				currentAttackingUnit = currentUnit;
 				
-				if (enemy->getArmy()->getUPFromPos(currentUnit->getPosition()) == UnitPosition::SUPPORT) {
+				if (enemyArmy->getUPFromPos(currentUnit->getPosition()) == UnitPosition::SUPPORT) {
 					//Places a unit sitting in support to an open position if possible
 					Point openPosition;
 					if (currentUnit->isMelee()) {
-						openPosition = enemy->getArmy()->getFirstOpenFrontRowPosition();
+						openPosition = enemyArmy->getFirstOpenFrontRowPosition();
 					} else {
-						openPosition = enemy->getArmy()->getFirstOpenBackRowPosition();
+						openPosition = enemyArmy->getFirstOpenBackRowPosition();
 					}
 					if (openPosition != Point(-1, -1)) {
-						enemy->getArmy()->switchUnits(currentUnit->getPosition(), openPosition);
+						enemyArmy->switchUnits(currentUnit->getPosition(), openPosition);
 					}
 					
 					removeUnitFromQueue(currentUnit);
@@ -264,7 +239,7 @@ void Battle::continueBattle() {
 				
 				std::vector<Unit*> attackableUnits;
 				
-				switch (enemy->getArmy()->getUPFromPos(currentUnit->getPosition())) {
+				switch (enemyArmy->getUPFromPos(currentUnit->getPosition())) {
 					case UnitPosition::BACKROW:
 						if (currentUnit->isRanged()) {
 							//Ranged attack case
@@ -409,23 +384,23 @@ void Battle::dealDamage(Unit* unitToAttack, int damage, bool isContinuation) {
 				+ player->getArmy()->getPaddingV() * (currentAttackingUnit->getPosition().getY() + 1)
 				+ player->getArmy()->getUnitSize() * currentAttackingUnit->getPosition().getY()
 				+ player->getArmy()->getUnitSize() / 2);
-		endCoord = Point(enemy->getArmy()->getX()
-				+ enemy->getArmy()->getPaddingH() * (unitToAttack->getPosition().getX() + 1)
-				+ enemy->getArmy()->getUnitSize() * unitToAttack->getPosition().getX()
-				+ enemy->getArmy()->getUnitSize() / 2,
-			enemy->getArmy()->getY()
-				+ enemy->getArmy()->getPaddingV() * (unitToAttack->getPosition().getY() + 1)
-				+ enemy->getArmy()->getUnitSize() * unitToAttack->getPosition().getY()
-				+ enemy->getArmy()->getUnitSize() / 2);
+		endCoord = Point(enemyArmy->getX()
+				+ enemyArmy->getPaddingH() * (unitToAttack->getPosition().getX() + 1)
+				+ enemyArmy->getUnitSize() * unitToAttack->getPosition().getX()
+				+ enemyArmy->getUnitSize() / 2,
+			enemyArmy->getY()
+				+ enemyArmy->getPaddingV() * (unitToAttack->getPosition().getY() + 1)
+				+ enemyArmy->getUnitSize() * unitToAttack->getPosition().getY()
+				+ enemyArmy->getUnitSize() / 2);
 	} else {
-		startCoord = Point(enemy->getArmy()->getX()
-				+ enemy->getArmy()->getPaddingH() * (currentAttackingUnit->getPosition().getX() + 1)
-				+ enemy->getArmy()->getUnitSize() * currentAttackingUnit->getPosition().getX()
-				+ enemy->getArmy()->getUnitSize() / 2,
-			enemy->getArmy()->getY()
-				+ enemy->getArmy()->getPaddingV() * (currentAttackingUnit->getPosition().getY() + 1)
-				+ enemy->getArmy()->getUnitSize() * currentAttackingUnit->getPosition().getY()
-				+ enemy->getArmy()->getUnitSize() / 2);
+		startCoord = Point(enemyArmy->getX()
+				+ enemyArmy->getPaddingH() * (currentAttackingUnit->getPosition().getX() + 1)
+				+ enemyArmy->getUnitSize() * currentAttackingUnit->getPosition().getX()
+				+ enemyArmy->getUnitSize() / 2,
+			enemyArmy->getY()
+				+ enemyArmy->getPaddingV() * (currentAttackingUnit->getPosition().getY() + 1)
+				+ enemyArmy->getUnitSize() * currentAttackingUnit->getPosition().getY()
+				+ enemyArmy->getUnitSize() / 2);
 		endCoord = Point(player->getArmy()->getX()
 				+ player->getArmy()->getPaddingH() * (unitToAttack->getPosition().getX() + 1)
 				+ player->getArmy()->getUnitSize() * unitToAttack->getPosition().getX()
@@ -457,7 +432,7 @@ void Battle::dealDamage(Unit* unitToAttack, int damage, bool isContinuation) {
 	
 	
 	
-	enemy->getArmy()->setAllowAttack(false);
+	enemyArmy->setAllowAttack(false);
 	player->getArmy()->setAllowAttack(false);
 	player->getArmy()->setSelectedUnitPos(Point(-1, -1));
 	unitToAttack->statsWithItems["currentLife"] -= damage;
@@ -496,8 +471,65 @@ int Battle::getAnimSpeed() {
 	return animSpeed;
 }
 
+BattleType Battle::getBattleType() {
+	return battleType;
+}
+
 void Battle::setAttackTexturePosition(Point newAttackTexturePosition) {
 	attackTexturePosition = newAttackTexturePosition;
+}
+
+void Battle::initGUIBattle() {
+	//Intializing the battle
+	currentAttackingUnit = NULL;
+	attackTexture = NULL;
+	attackTexturePosition = Point(0, 0);
+	animSpeed = Global::ticks / 4;
+	
+	gui = new WholeScreenGUI(Global::permaGUI->getDim());
+	gui->setBelongsToBattle(true);
+	gui->addPart(player->getArmy());
+	gui->addPart(enemyArmy);
+	gui->addPart(player->getArmy()->getUnitInfo());
+	
+	maxTurns = 100;
+	currentTurn = 0;
+	
+	//Displayes the current turn
+	class TurnCounter : public BasicGUI {
+	public:
+		TurnCounter(int xp, int yp, int wp, int hp, int& tC) : BasicGUI(xp, yp, wp, hp), turnCounter(tC) {}
+		
+		void render() {
+			SDL_Rect destinationRect = {x, y, w, h};
+			Global::resourceHandler->getATexture(TT::GUI, "guiheader")->render(destinationRect);
+			
+			ATexture* turnCounterTexture = Global::resourceHandler->getTextTexture(std::to_string(turnCounter), Global::resourceHandler->colors["whole-header"]);
+			Dimension d = turnCounterTexture->getDimensions();
+			d *= 64;
+			d /= Global::defaultFontSize;
+			destinationRect.x = x + w / 2 - d.W() / 2;
+			destinationRect.y = y + h / 2 - d.H() / 2;
+			destinationRect.w = d.W();
+			destinationRect.h = d.H();
+			turnCounterTexture->render(destinationRect);
+		}
+	private:
+		int& turnCounter;
+	};
+	
+	gui->addTempPart(new TurnCounter(player->getArmy()->getUnitInfo()->getX(),
+								 enemyArmy->getY(),
+								 player->getArmy()->getUnitInfo()->getW(),
+								 gui->getHeaderSize(),
+								 currentTurn));
+	
+	//Setting this battle as current gui
+	Global::guiHandler->setGUI(gui);
+	Global::guiHandler->setBattle(this);
+	
+	playerUnitCount = 0;
+	enemyUnitCount = 0;
 }
 
 void Battle::removeUnitFromQueue(Unit* unitToRemove) {

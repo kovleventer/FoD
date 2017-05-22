@@ -93,7 +93,8 @@ void InteractiveWorldObject::activate() {
 	}
 	
 	if (dynamic_cast<NPC*>(owner) != NULL && dynamic_cast<NPC*>(owner)->isEnemy()) {
-		std::cout << "Battle with structures is not yet implemented" << std::endl;
+		//Battle handles itself
+		new Battle(this);
 	} else {
 		for (unsigned int i = 0; i < questObjectiveVisits.size(); i++) {
 			questObjectiveVisits[i]->complete();
@@ -101,6 +102,16 @@ void InteractiveWorldObject::activate() {
 		
 		Global::guiHandler->setGUI(gui);
 	}
+}
+
+Army* InteractiveWorldObject::getGarrisonArmy() {
+	for (unsigned int i = 0; i < gui->getPartCount(); i++) {
+		GarrisonWrapper* possibleGarrison = dynamic_cast<GarrisonWrapper*>(gui->getPart(i));
+		if (possibleGarrison != NULL) {
+			return possibleGarrison->getGarrison()->getArmy();
+		}
+	}
+	return NULL;
 }
 
 void InteractiveWorldObject::addQuestTriggerCapture(Quest* questTriggerCaptureToAdd) {

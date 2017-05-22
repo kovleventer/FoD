@@ -7,6 +7,7 @@
 #include "../util/point.h"
 #include "mapentity.h"
 #include "../gui/wholescreengui.h"
+#include "../player/army.h"
 
 class Character; // Forward declaration
 class InteractiveGUI; // Forward declaration
@@ -70,6 +71,10 @@ public:
 	
 	//NOTE temporary variable
 	std::string tempOwnerHolder;
+	
+	//Returns the garrison army if such a thing exists
+	//Returns NULL otherwise
+	Army* getGarrisonArmy();
 	
 	//Quest stuff
 	void addQuestTriggerCapture(Quest* questTriggerCaptureToAdd);

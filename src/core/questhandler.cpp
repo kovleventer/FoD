@@ -68,16 +68,27 @@ void QuestHandler::loadAll() {
 			case QuestTrigger::TALK_WITH_NPC: {
 				std::string triggerTargetName;
 				std::getline(file, triggerTargetName);
-				loaded->qtTalkTarget = (NPC*)Global::npcHandler->getCharacterByName(triggerTargetName);
+				NPC* triggerTarget = dynamic_cast<NPC*>(Global::npcHandler->getCharacterByName(triggerTargetName));
+				if (triggerTarget == NULL) {
+					std::clog << "Error! Skipping " << questNames[i] << std::endl;
+					continue;
+				}
+				loaded->qtTalkTarget = triggerTarget;
 				break; }
 			case QuestTrigger::STRUCTURE_CAPTURE: {
 				std::string triggerTargetName;
 				std::getline(file, triggerTargetName);
-				loaded->qtStructTarget = Global::worldObjectHandler->getInteractiveByName(triggerTargetName);
+				InteractiveWorldObject* triggerTarget = Global::worldObjectHandler->getInteractiveByName(triggerTargetName);
+				if (triggerTarget == NULL) {
+					std::clog << "Error! Skipping " << questNames[i] << std::endl;
+					continue;
+				}
+				loaded->qtStructTarget = triggerTarget;
 				break; }
 			case QuestTrigger::TIME: {
 				std::string triggerTimeString;
 				std::getline(file, triggerTimeString);
+				//FIXME the exception this migt throw somewhy not cached
 				loaded->qtTimeInTicks = std::stoi(triggerTimeString);
 				break; }
 			case QuestTrigger::QUEST_COMPLETION: {
@@ -90,17 +101,32 @@ void QuestHandler::loadAll() {
 			case QuestObjective::TALK_WITH_NPC: {
 				std::string objectiveTargetName;
 				std::getline(file, objectiveTargetName);
-				loaded->qoTalkTarget = (NPC*)Global::npcHandler->getCharacterByName(objectiveTargetName);
+				NPC* objectiveTarget = dynamic_cast<NPC*>(Global::npcHandler->getCharacterByName(objectiveTargetName));
+				if (objectiveTarget == NULL) {
+					std::clog << "Error! Skipping " << questNames[i] << std::endl;
+					continue;
+				}
+				loaded->qoTalkTarget = objectiveTarget;
 				break; }
 			case QuestObjective::KILL_NPC: {
 				std::string objectiveTargetName;
 				std::getline(file, objectiveTargetName);
-				loaded->qoKillTarget = (NPC*)Global::npcHandler->getCharacterByName(objectiveTargetName);
+				NPC* objectiveTarget = dynamic_cast<NPC*>(Global::npcHandler->getCharacterByName(objectiveTargetName));
+				if (objectiveTarget == NULL) {
+					std::clog << "Error! Skipping " << questNames[i] << std::endl;
+					continue;
+				}
+				loaded->qoKillTarget = objectiveTarget;
 				break; }
 			case QuestObjective::VISIT_STRUCTURE: {
 				std::string objectiveTargetName;
 				std::getline(file, objectiveTargetName);
-				loaded->qoStructTarget = Global::worldObjectHandler->getInteractiveByName(objectiveTargetName);
+				InteractiveWorldObject* objectiveTarget = Global::worldObjectHandler->getInteractiveByName(objectiveTargetName);
+				if (objectiveTarget == NULL) {
+					std::clog << "Error! Skipping " << questNames[i] << std::endl;
+					continue;
+				}
+				loaded->qoStructTarget = objectiveTarget;
 				break; }
 		}
 		

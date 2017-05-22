@@ -44,6 +44,7 @@ void Player::updatePlayerPosition() {
 		if ((((PointD)position * Global::tileSize) + progressVector * Global::tileSize).distanceTo(((PointD)follow->getPosition() * Global::tileSize) + follow->getProgressVector() * Global::tileSize) <= Global::tileSize * 2 / 3) {
 			follow->activate();
 			clearPath();
+			return;
 		}
 	}
 	
