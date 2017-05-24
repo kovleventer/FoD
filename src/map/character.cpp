@@ -13,21 +13,7 @@ Character::Character(Point pos) : MapEntity(pos) {
 
 Character::Character(int x, int y) : Character(Point(x, y)) {}
 
-Character::~Character() {
-	if (this != Global::player) {
-		//Setting building ownerships and resetting possible garrisons
-		//DEPRECATED possibly
-		for (unsigned int i = 0; i < ownedBuildings.size(); i++) {
-			ownedBuildings[i]->setOwner(Character::characterPlaceholderTakeable);
-			for (unsigned int j = 0; j < ownedBuildings[i]->getGUI()->getPartCount(); j++) {
-				GarrisonWrapper* possibleGarrisonWrapper = dynamic_cast<GarrisonWrapper*>(ownedBuildings[i]->getGUI()->getPart(j));
-				if (possibleGarrisonWrapper != NULL) {
-					possibleGarrisonWrapper->getGarrison()->recreateGarrisonArmy();
-				}
-			}
-		}
-	}
-}
+Character::~Character() {}
 
 PointD Character::getProgressVector() {
 	return progressVector;

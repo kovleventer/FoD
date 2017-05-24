@@ -30,8 +30,10 @@ enum class BattleType {
  */
 class Battle {
 public:
-	//Quick Battle
+	//Quick Battles
 	Battle(NPC* n1, NPC* n2);
+	
+	Battle(NPC* n1, InteractiveWorldObject* iwo);
 	
 	//Interactive Battle with player
 	Battle(NPC* e);
@@ -85,6 +87,12 @@ private:
 	//A valuable lesson was learned here
 	NPC* npc1;
 	NPC* npc2;
+	InteractiveWorldObject* structToFight;
+	Army* army1;
+	Army* army2;
+	int army1UnitCount, army2UnitCount;
+	//This function does not require threading magic
+	void quickBattle();
 	
 	//Turn counters
 	int maxTurns, currentTurn;
@@ -101,4 +109,6 @@ private:
 	//Anim stuff
 	Point attackTexturePosition;
 	int animSpeed;
+	
+	void aiWhichUnitToAttack(Unit* currentUnit, Army* unitsArmy, Army* relativeEnemyArmy);
 };

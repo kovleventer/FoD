@@ -112,6 +112,19 @@ void NPC::kill() {
 	delete army;
 	delete inventory;
 	
+	//Code from MapEntity destructor
+	if (Global::map != NULL) {
+		Tile* thisTile = Global::map->getTile(position);
+		if (thisTile != NULL) {
+			if (atBackground) {
+				thisTile->backgroundEntities.erase(std::remove(thisTile->backgroundEntities.begin(), thisTile->backgroundEntities.end(), this));
+			} else {
+				thisTile->entities.erase(std::remove(thisTile->entities.begin(), thisTile->entities.end(), this));
+			}
+		}
+	}
+	
+	position = Point(-1, -1);
 	dead = true;
 }
 

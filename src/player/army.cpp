@@ -66,23 +66,17 @@ void Army::render() {
 	
 	destinationRect.w = unitSize;
 	destinationRect.h = unitSize;
-	//FIXME correct display and interaction when army is inverted
-	/*for (int j0 = 0; j0 < iHeight; j0++) {
-		int j = isInverted ? iHeight - 1 - j0 : j0;*/
-	for (int j = 0; j < iHeight; j++) {
+	for (int j0 = 0; j0 < iHeight; j0++) {
 		for (int i = 0; i < iWidth; i++) {
+			int j = isInverted ? (j0 == 0 ? 1 : 0) : j0;
 			destinationRect.x = x + paddingHorizontal * (i + 1) + unitSize * i;
-			/*if (isInverted) {
-				destinationRect.y = y + paddingVertical * (iHeight - j) + unitSize * (iHeight - 1 - j);
-			} else {*/
-				destinationRect.y = y + paddingVertical * (j + 1) + unitSize * j;
-			//}
-			if (units[j * iWidth + i] == NULL || (units[j * iWidth + i]->isDead() && Global::guiHandler->isHardlocked())) {
+			destinationRect.y = y + paddingVertical * (j + 1) + unitSize * j;
+			if (units[j0 * iWidth + i] == NULL || (units[j0 * iWidth + i]->isDead() && Global::guiHandler->isHardlocked())) {
 				//If there are no present units at the given position
 				//Or the unit is deceased and we are currently on the battlefield
 				//In these cases we render the no-unit-there texture
 				
-				switch (getUPFromPos(Point(i, j))) {
+				switch (getUPFromPos(Point(i, j0))) {
 					case UnitPosition::FRONTROW:
 						defaultUnitTextureFront->render(destinationRect);
 						break;
@@ -96,11 +90,11 @@ void Army::render() {
 				
 			} else {
 				//Rendering of unit selection / hovering indicator
-				units[j * iWidth + i]->render(destinationRect);
-				units[j * iWidth + i]->renderMiniStats({destinationRect.x, destinationRect.y + destinationRect.h, destinationRect.w, destinationRect.h / 3});
-				if (selectedUnitPos == Point(i, j)) {
+				units[j0 * iWidth + i]->render(destinationRect);
+				units[j0 * iWidth + i]->renderMiniStats({destinationRect.x, destinationRect.y + destinationRect.h, destinationRect.w, destinationRect.h / 3});
+				if (selectedUnitPos == Point(i, j0)) {
 					selectedUnitTexture->render(destinationRect);
-				} else if (hoveredUnitPos == Point(i, j)) {
+				} else if (hoveredUnitPos == Point(i, j0)) {
 					if (isInverted) {
 						//If enemy we render an attack indicator texture
 						if (isEnemyAttackable && allowAttack) {
@@ -109,9 +103,9 @@ void Army::render() {
 							SDL_SetRenderDrawColor(Global::renderer, 0xAF, 0x33, 0x33, 0xAF);
 							SDL_Rect damageIndicatorDestinationRect;
 							damageIndicatorDestinationRect.x = destinationRect.x;
-							damageIndicatorDestinationRect.y = destinationRect.y + (int)((double)(units[j * iWidth + i]->statsWithItems["life"] - units[j * iWidth + i]->statsWithItems["currentLife"]) / units[j * iWidth + i]->statsWithItems["life"] * destinationRect.h);
+							damageIndicatorDestinationRect.y = destinationRect.y + (int)((double)(units[j0 * iWidth + i]->statsWithItems["life"] - units[j0 * iWidth + i]->statsWithItems["currentLife"]) / units[j0 * iWidth + i]->statsWithItems["life"] * destinationRect.h);
 							damageIndicatorDestinationRect.w = destinationRect.w;
-							damageIndicatorDestinationRect.h = (int)((double)(enemyDamageIndicator) / units[j * iWidth + i]->statsWithItems["life"] * destinationRect.h) + 1;
+							damageIndicatorDestinationRect.h = (int)((double)(enemyDamageIndicator) / units[j0 * iWidth + i]->statsWithItems["life"] * destinationRect.h) + 1;
 							SDL_RenderFillRect(Global::renderer, &damageIndicatorDestinationRect);
 							
 							
@@ -293,6 +287,7 @@ void Army::switchUnits(Point unitPos1, Point unitPos2) {
 void Army::handleLeftClickEvent(int xp, int yp) {
 	Point clickPos = getUnitOnCursor(xp, yp);
 	if (clickPos != Point(-1, -1)) {
+		
 		if (Global::guiHandler->isHardlocked()) {
 			//If we are in a battle
 			
@@ -622,7 +617,11 @@ Point Army::getUnitOnCursor(int xp, int yp) {
 			int unitX = x + paddingHorizontal * (i + 1) + unitSize * i;
 			int unitY = y + paddingVertical * (j + 1) + unitSize * j;
 			if (xp >= unitX && xp <= unitX + unitSize && yp >= unitY && yp <= unitY + unitSize) {
-				return Point(i, j);
+				if (isInverted) {
+					return Point(i, j == 0 ? 1 : 0);
+				} else {
+					return Point(i, j);
+				}
 			}
 		}
 	}

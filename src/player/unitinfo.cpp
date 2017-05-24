@@ -42,7 +42,7 @@ void UnitInfo::render() {
 		}
 		
 		//Name
-		ATexture* nameText = Global::resourceHandler->getTextTexture(Text(selectedUnit->getName(), Global::resourceHandler->colors["unitinfo-desc"]));
+		ATexture* nameText = Global::resourceHandler->getTextTexture(Text(selectedUnit->getName(), Global::resourceHandler->getColor("unitinfo-desc")));
 		Dimension d = nameText->getDimensions();
 		d *= nameSize;
 		d /= Global::defaultFontSize;
@@ -98,7 +98,7 @@ void UnitInfo::render() {
 				ossValue << selectedUnit->getLevel();
 			}
 			
-			ATexture* statText = Global::resourceHandler->getTextTexture(Text(ossStat.str(), Global::resourceHandler->colors["unitinfo-desc"]));
+			ATexture* statText = Global::resourceHandler->getTextTexture(Text(ossStat.str(), Global::resourceHandler->getColor("unitinfo-desc")));
 			d = statText->getDimensions();
 			d *= statsSize;
 			d /= Global::defaultFontSize;
@@ -111,11 +111,11 @@ void UnitInfo::render() {
 			
 			SDL_Color valueColor;
 			if (difference == 0) {
-				valueColor = Global::resourceHandler->colors["unitinfo-values-unchanged"];
+				valueColor = Global::resourceHandler->getColor("unitinfo-values-unchanged");
 			} else if (difference > 0) {
-				valueColor = Global::resourceHandler->colors["unitinfo-values-incremented"];
+				valueColor = Global::resourceHandler->getColor("unitinfo-values-incremented");
 			} else {
-				valueColor = Global::resourceHandler->colors["unitinfo-values-decremented"];
+				valueColor = Global::resourceHandler->getColor("unitinfo-values-decremented");
 			}
 			
 			ATexture* valueText = Global::resourceHandler->getTextTexture(Text(ossValue.str(), valueColor));

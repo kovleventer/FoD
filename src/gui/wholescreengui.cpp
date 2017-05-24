@@ -33,7 +33,7 @@ void WholeScreenGUI::render() {
 	
 	//Rendereing header text
 	int headerTextSize = headerSize;
-	ATexture* headerTextTexture = Global::resourceHandler->getTextTexture(headerText, Global::resourceHandler->colors["whole-header"]);
+	ATexture* headerTextTexture = Global::resourceHandler->getTextTexture(headerText, Global::resourceHandler->getColor("whole-header"));
 	Dimension d = headerTextTexture->getDimensions();
 	d *= headerTextSize;
 	d /= Global::defaultFontSize;

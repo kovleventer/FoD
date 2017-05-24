@@ -21,7 +21,7 @@ void Button::render() {
 	texture->render(destinationRect);
 	
 	if (text != "") {
-		ATexture* textTexture = Global::resourceHandler->getTextTexture(Text(text, Global::resourceHandler->colors["button-text"]));
+		ATexture* textTexture = Global::resourceHandler->getTextTexture(Text(text, Global::resourceHandler->getColor("button-text")));
 		Dimension d = textTexture->getDimensions();
 		d *= fontSize;
 		d /= Global::defaultFontSize;

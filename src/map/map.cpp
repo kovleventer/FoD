@@ -512,7 +512,7 @@ void Map::renderTileCoordinates() {
 				j * Global::tileSize - Global::camera->getPosition().getY()
 			);
 			
-			ATexture* textTextureX = Global::resourceHandler->getTextTexture(Text(std::to_string(i), Global::resourceHandler->colors["debug-coord"]));
+			ATexture* textTextureX = Global::resourceHandler->getTextTexture(Text(std::to_string(i), Global::resourceHandler->getColor("debug-coord")));
 			Dimension d = textTextureX->getDimensions();
 			int textSize = Global::tileSize / 4;
 			d *= textSize;
@@ -529,7 +529,7 @@ void Map::renderTileCoordinates() {
 			
 			
 			
-			ATexture* textTextureY = Global::resourceHandler->getTextTexture(Text(std::to_string(j), Global::resourceHandler->colors["debug-coord"]));
+			ATexture* textTextureY = Global::resourceHandler->getTextTexture(Text(std::to_string(j), Global::resourceHandler->getColor("debug-coord")));
 			d = textTextureY->getDimensions();
 			textSize = Global::tileSize / 4;
 			d *= textSize;

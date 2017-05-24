@@ -62,9 +62,7 @@ public:
 	Mix_Music* getMusic(std::string name);
 	
 	
-	//Stores the colors that can be later referenced
-	//TODO use getters for consistency
-	std::map<std::string, SDL_Color> colors;
+	SDL_Color getColor(std::string name);
 private:
 	//***IMAGES***
 	void loadImages();
@@ -104,6 +102,8 @@ private:
 	
 	//***COLORS***
 	void loadColors();
+	//Stores the colors that can be later referenced
+	std::map<std::string, SDL_Color> colors;
 	
 	
 	//***AUDIO***

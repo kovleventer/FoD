@@ -86,7 +86,6 @@ void InteractiveWorldObject::setOwner(Character* newOwner) {
 }
 
 void InteractiveWorldObject::activate() {
-	//TODO finish implementation
 	std::cout << name << " (owned by " << owner->getName() << ") activated" << std::endl;
 	if (owner->getName() == "__takeable__") {
 		owner = Global::player;

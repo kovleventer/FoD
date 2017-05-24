@@ -149,6 +149,14 @@ Mix_Music* ResourceHandler::getMusic(std::string name) {
 	return music[name];
 }
 
+SDL_Color ResourceHandler::getColor(std::string name) {
+	if (colors.find(name) == colors.end()) {
+		std::clog << "Error: Color missing: " << name << " Using black as fallback" << std::endl;
+		return {0, 0, 0};
+	}
+	return colors[name];
+}
+
 void ResourceHandler::loadImages() {
 	loadTerrainImages();
 	loadWorldObjectImages();
@@ -295,6 +303,7 @@ void ResourceHandler::loadFont() {
 }
 
 void ResourceHandler::loadColors() {
+	//TODO make this a file
 	colors["whole-header"] = {220, 210, 200};
 	colors["iteminfo-desc"] = {240, 240, 240};
 	colors["unitinfo-desc"] = {235, 235, 235};

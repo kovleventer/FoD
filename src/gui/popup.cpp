@@ -85,7 +85,7 @@ void Popup::render() {
 	}
 	
 	if (text != "") {
-		ATexture* textTexture = Global::resourceHandler->getTextTexture(Text(text, Global::resourceHandler->colors["popup-text"]));
+		ATexture* textTexture = Global::resourceHandler->getTextTexture(Text(text, Global::resourceHandler->getColor("popup-text")));
 		Dimension d = textTexture->getDimensions();
 		//TODO change this
 		int textSize = 36;

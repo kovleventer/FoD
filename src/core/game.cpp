@@ -102,6 +102,9 @@ Game::Game(std::string aName, Version version) {
 			tickID = SDL_AddTimer(1000 / Global::ticks, timer, (char*)2);
 			
 			
+			//new Battle((NPC*)Global::npcHandler->getCharacterByName("Kov Lev"), (NPC*)Global::npcHandler->getCharacterByName("Friend"));
+			
+			
 			//Contains a while loop
 			mainLoop();
 			

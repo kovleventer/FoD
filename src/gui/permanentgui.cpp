@@ -150,7 +150,7 @@ void PermanentGUI::render() {
 	}
 	
 	//gold indicator for player
-	ATexture* goldText = Global::resourceHandler->getTextTexture(std::to_string(Global::player->getGold()), Global::resourceHandler->colors["gold"]);
+	ATexture* goldText = Global::resourceHandler->getTextTexture(std::to_string(Global::player->getGold()), Global::resourceHandler->getColor("gold"));
 	Dimension d = goldText->getDimensions();
 	d *= upperHeight;
 	d /= Global::defaultFontSize;
@@ -168,7 +168,7 @@ void PermanentGUI::render() {
 	goldTexture->render(destinationRect);
 	
 	if (renderDebugTickInfo) {
-		ATexture* gameTicksText = Global::resourceHandler->getTextTexture(std::to_string(Global::tickHandler->getGameTicks()), Global::resourceHandler->colors["gold"]);
+		ATexture* gameTicksText = Global::resourceHandler->getTextTexture(std::to_string(Global::tickHandler->getGameTicks()), Global::resourceHandler->getColor("gold"));
 		d = gameTicksText->getDimensions();
 		d *= upperHeight;
 		d /= Global::defaultFontSize;

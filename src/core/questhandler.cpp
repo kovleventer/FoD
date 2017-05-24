@@ -88,7 +88,7 @@ void QuestHandler::loadAll() {
 			case QuestTrigger::TIME: {
 				std::string triggerTimeString;
 				std::getline(file, triggerTimeString);
-				//FIXME the exception this migt throw somewhy not cached
+				//FIXME the exception this might throw somewhy not cached
 				loaded->qtTimeInTicks = std::stoi(triggerTimeString);
 				break; }
 			case QuestTrigger::QUEST_COMPLETION: {

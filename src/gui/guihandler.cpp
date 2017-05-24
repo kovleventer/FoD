@@ -40,8 +40,6 @@ void GUIHandler::setGUI(BasicGUI* newGUI) {
 	
 	if (newGUI == NULL) return;
 	
-	//currentGUI = newGUI;
-	//hasGUI = (currentGUI != NULL);
 	if (hasGUI && !hasGUIInQueue) {
 		popups.push(newGUI);
 		hasGUIInQueue = true;
@@ -99,7 +97,7 @@ void GUIHandler::clear() {
 		}
 		
 		popups.pop();
-			//Stopping player movement if neccesary
+		//Stopping player movement if neccesary
 		if (hasGUI && Global::player->getState() == PlayerState::MOVING) {
 			Global::player->clearPath();
 		}
@@ -124,7 +122,6 @@ void GUIHandler::render() {
 		SDL_RenderFillRect(Global::renderer, &destinationRect);
 		WholeScreenGUI* possibleBattleWSGUI = dynamic_cast<WholeScreenGUI*>(currentGUI);
 		if (possibleBattleWSGUI != NULL && possibleBattleWSGUI->getBelongsToBattle()) {
-		//if (currentBattle != NULL) {
 			currentBattle->render();
 		} else {
 			currentGUI->render();

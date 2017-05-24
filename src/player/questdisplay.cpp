@@ -18,7 +18,7 @@ void QuestLister::render() {
 	SDL_Rect destinationRect = {x, y, w, headerSize};
 	headBGTexture->render(destinationRect);
 	
-	ATexture* headerText = Global::resourceHandler->getTextTexture("Active quests", Global::resourceHandler->colors["iteminfo-desc"]);
+	ATexture* headerText = Global::resourceHandler->getTextTexture("Active quests", Global::resourceHandler->getColor("iteminfo-desc"));
 	Dimension d = headerText->getDimensions();
 	d *= headerSize * 3 / 4;
 	d /= Global::defaultFontSize;
@@ -35,7 +35,7 @@ void QuestLister::render() {
 		
 		Quest* currentQuest = getQuest(i);
 		if (currentQuest != NULL) {
-			ATexture* headerText = Global::resourceHandler->getTextTexture(currentQuest->getName(), Global::resourceHandler->colors["iteminfo-desc"]);
+			ATexture* headerText = Global::resourceHandler->getTextTexture(currentQuest->getName(), Global::resourceHandler->getColor("iteminfo-desc"));
 			Dimension d = headerText->getDimensions();
 			d *= headerSize * 2 / 3;
 			d /= Global::defaultFontSize;
