@@ -23,7 +23,7 @@ class Character : public MapEntity {
 public:
 	Character(Point pos);
 	Character(int x, int y);
-	~Character();
+	virtual ~Character();
 	
 	//Getters
 	PointD getProgressVector();
@@ -41,11 +41,13 @@ public:
 	void takeGold(int goldToTake);
 	
 	//Owned controllers
-	void addOwned(InteractiveWorldObject* interactiveToAdd);
-	void removeOwned(InteractiveWorldObject* interactiveToRemove);
+	virtual void addOwned(InteractiveWorldObject* interactiveToAdd);
+	virtual void removeOwned(InteractiveWorldObject* interactiveToRemove);
 	
 	//Indicates if a structure is takeable by anyone
 	static Character* characterPlaceholderTakeable;
+	//Indicates if a structure can not have any owner
+	static Character* characterPlaceholderNeutral;
 protected:
 	//When we are rendering, we are using position+progressVector to get the actual position of the claracter
 	PointD progressVector;

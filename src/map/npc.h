@@ -10,6 +10,7 @@
 #include "../player/army.h"
 #include "../player/inventory.h"
 #include "character.h"
+#include "../util/stdextension.h"
 
 class Quest;
 
@@ -19,15 +20,27 @@ class Quest;
 
 
 /*!
+ * @enum NPCMovement
+ * Determinates what controls the npc's movement
+ */
+enum class NPCMovement {
+	STANDING,
+	CIRCULATING,
+	VISIT_OWN_STRUCT
+};
+
+
+/*!
  * @class NPC non-player character, non-person character or non-playable character as wikipedia states
  * Controlled by AI
  * Sometimes moves
  */
 class NPC : public Character {
+	friend class NPCHandler;
 public:
-	NPC(std::string text, int x, int y);
-	NPC(std::string text, Point pos);
-	NPC(std::string text, std::vector<Point> pathPoints);
+	NPC(std::string text, int x, int y, NPCMovement nm);
+	NPC(std::string text, Point pos, NPCMovement nm);
+	NPC(std::string text, CircularPath* cp);
 	
 	//deletes path
 	~NPC();
@@ -43,16 +56,18 @@ public:
 	
 	//Getters
 	double getSpeed();
-	bool getStanding();
-	std::vector<Point> getTempCont();
+	NPCMovement getMovementType();
 	CircularPath* getPath();
 	bool isEnemy();
 	bool isDead();
 	
 	//Setters
 	void setSpeed(double newSpeed);
-	void setPath(CircularPath* newPath);
 	void setIsEnemy(bool newIsEnemy);
+	
+	//Overriding from character (adding functionality)
+	void addOwned(InteractiveWorldObject* interactiveToAdd);
+	void removeOwned(InteractiveWorldObject* interactiveToRemove);
 	
 	//This kills the npc
 	void kill();
@@ -65,16 +80,24 @@ private:
 	void init();
 	
 	CircularPath* path;
-	std::vector<Point> temporaryContainer;
 	
 	//Is NPC standing
-	bool isStanding;
+	NPCMovement movementType;
+	
+	//Sets NPC's position and the AI makes decisions
+	void setPositionAI(Point newPosition);
 	
 	//TODO factions
 	bool enemy;
 	
 	//Is npc dead
 	bool dead;
+	
+	//If position is set already for the current path piece
+	bool positionSet;
+	
+	//Regenerates path by taking all owned structures
+	void recalculatePathByOwned();
 	
 	//Storing data dor quests
 	std::vector<Quest*> questTriggerTalks;

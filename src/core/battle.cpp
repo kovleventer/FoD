@@ -239,6 +239,7 @@ void Battle::continueBattle() {
 }
 
 int Battle::getPossibleDamage(Unit* unitToAttack) {
+	if (currentAttackingUnit == NULL) return 0;
 	//Calculating damage
 	int attackValue = currentAttackingUnit->getAttack();
 	int defenseValue = unitToAttack->getDefense(currentAttackingUnit);
@@ -484,22 +485,24 @@ void Battle::quickBattle() {
 				}
 			}
 			
-			for (int i = 0; i < army1->getWidth(); i++) {
-				for (int j = 0; j < army1->getHeight(); j++) {
-					Unit* tempUnit = army1->getUnit(i, j);
-					if (tempUnit != NULL) {
-						for (int k = 0; k < tempUnit->getUnitInventorySize(); k++) {
-							Item* currentItem = tempUnit->getItem(k);
-							if (currentItem != NULL) {
-								npc2->getInventory()->addItem(currentItem);
+			if (battleType == BattleType::NPC_NPC) {
+				for (int i = 0; i < army1->getWidth(); i++) {
+					for (int j = 0; j < army1->getHeight(); j++) {
+						Unit* tempUnit = army1->getUnit(i, j);
+						if (tempUnit != NULL) {
+							for (int k = 0; k < tempUnit->getUnitInventorySize(); k++) {
+								Item* currentItem = tempUnit->getItem(k);
+								if (currentItem != NULL) {
+									npc2->getInventory()->addItem(currentItem);
+								}
 							}
 						}
-					}
-					
-					//NOTE completely irrelevant stuff
-					Unit* tempA2Unit = army2->getUnit(i, j);
-					if (tempA2Unit != NULL) {
-						tempA2Unit->recalculateInventory();
+						
+						//NOTE completely irrelevant stuff
+						Unit* tempA2Unit = army2->getUnit(i, j);
+						if (tempA2Unit != NULL) {
+							tempA2Unit->recalculateInventory();
+						}
 					}
 				}
 			}

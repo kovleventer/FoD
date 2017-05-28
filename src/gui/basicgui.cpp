@@ -75,6 +75,7 @@ void BasicGUI::render() {
 }
 
 //Do nothing since they are virtual functions
+//They could be defined as pure virtuals, however overriding (or implementing) them is not always necessary
 void BasicGUI::handleLeftClickEvent(int xp, int yp) {}
 void BasicGUI::handleRightClickEvent(int xp, int yp) {}
 void BasicGUI::handleMouseMotionEvent(int xp, int yp) {}

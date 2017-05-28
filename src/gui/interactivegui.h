@@ -90,6 +90,7 @@ public:
 	
 	//Getters, setters for items
 	Item* getItem(unsigned int index);
+	unsigned int getItemsToSellSize();
 	void addItem(Item* itemToAdd);
 	void removeCurrentItem();
 	//Overwrites the current itemlist
@@ -105,6 +106,7 @@ public:
 	void setFontSize(int newFontSize);
 	void setItemInfo(ItemInfo* newItemInfo);
 	void setItemCheckoutMenu(ItemCheckoutMenu* newItemCheckoutMenu);
+	void setSelectedItemPosition(unsigned int newSelectedItemPosition);
 	
 	//Event handling
 	void handleLeftClickEvent(int xp, int yp);

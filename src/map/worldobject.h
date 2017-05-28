@@ -9,9 +9,11 @@
 #include "../gui/wholescreengui.h"
 #include "../player/army.h"
 
-class Character; // Forward declaration
-class InteractiveGUI; // Forward declaration
+//Forward declarations
+class Character;
+class InteractiveGUI;
 class Quest;
+class NPC;
 
 /*!
  * @author kovlev
@@ -26,6 +28,7 @@ class WorldObject : public MapEntity {
 public:
 	WorldObject(std::string text, int x, int y);
 	WorldObject(std::string text, Point pos);
+	virtual ~WorldObject();
 };
 
 
@@ -48,6 +51,7 @@ private:
 /*!
  * @class InteractiveWorldObject a world objects that has tiles, which trigger some kind of events
  * Has properties like owner or name
+ * Often referred to as 'structure' or 'struct' which may cause confusion
  */
 class InteractiveWorldObject : public WorldObject {
 public:
@@ -67,7 +71,10 @@ public:
 	void setOwner(Character* newOwner);
 	
 	//Activates the current IWO
+	//If the player does this
 	void activate();
+	//If an NPC does this
+	void activate(NPC* npc);
 	
 	//NOTE temporary variable
 	std::string tempOwnerHolder;

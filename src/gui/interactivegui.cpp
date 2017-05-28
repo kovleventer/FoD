@@ -195,6 +195,10 @@ Item* ItemBuyingMenu::getItem(unsigned int index) {
 	return NULL;
 }
 
+unsigned int ItemBuyingMenu::getItemsToSellSize() {
+	return itemsToSell.size();
+}
+
 void ItemBuyingMenu::addItem(Item* itemToAdd) {
 	itemsToSell.push_back(itemToAdd);
 }
@@ -234,6 +238,10 @@ void ItemBuyingMenu::setItemInfo(ItemInfo* newItemInfo) {
 
 void ItemBuyingMenu::setItemCheckoutMenu(ItemCheckoutMenu* newItemCheckoutMenu) {
 	itemCheckoutMenu = newItemCheckoutMenu;
+}
+
+void ItemBuyingMenu::setSelectedItemPosition(unsigned int newSelectedItemPosition) {
+	selectedItemPosition = newSelectedItemPosition;
 }
 
 void ItemBuyingMenu::handleLeftClickEvent(int xp, int yp) {

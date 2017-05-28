@@ -10,6 +10,7 @@
 /*!
  * @class AudioHandler Handles audio
  * Plays music and sound effects
+ * Basically a wrapper over SDL_Mixer
  */
 class AudioHandler {
 public:
@@ -48,6 +49,8 @@ public:
 	int getSoundVolume();
 	int getMusicVolume();
 private:
+	//Not really used since the param -1 handles all channels
+	//Therefore iterating over channels is not have to be done by us
 	int allocatedChannels;
 	
 	//Temporary variables for muting

@@ -9,20 +9,23 @@
  * @author kovlev
  */
 
-NPC::NPC(std::string text, int x, int y) : NPC(text, Point(x, y)) {}
+NPC::NPC(std::string text, int x, int y, NPCMovement nm) : NPC(text, Point(x, y), nm) {}
 
-NPC::NPC(std::string text, Point pos) : Character(pos) {
+NPC::NPC(std::string text, Point pos, NPCMovement nm) : Character(pos) {
 	texture = Global::resourceHandler->getATexture(TT::NPC, text);
-	isStanding = true;
+	movementType = nm;
+	if (movementType == NPCMovement::VISIT_OWN_STRUCT) {
+		speed = 0.07 / Global::ticks * 64;
+	}
 	path = NULL;
 	init();
 }
 
-NPC::NPC(std::string text, std::vector<Point> pathPoints) : Character(pathPoints[0]) {
+NPC::NPC(std::string text, CircularPath* cp) : Character(cp->current()) {
 	texture = Global::resourceHandler->getATexture(TT::NPC, text);
-	isStanding = false;
+	movementType = NPCMovement::CIRCULATING;
 	speed = 0.07 / Global::ticks * 64;
-	temporaryContainer = pathPoints;
+	path = cp;
 	init();
 }
 
@@ -33,7 +36,7 @@ NPC::~NPC() {
 }
 
 void NPC::updateNPCPosition() {
-	if (isStanding) return;
+	if (movementType == NPCMovement::STANDING) return;
 	Point nextTile = path->next();
 	Point currentTile = path->current();
 	progressVector += PointD(nextTile - currentTile) * speed;
@@ -43,7 +46,12 @@ void NPC::updateNPCPosition() {
 	
 	if (fabs(progressVector.getX()) > 0.5 || fabs(progressVector.getY()) > 0.5) {
 		//We can not simply change the positon, we need the update the references on the tile
-		setPosition(nextTile);
+		if (!positionSet) {
+			setPositionAI(nextTile);
+			positionSet = true;
+		}
+	} else {
+		positionSet = false;
 	}
 	
 	if (fabs(progressVector.getX()) > 1 || fabs(progressVector.getY()) > 1) {
@@ -70,12 +78,8 @@ void NPC::activate() {
 	}
 }
 
-bool NPC::getStanding() {
-	return isStanding;
-}
-
-std::vector<Point> NPC::getTempCont() {
-	return temporaryContainer;
+NPCMovement NPC::getMovementType() {
+	return movementType;
 }
 
 CircularPath* NPC::getPath() {
@@ -90,12 +94,22 @@ bool NPC::isDead() {
 	return dead;
 }
 
-void NPC::setPath(CircularPath* newPath) {
-	path = newPath;
-}
-
 void NPC::setIsEnemy(bool newIsEnemy) {
 	enemy = newIsEnemy;
+}
+
+void NPC::addOwned(InteractiveWorldObject* interactiveToAdd) {
+	Character::addOwned(interactiveToAdd);
+	if (movementType == NPCMovement::VISIT_OWN_STRUCT) {
+		recalculatePathByOwned();
+	}
+}
+
+void NPC::removeOwned(InteractiveWorldObject* interactiveToRemove) {
+	Character::removeOwned(interactiveToRemove);
+	if (movementType == NPCMovement::VISIT_OWN_STRUCT) {
+		recalculatePathByOwned();
+	}
 }
 
 void NPC::kill() {
@@ -107,7 +121,7 @@ void NPC::kill() {
 	if (path != NULL)
 		delete path;
 	
-	Global::npcHandler->npcs.erase(std::remove(Global::npcHandler->npcs.begin(), Global::npcHandler->npcs.end(), this));
+	stdex::remove_value_vec(Global::npcHandler->npcs, this);
 	
 	delete army;
 	delete inventory;
@@ -117,9 +131,9 @@ void NPC::kill() {
 		Tile* thisTile = Global::map->getTile(position);
 		if (thisTile != NULL) {
 			if (atBackground) {
-				thisTile->backgroundEntities.erase(std::remove(thisTile->backgroundEntities.begin(), thisTile->backgroundEntities.end(), this));
+				stdex::remove_value_vec(thisTile->backgroundEntities, this);
 			} else {
-				thisTile->entities.erase(std::remove(thisTile->entities.begin(), thisTile->entities.end(), this));
+				stdex::remove_value_vec(thisTile->entities, this);
 			}
 		}
 	}
@@ -150,4 +164,37 @@ void NPC::init() {
 	atBackground = false;
 	inventory = new Inventory(20);
 	dead = false;
+	positionSet = false;
+}
+
+void NPC::setPositionAI(Point newPosition) {
+	setPosition(newPosition);
+	
+	InteractiveWorldObject* currentInteractive = Global::map->getInteractiveOnTile(position);
+	if (currentInteractive != NULL) {
+		currentInteractive->activate(this);
+	}
+}
+
+void NPC::recalculatePathByOwned() {
+	std::vector<Point> ownedPoses;
+	//FIXME this
+	/*std::cout << ownedBuildings.size() << std::endl;
+	if (ownedBuildings.size() == 1) {
+		if (path != NULL) {
+			delete path;
+			path = NULL;
+		}
+		//movementType = NPCMovement::STANDING;
+		return;
+	}*/
+	
+	for (unsigned int i = 0; i < ownedBuildings.size(); i++) {
+		ownedPoses.push_back(ownedBuildings[i]->getPosition());
+	}
+	if (path != NULL) {
+		delete path;
+	}
+	//TODO add temp path so that the npc can walk to its structure
+	path = new CircularPath(ownedPoses);
 }

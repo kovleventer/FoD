@@ -18,11 +18,15 @@ NPCHandler::~NPCHandler() {
 	
 	delete Character::characterPlaceholderTakeable;
 	Character::characterPlaceholderTakeable = NULL;
+	delete Character::characterPlaceholderNeutral;
+	Character::characterPlaceholderNeutral = NULL;
 }
 
 void NPCHandler::loadAll() {
 	Character::characterPlaceholderTakeable = new Character(-1, -1);
 	Character::characterPlaceholderTakeable->setName("__takeable__");
+	Character::characterPlaceholderTakeable = new Character(-1, -1);
+	Character::characterPlaceholderTakeable->setName("__neutral__");
 	
 	std::vector<std::string> npcNames = FilesystemHandler::getFilesInDir(basePath);
 	
@@ -110,13 +114,33 @@ void NPCHandler::loadAll() {
 		int pathLen = 0;
 		file >> pathLen;
 		
+		//If NPC
 		std::vector<Point> pathPieces;
+		//If player or npc with VISIT_OWN_STRUCT
+		Point position;
+		bool visitOwnStruct = false;
 		
-		for (int i = 0; i < pathLen; i++) {
-			int pathX, pathY;
-			file >> pathX;
-			file >> pathY;
-			pathPieces.push_back(Point(pathX, pathY));
+		if (textureName == "player") {
+			int px, py;
+			file >> px;
+			file >> py;
+			position = Point(px, py);
+		} else {
+			if (pathLen == -1) {
+				//-1 indicates that it is only for position
+				int px, py;
+				file >> px;
+				file >> py;
+				position = Point(px, py);
+				visitOwnStruct = true;
+			} else {
+				for (int i = 0; i < pathLen; i++) {
+					int pathX, pathY;
+					file >> pathX;
+					file >> pathY;
+					pathPieces.push_back(Point(pathX, pathY));
+				}
+			}
 		}
 		
 		double scale;
@@ -137,7 +161,7 @@ void NPCHandler::loadAll() {
 		
 		if (textureName == "player") {
 			//Player counts as an npc
-			Global::player->setPosition(pathPieces[0]);
+			Global::player->setPosition(position);
 			Global::player->setScale(scale);
 			Global::player->setName(name);
 			//Adding units to army
@@ -166,20 +190,24 @@ void NPCHandler::loadAll() {
 			
 			Global::player->giveGold(gold);
 			
-			Global::camera->setPosition(pathPieces[0]);
+			Global::camera->setPosition(position);
 		} else {
 			//Initializing NPC
 			//NOTE a little bit of redundancy here
 			NPC* loaded;
 			
 			if (pathPieces.size() == 1) {
-				loaded = new NPC(textureName, pathPieces[0]);
+				loaded = new NPC(textureName, pathPieces[0], NPCMovement::STANDING);
 				Global::map->getTile(pathPieces[0])->entities.push_back(loaded);
 			} else if (pathPieces.size() == 0) {
-				loaded = new NPC(textureName, Point(0, 0));
-				Global::map->getTile(0, 0)->entities.push_back(loaded);
+				if (visitOwnStruct) {
+					loaded = new NPC(textureName, position, NPCMovement::VISIT_OWN_STRUCT);
+				} else {
+					loaded = new NPC(textureName, Point(0, 0), NPCMovement::STANDING);
+					Global::map->getTile(0, 0)->entities.push_back(loaded);
+				}
 			} else {
-				loaded = new NPC(textureName, pathPieces);
+				loaded = new NPC(textureName, new CircularPath(pathPieces));
 				Global::map->getTile(pathPieces[0])->entities.push_back(loaded);
 			}
 			
@@ -213,11 +241,6 @@ void NPCHandler::loadAll() {
 			
 			loaded->giveGold(gold);
 			
-			//Setting path
-			if (!loaded->getStanding()) {
-				loaded->setPath(new CircularPath(loaded->getTempCont()));
-			}
-			
 			npcs.push_back(loaded);
 			npcsByName[name] = loaded;
 		}
@@ -231,7 +254,13 @@ void NPCHandler::updateNPCsPosition() {
 }
 
 Character* NPCHandler::getCharacterByName(std::string characterName) {
-	//Some python like player-checking
+	//Some python like special-checking
+	if (characterName == "__takeable__") {
+		return Character::characterPlaceholderTakeable;
+	}
+	if (characterName == "__neutral__") {
+		return Character::characterPlaceholderNeutral;
+	}
 	if (characterName == "__player__") {
 		return Global::player;
 	}

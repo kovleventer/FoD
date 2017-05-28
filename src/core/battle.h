@@ -12,6 +12,7 @@
  * @author kovlev
  */
 
+
 /*!
  * @enum BattleType the type of battle
  */
@@ -25,8 +26,8 @@ enum class BattleType {
 
 /*!
  * @class Battle a battle is between two characters
- * On an npc-player duel, the battle is visible, animated and controllable
- * npc-npc duel is not yet implemented
+ * On an npc-player (or npc-interactive) duel, the battle is visible, animated and controllable
+ * On npc-npc duel or npc vs interactive, the battle is done instantly without gui
  */
 class Battle {
 public:
@@ -74,6 +75,7 @@ private:
 	WholeScreenGUI* gui;
 	BattleType battleType;
 	
+	//Initializes gui
 	void initGUIBattle();
 	
 	//If the player is participating in the battle
@@ -110,5 +112,8 @@ private:
 	Point attackTexturePosition;
 	int animSpeed;
 	
+	//AI decides which unit to attack next
+	//Some movement had been implemented however it is far from comlete
+	//After the target is chosen, calls the dealDamage method
 	void aiWhichUnitToAttack(Unit* currentUnit, Army* unitsArmy, Army* relativeEnemyArmy);
 };

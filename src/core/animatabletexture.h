@@ -81,6 +81,7 @@ private:
 	
 	//For animated textures
 	std::vector< std::pair<SDL_Texture*, int> > textureParts;
+	//The max value of the durations
 	int totalAnimationCycleDuration;
 	unsigned int currentIndex;
 	

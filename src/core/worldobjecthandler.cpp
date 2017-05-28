@@ -32,7 +32,6 @@ void WorldObjectHandler::loadAll() {
 void WorldObjectHandler::setOwnershipRelations() {
 	for (unsigned int i = 0; i < interactives.size(); i++) {
 		interactives[i]->setOwner(Global::npcHandler->getCharacterByName(interactives[i]->tempOwnerHolder));
-		Global::npcHandler->getCharacterByName(interactives[i]->tempOwnerHolder)->addOwned(interactives[i]);
 	}
 }
 

@@ -7,14 +7,21 @@
  */
 
 ATexture::ATexture(SDL_Texture* staticTexture) {
+	//Static textures are simple
 	currentTexture = staticTexture;
 	textureType = TextureType::STATIC;
 }
 
 ATexture::ATexture(std::vector< std::pair<SDL_Texture*, int> > textParts) {
+	//Animated textures
 	if (textParts.size() == 0) {
-		throw std::runtime_error("Error! invalid texture count (0)");
+		throw std::runtime_error("Invalid texture count (0)");
 		return;
+	}
+	if (textParts.size() == 1) {
+		std::clog << "Warning! Animated texture consists only one stage. Simplifying to static texture" << std::endl;
+		currentTexture = textParts[0].first;
+		textureType = TextureType::STATIC;
 	}
 	
 	textureParts = textParts;
@@ -28,7 +35,7 @@ ATexture::ATexture(std::vector< std::pair<SDL_Texture*, int> > textParts) {
 
 ATexture::ATexture(std::vector<SDL_Texture*> textParts) {
 	if (textParts.size() != 8) {
-		throw std::runtime_error("Error! invalid texture count (not 8)");
+		throw std::runtime_error("Invalid texture count (not 8)");
 		return;
 	}
 	

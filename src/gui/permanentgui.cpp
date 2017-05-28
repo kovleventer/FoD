@@ -87,6 +87,7 @@ PermanentGUI::PermanentGUI(int uH, int lH) {
 
 void PermanentGUI::initButtonCallbacks() {
 	//Lambda magic
+	//There may be a better way of passing anonymus functions as callbacks
 	buttons[0]->setOnClick([] {
 		if (Global::permaGUI->getClickedEntry() == ClickedEntry::QUESTS) {
 			Global::guiHandler->clear();
@@ -168,6 +169,7 @@ void PermanentGUI::render() {
 	goldTexture->render(destinationRect);
 	
 	if (renderDebugTickInfo) {
+		//Renders current gameticks to the top-left corner of the screen
 		ATexture* gameTicksText = Global::resourceHandler->getTextTexture(std::to_string(Global::tickHandler->getGameTicks()), Global::resourceHandler->getColor("gold"));
 		d = gameTicksText->getDimensions();
 		d *= upperHeight;

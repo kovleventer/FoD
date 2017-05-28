@@ -4,6 +4,7 @@
 #include "character.h"
 #include "../gui/interactivegui.h"
 #include "../player/quest.h"
+#include "../map/npc.h"
 
 /*!
  * @author kovlev
@@ -17,6 +18,8 @@ WorldObject::WorldObject(std::string text, Point pos) : MapEntity(pos) {
 	texture = Global::resourceHandler->getATexture(TT::WORLDOBJECT, text);
 	atBackground = true;
 }
+
+WorldObject::~WorldObject() {}
 
 
 // ImpassableWorldObject stuff
@@ -82,16 +85,23 @@ void InteractiveWorldObject::setOwner(Character* newOwner) {
 		questTriggerCaptures[i]->start();
 	}
 	
+	//Setting ownership relations at npc side
+	if (owner != NULL) {
+		owner->removeOwned(this);
+	}
 	owner = newOwner;
+	if (owner != NULL) {
+		owner->addOwned(this);
+	}
 }
 
 void InteractiveWorldObject::activate() {
-	std::cout << name << " (owned by " << owner->getName() << ") activated" << std::endl;
 	if (owner->getName() == "__takeable__") {
-		owner = Global::player;
+		setOwner(Global::player);
 	}
 	
-	if (dynamic_cast<NPC*>(owner) != NULL && dynamic_cast<NPC*>(owner)->isEnemy()) {
+	NPC* ownerNPC = dynamic_cast<NPC*>(owner);
+	if (ownerNPC != NULL && ownerNPC->isEnemy()) {
 		//Battle handles itself
 		new Battle(this);
 	} else {
@@ -100,6 +110,53 @@ void InteractiveWorldObject::activate() {
 		}
 		
 		Global::guiHandler->setGUI(gui);
+	}
+}
+
+void InteractiveWorldObject::activate(NPC* npc) {
+	std::cout << npc->getName() << " activated " << name << " with $ of " << npc->getGold() << std::endl;
+	if (owner->getName() == "__takeable__") {
+		setOwner(npc);
+	}
+	
+	NPC* ownerNPC = dynamic_cast<NPC*>(owner);
+	if (npc->isEnemy()) {
+		//If current npc is an enemy
+		if ((ownerNPC != NULL && !ownerNPC->isEnemy())
+			|| (owner == Global::player)) {
+			//If current structure's owner is hostile towards npc
+			new Battle(npc, this);
+			return;
+		}
+	} else {
+		//If current npc is not an enemy
+		if (ownerNPC->isEnemy()) {
+			//If current structure's owner is hostile towards npc
+			new Battle(npc, this);
+			return;
+		}
+	}
+	
+	//NPC interaction for real
+	//The NPC will be able to buy and sell items & units
+	for (unsigned int i = 0; i < gui->getPartCount(); i++) {
+		//NOTE a bit slow due to the loop
+		ItemMarket* possibleItemMarket = dynamic_cast<ItemMarket*>(gui->getPart(i));
+		if (possibleItemMarket != NULL) {
+			//Traversing items
+			ItemBuyingMenu* ibm = possibleItemMarket->getItemBuyingMenu();
+			for (unsigned int j = 0; j < ibm->getItemsToSellSize(); j++) {
+				Item* currentItem = ibm->getItem(j);
+				
+				//The NPC does not hesitate, he simply buys all items he can
+				if (currentItem->getPrice() <= npc->getGold()) {
+					npc->takeGold(currentItem->getPrice());
+					npc->getInventory()->addItem(currentItem);
+					ibm->setSelectedItemPosition(j);
+					ibm->removeCurrentItem();
+				}
+			}
+		}
 	}
 }
 

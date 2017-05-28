@@ -52,10 +52,13 @@ void TickHandler::addAnimatedTexture(ATexture* animText) {
 }
 
 void TickHandler::removeAnimatedTexture(ATexture* animText) {
-	animatedTextures.erase(std::remove(animatedTextures.begin(), animatedTextures.end(), animText));
+	stdex::remove_value_vec(animatedTextures, animText);
 }
 
 void TickHandler::animateBattleAction(Point startCoord, Point endCoord) {
+	//Required due to threading
+	//It is possible that the battle animation still runs when cleanup is happening
+	if (Global::guiHandler == NULL) return;
 	//t = s / v
 	double s = startCoord.distanceTo(endCoord);
 	int v = Global::guiHandler->getBattle()->getAnimSpeed();

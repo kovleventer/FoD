@@ -17,7 +17,7 @@ public:
 	Camera(int x, int y, int newSpeed);
 	Camera(Point pos, int newSpeed);
 	
-	//Moves the camera with a vector
+	//Moves the camera with a vector, not to a specified position
 	void move(int x, int y);
 	void move(Point moveVector);
 	

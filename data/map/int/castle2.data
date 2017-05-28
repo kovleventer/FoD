@@ -1,6 +1,10 @@
+Purple Castle
+castle2
 Kov Lev
-undead
-"Axeman" "Bowman" "Bowman" "" "" "" "" "" "" ""
+1 1 1
+5 "sword" "ring" "staff" "mshield1" "boots"
+4 "Axeman" "Dog" "Bowman" "Axeman"
+"Dog" "Dog" "Dog" "" "" "" "" "" "" ""
 4 1 2 0 0 0 0 0 0 0
 42 0 0 0 0 0 0 0 0 0
 26 0 0 0 0 0 0 0 0 0
@@ -14,8 +18,6 @@ undead
 "" "" "" ""
 "" "" "" ""
 "" "" "" ""
-1 "sword"
-200
--1 0 6
+18 18
+1 0 0
 1
-enemy

@@ -55,6 +55,8 @@ enum class QuestState {
  * @class Quest
  * Represents a quest
  * A quest is triggerable, has different objectives and rewards
+ * Normal quest lifetime:
+ * NOT_YET_STARTED ---Trigger activated--> IN_PROGRESS ---Objective completed, reward added--> COMPLETED
  */
 class Quest {
 	friend class QuestHandler;
@@ -83,7 +85,7 @@ public:
 	void setRewardGold(int newRewardGold);
 	void addRewardItem(Item* rewardItemToAdd);
 	
-	//Checks whether the queststate is correct
+	//Checks whether the questState is correct
 	void start();
 	void complete();
 private:

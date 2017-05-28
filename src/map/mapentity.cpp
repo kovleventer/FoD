@@ -24,9 +24,9 @@ MapEntity::~MapEntity() {
 		Tile* thisTile = Global::map->getTile(position);
 		if (thisTile != NULL) {
 			if (atBackground) {
-				thisTile->backgroundEntities.erase(std::remove(thisTile->backgroundEntities.begin(), thisTile->backgroundEntities.end(), this));
+				stdex::remove_value_vec(thisTile->backgroundEntities, this);
 			} else {
-				thisTile->entities.erase(std::remove(thisTile->entities.begin(), thisTile->entities.end(), this));
+				stdex::remove_value_vec(thisTile->entities, this);
 			}
 		}
 	}
@@ -53,7 +53,7 @@ void MapEntity::setPosition(Point newPosition) {
 	if (nextTile == NULL) return;
 	
 	//We move the pointers
-	thisTile->entities.erase(std::remove(thisTile->entities.begin(), thisTile->entities.end(), this));
+	stdex::remove_value_vec(thisTile->entities, this);
 	nextTile->entities.push_back(this);
 	
 	position = newPosition;

@@ -66,10 +66,11 @@ void Character::addOwned(InteractiveWorldObject* interactiveToAdd) {
 }
 
 void Character::removeOwned(InteractiveWorldObject* interactiveToRemove) {
-	ownedBuildings.erase(std::remove(ownedBuildings.begin(), ownedBuildings.end(), interactiveToRemove), ownedBuildings.end());
+	stdex::remove_value_vec(ownedBuildings, interactiveToRemove);
 }
 
 Character* Character::characterPlaceholderTakeable = NULL;
+Character* Character::characterPlaceholderNeutral = NULL;
 
 void Character::calcRotation(Point pRot) {
 	if (pRot == Point(1, -1)) {

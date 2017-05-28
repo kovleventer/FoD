@@ -18,6 +18,7 @@
 class BasicGUI {
 public:
 	//Base class for all gui elements
+	//All coordinates are absolute
 	BasicGUI(int xp, int yp, int wp, int hp);
 	BasicGUI(SDL_Rect dimensionRect);
 	virtual ~BasicGUI();
@@ -41,6 +42,7 @@ public:
 	bool contains(Point p);
 	
 	virtual void render();
+	//Virtual functions for event handling
 	virtual void handleLeftClickEvent(int xp, int yp);
 	virtual void handleRightClickEvent(int xp, int yp);
 	virtual void handleMouseMotionEvent(int xp, int yp);

@@ -1,11 +1,14 @@
 #pragma once
 
+#include <algorithm>
+
 /*!
  * @author kovlev
  */
 
 /*!
- * @namespace stdex contains functions that helps stl containers
+ * @namespace stdex
+ * Contains functions that helps stl containers
  */
 namespace stdex {
 	
@@ -48,4 +51,10 @@ namespace stdex {
 		m.clear();
 	}
 	
+	//Removes element by value from a vector
+	template<typename Vector, typename E>
+	void remove_value_vec(Vector& v, E e) {
+		//NOTE removes all elements, this might not be the preferable behaviour in all cases
+		v.erase(std::remove(v.begin(), v.end(), e), v.end());
+	}
 }
