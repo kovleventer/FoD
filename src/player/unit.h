@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include <string>
 #include <map>
+#include <numeric>
 
 #include "item.h"
 #include "../util/point.h"
@@ -14,7 +15,8 @@
 
 
 /*!
- * @enum UnitType the unit's type (self-explanatory, I think)
+ * @enum UnitType 
+ * The unit's type (self-explanatory, I think)
  */
 enum class UnitType {
 	FIGHTER,
@@ -25,7 +27,8 @@ enum class UnitType {
 
 
 /*!
- * @class Unit represents a unit
+ * @class Unit
+ * Represents a unit
  * Uses maps with string keys and int values for storing stats
  */
 class Unit {
@@ -62,6 +65,7 @@ public:
 	void addTempXP(int xpToAdd);
 	void clearTempXP();
 	
+	//Unit inventory manipulators
 	bool addItem(Item* itemToAdd);
 	Item* removeItem(int position);
 	Item* getItem(int position);
@@ -75,7 +79,11 @@ public:
 	int getAttack();
 	int getDefense(Unit* attackingUnit);
 	
+	//Recalculates stats based on items in inventory
 	void recalculateInventory();
+	
+	//Does not return the price of the unit -- it calculates ~ how strong is the unit actually
+	int getUnitValue(bool withItems);
 	
 	//This kills the unit
 	void kill();
@@ -113,9 +121,30 @@ private:
 
 
 /*!
- * @class UnitSpeedComparator Compares two units by their speed stats (used in battle)
+ * @class UnitSpeedComparator
+ * Compares two units by their speed stats (used in battle)
  */
 class UnitSpeedComparator {
+public:
+	bool operator()(Unit* a, Unit* b);
+};
+
+
+/*!
+ * @class UnitValueComparatorWItems
+ * Compares two units by their values with items
+ */
+class UnitValueComparatorWItems {
+public:
+	bool operator()(Unit* a, Unit* b);
+};
+
+
+/*!
+ * @class UnitValueComparatorNoItems
+ * Compares two units by their values without items
+ */
+class UnitValueComparatorNoItems {
 public:
 	bool operator()(Unit* a, Unit* b);
 };

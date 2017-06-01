@@ -8,7 +8,7 @@
 
 #include "../util/point.h"
 #include "../map/npc.h"
-#include "../util/circularpath.h"
+#include "../util/path.h"
 #include "../util/filesystemhandler.h"
 
 /*!

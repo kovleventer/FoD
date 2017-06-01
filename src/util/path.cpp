@@ -1,4 +1,4 @@
-#include "circularpath.h"
+#include "path.h"
 
 #include "pathfinding.h"
 
@@ -6,9 +6,46 @@
  * @author kovlev
  */
 
-CircularPath::CircularPath(std::vector<Point> points) {
-	//Init
+
+// BasePath stuff
+
+BasePath::BasePath()  {
 	positionIndex = 0;
+}
+
+BasePath::~BasePath() {}
+
+
+// SimplePath stuff
+
+SimplePath::SimplePath(std::vector<Point> points) : BasePath() {
+	path = points;
+}
+
+Point SimplePath::next() {
+	if (positionIndex >= path.size() - 1) {
+		return Point::INVALID;
+	}
+	return path[positionIndex + 1];
+}
+
+Point SimplePath::current() {
+	return path[positionIndex];
+}
+
+bool SimplePath::isAtFirst() {
+	return positionIndex == 0;
+}
+
+bool SimplePath::isAtLast() {
+	return positionIndex == path.size() - 1;
+}
+
+
+// CircularPath stuff
+
+CircularPath::CircularPath(std::vector<Point> points) : BasePath() {
+	//Init
 	generatePath(points);
 }
 
@@ -23,6 +60,15 @@ Point CircularPath::next() {
 
 Point CircularPath::current() {
 	return path[positionIndex];
+}
+
+//Since this type of path is circular, first and last points make no sense
+bool CircularPath::isAtFirst() {
+	return false;
+}
+
+bool CircularPath::isAtLast() {
+	return false;
 }
 
 void CircularPath::moveForward() {

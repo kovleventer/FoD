@@ -1,7 +1,7 @@
 Player's name
 player
-"" "Axeman" "Axeman" "" "" "" "Bowman" "Gray Mage" "" ""
-0 1 1 0 0 0 1 1 0 0
+"" "Axeman" "Axeman" "Knight" "" "" "Bowman" "Gray Mage" "" ""
+0 1 1 1 0 0 1 1 0 0
 0 0 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0 0 0
 "" "" "" ""

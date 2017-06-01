@@ -127,6 +127,7 @@ void Battle::continueBattle() {
 		}
 		if (enemyUnitCount == 0) {
 			player->getArmy()->finalizeUnitExperiences();
+			player->getArmy()->setAllowAttack(false);
 			Global::guiHandler->clear();
 			
 			
@@ -325,7 +326,7 @@ void Battle::dealDamage(Unit* unitToAttack, int damage, bool isContinuation) {
 		
 		enemyArmy->setAllowAttack(false);
 		player->getArmy()->setAllowAttack(false);
-		player->getArmy()->setSelectedUnitPos(Point(-1, -1));
+		player->getArmy()->setSelectedUnitPos(Point::INVALID);
 	}
 	
 	unitToAttack->statsWithItems["currentLife"] -= damage;
@@ -601,7 +602,7 @@ void Battle::aiWhichUnitToAttack(Unit* currentUnit, Army* unitsArmy, Army* relat
 		} else {
 			openPosition = unitsArmy->getFirstOpenBackRowPosition();
 		}
-		if (openPosition != Point(-1, -1)) {
+		if (openPosition != Point::INVALID) {
 			unitsArmy->switchUnits(currentUnit->getPosition(), openPosition);
 		}
 					

@@ -64,6 +64,8 @@ public:
 	//These two are working properly
 	bool operator==(const Point& other) const;
 	bool operator!=(const Point& other) const;
+	
+	const static Point INVALID;
 private:
 	int x;
 	int y;
@@ -140,6 +142,8 @@ public:
 	//These two are working properly
 	bool operator==(const PointD& other) const;
 	bool operator!=(const PointD& other) const;
+	
+	const static PointD INVALID;
 private:
 	double x;
 	double y;

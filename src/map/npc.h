@@ -3,10 +3,10 @@
 #include <SDL.h>
 #include <vector>
 #include <string>
-#include <thread>
+#include <queue>
 
 #include "../util/point.h"
-#include "../util/circularpath.h"
+#include "../util/path.h"
 #include "../player/army.h"
 #include "../player/inventory.h"
 #include "character.h"
@@ -72,6 +72,10 @@ public:
 	//This kills the npc
 	void kill();
 	
+	//Recalculates the optimal positions for units in army
+	//Redistributes items
+	void rearrangeArmy();
+	
 	//Quest stuff
 	void addQuestTriggerTalk(Quest* questTriggerTalkToAdd);
 	void addQuestObjectiveTalk(Quest* questObjectiveTalkToAdd);
@@ -95,6 +99,9 @@ private:
 	
 	//If position is set already for the current path piece
 	bool positionSet;
+	
+	//If the NPC is standing only temporarily (has currently only one or zero structures)
+	bool temporaryStanding;
 	
 	//Regenerates path by taking all owned structures
 	void recalculatePathByOwned();

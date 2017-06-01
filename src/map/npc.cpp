@@ -100,14 +100,14 @@ void NPC::setIsEnemy(bool newIsEnemy) {
 
 void NPC::addOwned(InteractiveWorldObject* interactiveToAdd) {
 	Character::addOwned(interactiveToAdd);
-	if (movementType == NPCMovement::VISIT_OWN_STRUCT) {
+	if (movementType == NPCMovement::VISIT_OWN_STRUCT || temporaryStanding) {
 		recalculatePathByOwned();
 	}
 }
 
 void NPC::removeOwned(InteractiveWorldObject* interactiveToRemove) {
 	Character::removeOwned(interactiveToRemove);
-	if (movementType == NPCMovement::VISIT_OWN_STRUCT) {
+	if (movementType == NPCMovement::VISIT_OWN_STRUCT || temporaryStanding) {
 		recalculatePathByOwned();
 	}
 }
@@ -138,8 +138,63 @@ void NPC::kill() {
 		}
 	}
 	
-	position = Point(-1, -1);
+	position = Point::INVALID;
 	dead = true;
+}
+
+void NPC::rearrangeArmy() {
+	std::priority_queue<Unit*, std::vector<Unit*>, UnitValueComparatorNoItems> meleeUnits;
+	std::priority_queue<Unit*, std::vector<Unit*>, UnitValueComparatorNoItems> rangedUnits;
+	//Removing all units while saving them and all their items
+	for (int i = 0; i < army->getWidth(); i++) {
+		for (int j = 0; j < army->getHeight(); j++) {
+			Unit* currentUnit = army->getUnit(i, j);
+			
+			if (currentUnit != NULL) {
+				for (int k = 0; k < currentUnit->getUnitInventorySize(); k++) {
+					inventory->addItem(currentUnit->removeItem(k));
+				}
+				
+				if (currentUnit->isDead()) {
+					//Not preserving unit if dead
+					delete currentUnit;
+					army->setUnit(i, j, NULL);
+					continue;
+				}
+				if (currentUnit->isMelee()) {
+					meleeUnits.push(currentUnit);
+				} else {
+					rangedUnits.push(currentUnit);
+				}
+			}
+		}
+	}
+	
+	army->nullifyUnits();
+	
+	//Readding units to army
+	//Choosing the most valuable units to the rows
+	int pushableToMeleeCount = meleeUnits.size() < 4 ? meleeUnits.size() : 4;
+	int pushableToRangedCount = rangedUnits.size() < 4 ? rangedUnits.size() : 4;
+	for (int i = 0; i < pushableToMeleeCount; i++) {
+		army->addUnit(meleeUnits.top());
+		meleeUnits.pop();
+	}
+	for (int i = 0; i < pushableToRangedCount; i++) {
+		army->addUnit(rangedUnits.top());
+		rangedUnits.pop();
+	}
+	//Adding the rest to the support
+	while (!meleeUnits.empty()) {
+		army->addUnit(meleeUnits.top(), UnitAddingPreference::SUPPORTFIRST);
+		meleeUnits.pop();
+	}
+	while (!meleeUnits.empty()) {
+		army->addUnit(rangedUnits.top(), UnitAddingPreference::SUPPORTFIRST);
+		rangedUnits.pop();
+	}
+	
+	//TODO add items to units
 }
 
 void NPC::addQuestTriggerTalk(Quest* questTriggerTalkToAdd) {
@@ -165,6 +220,7 @@ void NPC::init() {
 	inventory = new Inventory(20);
 	dead = false;
 	positionSet = false;
+	temporaryStanding = false;
 }
 
 void NPC::setPositionAI(Point newPosition) {
@@ -178,16 +234,18 @@ void NPC::setPositionAI(Point newPosition) {
 
 void NPC::recalculatePathByOwned() {
 	std::vector<Point> ownedPoses;
-	//FIXME this
-	/*std::cout << ownedBuildings.size() << std::endl;
-	if (ownedBuildings.size() == 1) {
+	if (ownedBuildings.size() <= 1) {
 		if (path != NULL) {
 			delete path;
 			path = NULL;
 		}
-		//movementType = NPCMovement::STANDING;
+		movementType = NPCMovement::STANDING;
+		temporaryStanding = true;
 		return;
-	}*/
+	}
+	
+	temporaryStanding = false;
+	movementType = NPCMovement::VISIT_OWN_STRUCT;
 	
 	for (unsigned int i = 0; i < ownedBuildings.size(); i++) {
 		ownedPoses.push_back(ownedBuildings[i]->getPosition());

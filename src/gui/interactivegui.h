@@ -195,6 +195,7 @@ public:
 	
 	//Getters, setters for units
 	Unit* getUnit(unsigned int index);
+	unsigned int getUnitsToSellSize();
 	void addUnit(Unit* unitToAdd);
 	void removeUnit(unsigned int index);
 	void setUnitList(std::vector<Unit*> newList);

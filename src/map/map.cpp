@@ -1,7 +1,7 @@
 #include "map.h"
 
 #include "../core/global.h"
-#include "../util/circularpath.h"
+#include "../util/path.h"
 
 /*!
  * @author kovlev
@@ -84,12 +84,12 @@ void Map::render() {
 }
 
 Point Map::getTileFromCursorPosition(Point cursorPosition) {
-	//If we pass an invalid cursor position we return (-1, -1)
+	//If we pass an invalid cursor position we return (-1, -1) (Point::INVALID)
 	if (cursorPosition.getX() < 0 ||
 		cursorPosition.getX() >= Global::screenWidth ||
 		cursorPosition.getY() < 0 ||
 		cursorPosition.getY() >= Global::screenHeight) {
-		return Point(-1, -1);
+		return Point::INVALID;
 	}
 	
 	Point positionOnFullPixmap = Global::camera->getPosition() + cursorPosition;

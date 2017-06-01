@@ -14,7 +14,8 @@
 
 
 /*!
- * @enum BattleType the type of battle
+ * @enum BattleType 
+ * The type of battle
  */
 enum class BattleType {
 	PLAYER_NPC,
@@ -25,7 +26,8 @@ enum class BattleType {
 
 
 /*!
- * @class Battle a battle is between two characters
+ * @class Battle
+ * A battle is between two characters
  * On an npc-player (or npc-interactive) duel, the battle is visible, animated and controllable
  * On npc-npc duel or npc vs interactive, the battle is done instantly without gui
  */

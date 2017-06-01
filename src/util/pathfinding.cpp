@@ -13,7 +13,7 @@ std::vector<Point> Pathfinding::findPath(Point start, Point destination) {
 	
 	//We keep track the previos point
 	std::map<Point, Point> cameFrom;
-	cameFrom[start] = Point(-1, -1);
+	cameFrom[start] = Point::INVALID;
 	
 	//Tiles to check
 	std::queue<Point> frontier;

@@ -14,7 +14,7 @@
 
 /*!
  * @class Pathfinding basically a one method class
- * Uses a highy unoptimezed algorithm (BFS) and an unsafe implementation
+ * Uses a highy unoptimized algorithm (BFS) and an unsafe implementation
  */
 class Pathfinding {
 public:

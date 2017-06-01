@@ -228,7 +228,7 @@ int Unit::getDefense(Unit* attackingUnit) {
 }
 
 void Unit::recalculateInventory() {
-	//Oh fuckmylife, i need to use maps for storing stats because its way too elegant here to give up
+	//I need to use maps for storing stats because its way too elegant here to give up
 	statsWithItems = stats;
 	for (int i = 0; i < unitInventorySize; i++) {
 		Item* tempItem = getItem(i);
@@ -242,6 +242,37 @@ void Unit::recalculateInventory() {
 					statsWithItems["currentNumberOfActions"] += it->second;
 				}
 			}
+		}
+	}
+	if (statsWithItems["currentLife"] <= 0) {
+		//Maybe not the best solution
+		kill();
+		statsWithItems["currentLife"] = 0;
+	}
+}
+
+int Unit::getUnitValue(bool withItems) {
+	int meleeMultipliers[] = {2, 2, 4, 2};
+	int rangedMultipliers[] = {1, 3, 2, 4};
+	if (withItems) {
+		int multiplicands[] = {statsWithItems["currentLife"],
+									getAttack() * statsWithItems["numberOfActions"],
+									(statsWithItems["physicalDefense"] + statsWithItems["magicDefense"]) / 2,
+									statsWithItems["speed"]};
+		if (isMelee()) {
+			return std::inner_product(std::begin(meleeMultipliers), std::end(meleeMultipliers), std::begin(multiplicands), 0);
+		} else {
+			return std::inner_product(std::begin(rangedMultipliers), std::end(rangedMultipliers), std::begin(multiplicands), 0);
+		}
+	} else {
+		int multiplicands[] = {stats["currentLife"],
+								getAttack() * stats["numberOfActions"],
+								(stats["physicalDefense"] + stats["magicDefense"]) / 2,
+								stats["speed"]};
+		if (isMelee()) {
+			return std::inner_product(std::begin(meleeMultipliers), std::end(meleeMultipliers), std::begin(multiplicands), 0);
+		} else {
+			return std::inner_product(std::begin(rangedMultipliers), std::end(rangedMultipliers), std::begin(multiplicands), 0);
 		}
 	}
 }
@@ -263,4 +294,12 @@ ATexture* Unit::deadTexture = NULL;
 
 bool UnitSpeedComparator::operator()(Unit* a, Unit* b) {
 	return (a->statsWithItems["speed"] < b->statsWithItems["speed"]);
+}
+
+bool UnitValueComparatorWItems::operator()(Unit* a, Unit* b) {
+	return (a->getUnitValue(true) < b->getUnitValue(true));
+}
+
+bool UnitValueComparatorNoItems::operator()(Unit* a, Unit* b) {
+	return (a->getUnitValue(false) < b->getUnitValue(false));
 }

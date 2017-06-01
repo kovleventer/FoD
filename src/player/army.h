@@ -93,6 +93,10 @@ public:
 	void removeUnit(int x, int y);
 	void removeUnit(Point p);
 	
+	//Sets all units to NULL
+	//NOTE save all pointer values otherwise memory leak will occurs
+	void nullifyUnits();
+	
 	//Switches two units on the given positions
 	void switchUnits(Point unitPos1, Point unitPos2);
 	
@@ -109,7 +113,7 @@ public:
 	bool areFrontAndBackRowsEmpty();
 	
 	//Gets the first open position on the back/front row
-	//Retruns Point(-1, -1), if no such position exists
+	//Retruns Point(-1, -1) (Point::INVALID), if no such position exists
 	Point getFirstOpenFrontRowPosition();
 	Point getFirstOpenBackRowPosition();
 	
@@ -149,7 +153,7 @@ private:
 	bool addUnitToSupport(Unit* unitToAdd);
 	
 	//Gets the position in point
-	//Returns -1, -1, if no unit is clicked
+	//Returns -1, -1 (Point::INVALID), if no unit is clicked
 	Point getUnitOnCursor(int xp, int yp);
 	
 	//Variables used in battles

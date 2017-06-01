@@ -35,7 +35,7 @@ void Player::updatePlayerPosition() {
 	
 	//If we are following an npc
 	if (follow != NULL) {
-		//NOTE this might slows down the program a lot
+		//NOTE this might slow down the program a lot
 		path = Pathfinding::findPath(position, follow->getPosition());
 		tileProgress = 0;
 		

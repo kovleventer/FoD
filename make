@@ -51,7 +51,7 @@ SOURCES=(
 	"player/questdisplay.cpp"
 	
 	"util/pathfinding.cpp"
-	"util/circularpath.cpp"
+	"util/path.cpp"
 	"util/point.cpp"
 	"util/text.cpp"
 	"util/version.cpp"

@@ -7,6 +7,7 @@
  * @author kovlev
  */
 
+
 Army::Army(int xp, int yp, int wp, int hp, int width, int height, bool isInv) : BasicGUI(xp, yp, wp, hp) {
 	units = new Unit*[width * height];
 	//Setting size attributes
@@ -39,8 +40,8 @@ Army::Army(int xp, int yp, int wp, int hp, int width, int height, bool isInv) : 
 	attackableUnitTexture = Global::resourceHandler->getATexture(TT::GUI, "attackableunit");
 	notAttackableUnitTexture = Global::resourceHandler->getATexture(TT::GUI, "notattackableunit");
 	
-	selectedUnitPos = Point(-1, -1);
-	hoveredUnitPos = Point(-1, -1);
+	selectedUnitPos = Point::INVALID;
+	hoveredUnitPos = Point::INVALID;
 	
 	//NOTE maybe unneeded, maybe necessary, maybe harmful and can cause errors
 	if (isInverted) {
@@ -263,6 +264,8 @@ void Army::setUnit(Point p, Unit* unitToSet) {
 }
 
 void Army::setUnit(int index, Unit* unitToSet) {
+	//Absolutely unoptimized
+	//Calculates the position Point from the index and the back
 	setUnit(index % iWidth, index / iWidth, unitToSet);
 }
 
@@ -276,6 +279,14 @@ void Army::removeUnit(Point p) {
 	removeUnit(p.getX(), p.getY());
 }
 
+void Army::nullifyUnits() {
+	for (int i = 0; i < iWidth; i++) {
+		for (int j = 0; j < iHeight; j++) {
+			setUnit(i, j, NULL);
+		}
+	}
+}
+
 void Army::switchUnits(Point unitPos1, Point unitPos2) {
 	Unit* unitA = getUnit(unitPos1);
 	Unit* unitB = getUnit(unitPos2);
@@ -286,7 +297,7 @@ void Army::switchUnits(Point unitPos1, Point unitPos2) {
 
 void Army::handleLeftClickEvent(int xp, int yp) {
 	Point clickPos = getUnitOnCursor(xp, yp);
-	if (clickPos != Point(-1, -1)) {
+	if (clickPos != Point::INVALID) {
 		
 		if (Global::guiHandler->isHardlocked()) {
 			//If we are in a battle
@@ -313,7 +324,7 @@ void Army::handleLeftClickEvent(int xp, int yp) {
 					if (tempUnit != getUnit(selectedUnitPos)) {
 						setUnit(clickPos, getUnit(selectedUnitPos));
 						setUnit(selectedUnitPos, tempUnit);
-						selectedUnitPos = Point(-1, -1);
+						selectedUnitPos = Point::INVALID;
 						unitInfo->setUnit(NULL);
 					}
 					allowAttack = false;
@@ -329,10 +340,10 @@ void Army::handleLeftClickEvent(int xp, int yp) {
 				//If garrison units are clicked
 				if (clickPos == selectedUnitPos) {
 					//When we click again on a selected unit, we remove the selection
-					selectedUnitPos = Point(-1, -1);
+					selectedUnitPos = Point::INVALID;
 					unitInfo->setUnit(NULL);
-				} else if (selectedUnitPos == Point(-1, -1)) {
-					if (Global::player->getArmy()->selectedUnitPos != Point(-1, -1)) {
+				} else if (selectedUnitPos == Point::INVALID) {
+					if (Global::player->getArmy()->selectedUnitPos != Point::INVALID) {
 						//Switching the units
 						Unit* tempUnit = getUnit(clickPos);
 						setUnit(clickPos, Global::player->getArmy()->getUnit(Global::player->getArmy()->selectedUnitPos));
@@ -345,20 +356,20 @@ void Army::handleLeftClickEvent(int xp, int yp) {
 					Unit* tempUnit = getUnit(clickPos);
 					setUnit(clickPos, getUnit(selectedUnitPos));
 					setUnit(selectedUnitPos, tempUnit);
-					selectedUnitPos = Point(-1, -1);
+					selectedUnitPos = Point::INVALID;
 					unitInfo->setUnit(NULL);
 				}
-				Global::player->getArmy()->selectedUnitPos = Point(-1, -1);
+				Global::player->getArmy()->selectedUnitPos = Point::INVALID;
 			} else if (dynamic_cast<GarrisonWrapper*>(dynamic_cast<InteractiveGUI*>(Global::guiHandler->getGUI()) == NULL
 				? NULL : ((InteractiveGUI*)Global::guiHandler->getGUI())->getCurrentPart()) != NULL) { //It works
 				Army* garrisonArmy = dynamic_cast<GarrisonWrapper*>(dynamic_cast<InteractiveGUI*>(Global::guiHandler->getGUI())->getCurrentPart())->getGarrison()->getArmy();
 				//If player units are clicked when in garrison
 				if (clickPos == selectedUnitPos) {
 					//When we click again on a selected unit, we remove the selection
-					selectedUnitPos = Point(-1, -1);
+					selectedUnitPos = Point::INVALID;
 					unitInfo->setUnit(NULL);
-				} else if (selectedUnitPos == Point(-1, -1)) {
-					if (garrisonArmy->selectedUnitPos != Point(-1, -1)) {
+				} else if (selectedUnitPos == Point::INVALID) {
+					if (garrisonArmy->selectedUnitPos != Point::INVALID) {
 						//Switching the units
 						Unit* tempUnit = getUnit(clickPos);
 						setUnit(clickPos, garrisonArmy->getUnit(garrisonArmy->selectedUnitPos));
@@ -371,10 +382,10 @@ void Army::handleLeftClickEvent(int xp, int yp) {
 					Unit* tempUnit = getUnit(clickPos);
 					setUnit(clickPos, getUnit(selectedUnitPos));
 					setUnit(selectedUnitPos, tempUnit);
-					selectedUnitPos = Point(-1, -1);
+					selectedUnitPos = Point::INVALID;
 					unitInfo->setUnit(NULL);
 				}
-				garrisonArmy->selectedUnitPos = Point(-1, -1);
+				garrisonArmy->selectedUnitPos = Point::INVALID;
 			} else {
 				//If player units are clicked
 				
@@ -386,9 +397,9 @@ void Army::handleLeftClickEvent(int xp, int yp) {
 					}
 				} else if (clickPos == selectedUnitPos) {
 					//When we click again on a selected unit, we remove the selection
-					selectedUnitPos = Point(-1, -1);
+					selectedUnitPos = Point::INVALID;
 					unitInfo->setUnit(NULL);
-				} else if (selectedUnitPos == Point(-1, -1)) {
+				} else if (selectedUnitPos == Point::INVALID) {
 					//If we do not have any selected unit, and our current clicked unit is legit
 					if (getUnit(clickPos) != NULL) {
 						selectedUnitPos = clickPos;
@@ -399,7 +410,7 @@ void Army::handleLeftClickEvent(int xp, int yp) {
 					Unit* tempUnit = getUnit(clickPos);
 					setUnit(clickPos, getUnit(selectedUnitPos));
 					setUnit(selectedUnitPos, tempUnit);
-					selectedUnitPos = Point(-1, -1);
+					selectedUnitPos = Point::INVALID;
 					unitInfo->setUnit(NULL);
 				}
 			
@@ -410,7 +421,7 @@ void Army::handleLeftClickEvent(int xp, int yp) {
 
 void Army::handleRightClickEvent(int xp, int yp) {
 	Point clickPos = getUnitOnCursor(xp, yp);
-	if (clickPos != Point(-1, -1)) {
+	if (clickPos != Point::INVALID) {
 		if (!Global::guiHandler->isHardlocked()) {
 			//If player's units are clikced
 			
@@ -428,8 +439,7 @@ void Army::handleMouseMotionEvent(int xp, int yp) {
 	Point hoverPos = getUnitOnCursor(xp, yp);
 	
 	if (Global::guiHandler->isHardlocked()) {
-		if (hoverPos != Point(-1, -1) && getUnit(hoverPos) != NULL && !getUnit(hoverPos)->isDead()) {
-			
+		if (hoverPos != Point::INVALID && getUnit(hoverPos) != NULL && !getUnit(hoverPos)->isDead()) {
 			isEnemyAttackable = false;
 			switch (getUPFromPos(hoverPos)) {
 				case UnitPosition::FRONTROW:
@@ -458,10 +468,10 @@ void Army::handleMouseMotionEvent(int xp, int yp) {
 		return;
 	}
 	
-	if (hoverPos != Point(-1, -1) && getUnit(hoverPos) != NULL && selectedUnitPos != hoverPos) {
+	if (hoverPos != Point::INVALID && getUnit(hoverPos) != NULL && selectedUnitPos != hoverPos) {
 		hoveredUnitPos = hoverPos;
 		//If we dont have an active unit
-		if (selectedUnitPos == Point(-1, -1)) {
+		if (selectedUnitPos == Point::INVALID) {
 			unitInfo->setUnit(getUnit(hoverPos));
 		}
 	} else {
@@ -470,7 +480,7 @@ void Army::handleMouseMotionEvent(int xp, int yp) {
 }
 
 void Army::clearHovering() {
-	hoveredUnitPos = Point(-1, -1);
+	hoveredUnitPos = Point::INVALID;
 }
 
 bool Army::isFrontRowEmpty() {
@@ -501,7 +511,7 @@ Point Army::getFirstOpenFrontRowPosition() {
 			return Point(i, 0);
 		}
 	}
-	return Point(-1, -1);
+	return Point::INVALID;
 }
 
 Point Army::getFirstOpenBackRowPosition() {
@@ -510,7 +520,7 @@ Point Army::getFirstOpenBackRowPosition() {
 			return Point(i, 1);
 		}
 	}
-	return Point(-1, -1);
+	return Point::INVALID;
 }
 
 UnitPosition Army::getUPFromPos(Point pos) {
@@ -539,10 +549,12 @@ void Army::finalizeUnitExperiences() {
 				}
 				
 				std::string unitName = units[i]->getName();
+				Point position = units[i]->getPosition();
 				
 				delete units[i];
 				
 				units[i] = Global::unitHandler->getUnit(unitName, level + 1);
+				units[i]->setPositionIndicator(position);
 				for (int j = 0; j < size; j++) {
 					units[i]->addItem(unitInventory[j]);
 				}
@@ -625,6 +637,6 @@ Point Army::getUnitOnCursor(int xp, int yp) {
 			}
 		}
 	}
-	//Returns (-1, -1) if no unit position is clicked
-	return Point(-1, -1);
+	//Returns (-1, -1) (invalid) if no unit position is clicked
+	return Point::INVALID;
 }

@@ -139,6 +139,7 @@ void InteractiveWorldObject::activate(NPC* npc) {
 	
 	//NPC interaction for real
 	//The NPC will be able to buy and sell items & units
+	bool boughtAnything = false;
 	for (unsigned int i = 0; i < gui->getPartCount(); i++) {
 		//NOTE a bit slow due to the loop
 		ItemMarket* possibleItemMarket = dynamic_cast<ItemMarket*>(gui->getPart(i));
@@ -154,9 +155,31 @@ void InteractiveWorldObject::activate(NPC* npc) {
 					npc->getInventory()->addItem(currentItem);
 					ibm->setSelectedItemPosition(j);
 					ibm->removeCurrentItem();
+					boughtAnything = true;
 				}
 			}
 		}
+		
+		Barracks* possibleBarracks = dynamic_cast<Barracks*>(gui->getPart(i));
+		if (possibleBarracks != NULL) {
+			//Traversing units
+			UnitBuyingMenu* ubm = possibleBarracks->getUnitBuyingMenu();
+			for (unsigned int j = 0; j < ubm->getUnitsToSellSize(); j++) {
+				Unit* currentUnit = ubm->getUnit(j);
+				
+				//The NPC does not hesitate, he simply buys all units he can
+				if (currentUnit->statsWithItems["price"] <= npc->getGold()) {
+					npc->takeGold(currentUnit->statsWithItems["price"]);
+					npc->getArmy()->addUnit(currentUnit);
+					ubm->removeUnit(j);
+					boughtAnything = true;
+				}
+			}
+		}
+	}
+	
+	if (boughtAnything) {
+		npc->rearrangeArmy();
 	}
 }
 

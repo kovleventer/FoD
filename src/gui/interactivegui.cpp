@@ -503,6 +503,10 @@ Unit* UnitBuyingMenu::getUnit(unsigned int index) {
 	return NULL;
 }
 
+unsigned int UnitBuyingMenu::getUnitsToSellSize() {
+	return unitsToSell.size();
+}
+
 void UnitBuyingMenu::addUnit(Unit* unitToAdd) {
 	unitsToSell.push_back(unitToAdd);
 	if (unitsToSell.size() <= 5) {

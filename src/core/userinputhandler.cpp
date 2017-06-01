@@ -101,8 +101,9 @@ void UserInputHandler::handleMousePressEvent(SDL_Event e) {
 		switch (Global::player->getState()) {
 			case PlayerState::STANDING: {
 				Point cursorTilePos = Global::map->getTileFromCursorPosition(Global::cursor->getPosition());
+				Tile* cursorTile = Global::map->getTile(cursorTilePos);
 				//If something is buggy
-				if (Global::map->getTile(cursorTilePos) == NULL) {
+				if (cursorTile == NULL) {
 					return;
 				}
 				
@@ -111,7 +112,7 @@ void UserInputHandler::handleMousePressEvent(SDL_Event e) {
 					return;
 				}
 				
-				if (Global::map->getTile(cursorTilePos)->getTileInfo() != TileInfo::IMPASSABLE) {
+				if (cursorTile->getTileInfo() != TileInfo::IMPASSABLE) {
 					
 					Global::player->setFollow(Global::map->getNPCOnTile(cursorTilePos));
 					
