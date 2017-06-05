@@ -24,6 +24,9 @@ public:
 	
 	virtual bool isAtFirst() = 0;
 	virtual bool isAtLast() = 0;
+	
+	//Moves forward one tile (sets the position index)
+	virtual void moveForward() = 0;
 protected:
 	//Indicates the current position
 	unsigned int positionIndex;
@@ -35,13 +38,15 @@ protected:
  */
 class SimplePath : public BasePath {
 public:
-	SimplePath(std::vector<Point> points);
+	SimplePath(Point start, Point end);
 	
 	Point next();
 	Point current();
 	
 	bool isAtFirst();
 	bool isAtLast();
+	
+	void moveForward();
 private:
 	std::vector<Point> path;
 };

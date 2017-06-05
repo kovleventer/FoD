@@ -343,6 +343,9 @@ void Game::mainLoop() {
 			case SDL_MOUSEBUTTONDOWN:
 				UserInputHandler::handleMousePressEvent(e);
 				break;
+			case SDL_MOUSEBUTTONUP:
+				UserInputHandler::handleMouseReleaseEvent(e);
+				break;
 			case SDL_MOUSEWHEEL:
 				//https://wiki.libsdl.org/SDL_MouseWheelEvent
 				//Check if the mouse wheel is flipped

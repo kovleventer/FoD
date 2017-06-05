@@ -57,7 +57,7 @@ public:
 	//Getters
 	double getSpeed();
 	NPCMovement getMovementType();
-	CircularPath* getPath();
+	BasePath* getPath();
 	bool isEnemy();
 	bool isDead();
 	
@@ -83,7 +83,9 @@ public:
 private:
 	void init();
 	
-	CircularPath* path;
+	BasePath* path;
+	//The path which is going to be active after current path finishes
+	BasePath* nextPath;
 	
 	//Is NPC standing
 	NPCMovement movementType;

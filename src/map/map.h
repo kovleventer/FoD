@@ -21,7 +21,8 @@
 
 
 /*!
- * @class Map the tilemap itself
+ * @class Map 
+ * The tilemap itself
  * It can render it and do other cool things
  */
 class Map {
@@ -37,9 +38,14 @@ public:
 	Tile* getTile(int x, int y);
 	Tile* getTile(Point pos);
 	
+	Army* getDisplayInfo();
+	Point getDisplayInfoPos();
+	void setDisplayInfo(Army* newDisplayInfo);
+	void setDisplayInfoPos(Point newDisplayInfoPos);
+	
 	void render();
 	
-	//sets the passablitity of the tiles
+	//Sets the passablitity of the tiles
 	void createPassabilityMap();
 	
 	//Converts screen coordinates to tile coordinates
@@ -75,10 +81,17 @@ private:
 	void renderTileMap();
 	void renderMapEntities();
 	void renderPath();
+	void renderDisplayInfo();
 	
 	//Loading
 	//Uses file IO
 	void loadTileMap();
+	
+	//Army for display info rendering
+	Army* displayInfo;
+	//In tile coordinates
+	Point displayInfoPos;
+	Dimension displayDim;
 	
 	//Paths
 	std::string tileMapPath;

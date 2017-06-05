@@ -45,8 +45,9 @@ void WholeScreenGUI::render() {
 	
 	//Render all parts
 	for (unsigned int i = 0; i < parts.size(); i++) {
-		//NOTE NULL-checking is not done here
-		parts[i]->render();
+		if (parts[i] != NULL) {
+			parts[i]->render();
+		}
 	}
 	
 	for (unsigned int i = 0; i < tempParts.size(); i++) {

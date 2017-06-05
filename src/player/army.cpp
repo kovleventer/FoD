@@ -430,6 +430,9 @@ void Army::handleRightClickEvent(int xp, int yp) {
 				unitInfo->setUnit(NULL);
 				delete clickedUnit;
 				setUnit(clickPos, NULL);
+				if (clickPos == selectedUnitPos) {
+					selectedUnitPos = Point::INVALID;
+				}
 			}
 		}
 	}
@@ -532,6 +535,10 @@ UnitPosition Army::getUPFromPos(Point pos) {
 		return UnitPosition::FRONTROW;
 	}
 	return UnitPosition::BACKROW;
+}
+
+UnitPosition Army::getUPFromPos(int x, int y) {
+	return getUPFromPos(Point(x, y));
 }
 
 void Army::finalizeUnitExperiences() {

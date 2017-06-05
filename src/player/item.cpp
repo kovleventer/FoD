@@ -69,3 +69,15 @@ void Item::render(SDL_Rect destinationRect, bool withIndicator) {
 		indicator->render(destinationRect);
 	}
 }
+
+int Item::getItemValue() {
+	int value = (stats["life"] * 1 +
+				stats["meleeDamage"] * 3 +
+				stats["shootingDamage"] * 3 +
+				stats["magicDamage"] * 3 +
+				stats["physicalDefense"] * 2 +
+				stats["magicDefense"] * 2 +
+				stats["speed"] * 2) *
+				(stats["numberOfActions"] + 1);
+	return value;
+}

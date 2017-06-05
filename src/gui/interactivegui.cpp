@@ -295,7 +295,8 @@ void ItemCheckoutMenu::render() {
 	//Rendering background
 	bgText->render(destinationRect);
 	
-	int itemToBuyPrice, itemToSellPrice;
+	int itemToBuyPrice = 0;
+	int itemToSellPrice = 0;
 	
 	//Rendering item to buy
 	destinationRect.x += horizontalPadding;

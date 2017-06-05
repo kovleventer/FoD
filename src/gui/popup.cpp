@@ -10,7 +10,7 @@ Popup::Popup(int xp, int yp, int wp, int hp, PopupType type) : BasicGUI(xp, yp, 
 	popupType = type;
 	
 	padding = 5;
-	buttonDimensions = Point(150, 50);
+	buttonDimensions = Dimension(150, 50);
 	
 	//Setting textures
 	backgroundT = Global::resourceHandler->getATexture(TT::GUI, "popupback");
@@ -20,9 +20,9 @@ Popup::Popup(int xp, int yp, int wp, int hp, PopupType type) : BasicGUI(xp, yp, 
 	
 	if (popupType == PopupType::POPUP_OK) {
 		buttonOK = new Button(
-			x + w - padding - buttonDimensions.getX(),
-			y + h - padding - buttonDimensions.getY(),
-			buttonDimensions.getX(), buttonDimensions.getY()
+			x + w - padding - buttonDimensions.W(),
+			y + h - padding - buttonDimensions.H(),
+			buttonDimensions.W(), buttonDimensions.H()
 		);
 		buttonOK->setText("OK");
 		
@@ -30,15 +30,15 @@ Popup::Popup(int xp, int yp, int wp, int hp, PopupType type) : BasicGUI(xp, yp, 
 		buttonYES = NULL;
 	} else if (popupType == PopupType::POPUP_YESNO) {
 		buttonNO = new Button(
-			x + w - padding * 2 - buttonDimensions.getX() * 2,
-			y + h - padding - buttonDimensions.getY(),
-			buttonDimensions.getX(), buttonDimensions.getY()
+			x + w - padding * 2 - buttonDimensions.W() * 2,
+			y + h - padding - buttonDimensions.H(),
+			buttonDimensions.W(), buttonDimensions.H()
 		);
 		buttonNO->setText("NO");
 		buttonYES = new Button(
-			x + w - padding - buttonDimensions.getX(),
-			y + h - padding - buttonDimensions.getY(),
-			buttonDimensions.getX(), buttonDimensions.getY()
+			x + w - padding - buttonDimensions.W(),
+			y + h - padding - buttonDimensions.H(),
+			buttonDimensions.W(), buttonDimensions.H()
 		);
 		buttonYES->setText("YES");
 		
@@ -52,7 +52,7 @@ Popup::Popup(int width, int height, PopupType type) : Popup(Global::screenWidth 
 															Global::permaGUI->getUpperHeight() + Global::permaGUI->getHeightLeftForMap() / 2 - height / 2,
 															width, height, type) {}
 
-Popup::Popup(Point dimension, PopupType type) : Popup(dimension.getX(), dimension.getY(), type) {}
+Popup::Popup(Dimension dimension, PopupType type) : Popup(dimension.W(), dimension.H(), type) {}
 
 Popup::~Popup() {
 	//Deletes the buttons
@@ -74,7 +74,7 @@ void Popup::render() {
 	destinationRect.x += padding;
 	destinationRect.y += padding;
 	destinationRect.w -= padding * 2;
-	destinationRect.h -= padding * 3 + buttonDimensions.getY();
+	destinationRect.h -= padding * 3 + buttonDimensions.H();
 	foregroundT->render(destinationRect);
 	
 	if (popupType == PopupType::POPUP_OK) {
@@ -155,3 +155,5 @@ void Popup::handleLeftClickEvent(int xp, int yp) {
 		}
 	}
 }
+
+const Dimension Popup::DEFAULT_DIM = Dimension(800, 400);

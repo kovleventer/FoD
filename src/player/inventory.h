@@ -55,10 +55,12 @@ public:
 	//Sets an item on the given positon to the given new item
 	void setItem(int x, int y, Item* itemToSet);
 	void setItem(Point p, Item* itemToSet);
+	void setItem(int index, Item* itemToSet);
 	
 	//Removes an item and returns it
 	Item* removeItem(int x, int y);
 	Item* removeItem(Point p);
+	Item* removeItem(int index);
 	
 	void handleLeftClickEvent(int xp, int yp);
 	void handleMouseMotionEvent(int xp, int yp);

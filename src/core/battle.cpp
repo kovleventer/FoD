@@ -115,8 +115,9 @@ void Battle::continueBattle() {
 		}
 		
 		if (playerUnitCount == 0) {
+			//If player lost
 			enemyArmy->finalizeUnitExperiences();
-			Popup* popup = new Popup(800, 400, PopupType::POPUP_OK);
+			Popup* popup = new Popup(Popup::DEFAULT_DIM, PopupType::POPUP_OK);
 			popup->setText("You died");
 			popup->buttonOK->setOnClick(Game::quit);
 			Global::guiHandler->clear();
@@ -126,12 +127,13 @@ void Battle::continueBattle() {
 			return;
 		}
 		if (enemyUnitCount == 0) {
+			//If player won
 			player->getArmy()->finalizeUnitExperiences();
 			player->getArmy()->setAllowAttack(false);
 			Global::guiHandler->clear();
 			
 			
-			Popup* popup = new Popup(800, 400, PopupType::POPUP_OK);
+			Popup* popup = new Popup(Popup::DEFAULT_DIM, PopupType::POPUP_OK);
 			int acquiredItems = 0;
 			//Adding enemy inventory
 			if (battleType == BattleType::PLAYER_NPC) {
@@ -182,6 +184,7 @@ void Battle::continueBattle() {
 			}
 			if (battleType == BattleType::PLAYER_STRUCT) {
 				enemyStruct->setOwner(Global::player);
+				enemyStruct->clearGarrisonArmy();
 			}
 			
 			delete this;
@@ -231,6 +234,7 @@ void Battle::continueBattle() {
 				
 				enemyArmy->setAllowAttack(true);
 				currentAttackingUnit = currentUnit;
+				
 				return;
 			} else {
 				aiWhichUnitToAttack(currentUnit, enemyArmy, player->getArmy());
@@ -558,6 +562,7 @@ void Battle::quickBattle() {
 			if (battleType == BattleType::NPC_STRUCT) {
 				//If npc won
 				structToFight->setOwner(npc1);
+				structToFight->clearGarrisonArmy();
 			}
 			return;
 		}

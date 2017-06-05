@@ -122,19 +122,27 @@ void Inventory::setItem(Point p, Item* itemToSet) {
 	setItem(p.getX(), p.getY(), itemToSet);
 }
 
+void Inventory::setItem(int index, Item* itemToSell) {
+	items[index] = itemToSell;
+}
+
 Item* Inventory::removeItem(int x, int y) {
 	//Checking for boundaries
 	if (y * iWidth + x >= (int)iSize || y * iWidth + x < 0) {
 		return NULL;
 	} else {
-		Item* itemToRemove = items[y * iWidth + x];
-		items[y * iWidth + x] = NULL;
-		return itemToRemove;
+		return removeItem(y * iWidth + x);
 	}
 }
 
 Item* Inventory::removeItem(Point p) {
 	return removeItem(p.getX(), p.getY());
+}
+
+Item* Inventory::removeItem(int index) {
+	Item* itemToRemove = items[index];
+	items[index] = NULL;
+	return itemToRemove;
 }
 
 void Inventory::handleLeftClickEvent(int xp, int yp) {

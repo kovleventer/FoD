@@ -204,6 +204,7 @@ void NPCHandler::loadAll() {
 			} else if (pathPieces.size() == 0) {
 				if (visitOwnStruct) {
 					loaded = new NPC(textureName, position, NPCMovement::VISIT_OWN_STRUCT);
+					Global::map->getTile(position)->entities.push_back(loaded);
 				} else {
 					loaded = new NPC(textureName, Point(0, 0), NPCMovement::STANDING);
 					Global::map->getTile(0, 0)->entities.push_back(loaded);

@@ -18,6 +18,10 @@ Map::Map() {
 	
 	allowDebug = false;
 	allowCoordinateRendering = false;
+	
+	displayInfo = NULL;
+	displayInfoPos = Point::INVALID;
+	displayDim = Dimension(500, 200);
 }
 
 Map::~Map() {
@@ -60,6 +64,22 @@ Tile* Map::getTile(Point pos) {
 	return getTile(pos.getX(), pos.getY());
 }
 
+Army* Map::getDisplayInfo() {
+	return displayInfo;
+}
+
+Point Map::getDisplayInfoPos() {
+	return displayInfoPos;
+}
+
+void Map::setDisplayInfo(Army* newDisplayInfo) {
+	displayInfo = newDisplayInfo;
+}
+
+void Map::setDisplayInfoPos(Point newDisplayInfoPos) {
+	displayInfoPos = newDisplayInfoPos;
+}
+
 void Map::render() {
 	//We can set the rendering order here
 	
@@ -80,6 +100,11 @@ void Map::render() {
 	
 	if (allowCoordinateRendering) {
 		renderTileCoordinates();
+	}
+	
+	//Army info if struct or npc is right clicked
+	if (displayInfo != NULL) {
+		renderDisplayInfo();
 	}
 }
 
@@ -276,7 +301,7 @@ void Map::renderMapEntities() {
 						}
 						NPC* possibleNPC = dynamic_cast<NPC*>(currEnt);
 						if (possibleNPC != NULL && possibleNPC->getMovementType() != NPCMovement::STANDING) {
-							//if (possibleNPC->isDead()) continue; // Temporary fix TODO proper fix
+							if (possibleNPC->getPath() == NULL) continue; //Ugly threading strikes again
 							PointD corrigation = (possibleNPC->getPath()->current() - possibleNPC->getPosition()) * Global::tileSize;
 							
 							destinationRect.x += possibleNPC->getProgressVector().getX() * Global::tileSize;
@@ -348,6 +373,53 @@ void Map::renderPath() {
 	destinationRect.x = Global::player->getPath()[Global::player->getPath().size() - 1].getX() * Global::tileSize - Global::camera->getPosition().getX();
 	destinationRect.y = Global::player->getPath()[Global::player->getPath().size() - 1].getY() * Global::tileSize - Global::camera->getPosition().getY();
 	Global::resourceHandler->getATexture(TT::PATH, "destination")->render(destinationRect);
+}
+
+void Map::renderDisplayInfo() {
+	//Setting rectangle
+	SDL_Rect destinationRect;
+	destinationRect.x = displayInfoPos.getX() * Global::tileSize - Global::camera->getPosition().getX() + Global::tileSize / 2 - displayDim.W() / 2;
+	destinationRect.y = displayInfoPos.getY() * Global::tileSize - Global::camera->getPosition().getY() - displayDim.H();
+	destinationRect.w = displayDim.W();
+	destinationRect.h = displayDim.H();
+	
+	//Correcting destinationRect if needed
+	if (displayInfoPos.getX() * Global::tileSize + Global::tileSize / 2 - displayDim.W() / 2 < 0) {
+		destinationRect.x -= displayInfoPos.getX() * Global::tileSize + Global::tileSize / 2 - displayDim.W() / 2;
+	}
+	if (displayInfoPos.getX() * Global::tileSize + Global::tileSize / 2 - displayDim.W() / 2 + displayDim.W() > Global::screenWidth) {
+		destinationRect.x -= displayInfoPos.getX() * Global::tileSize + Global::tileSize / 2 - displayDim.W() / 2 + displayDim.W() - Global::screenWidth;
+	}
+	if (displayInfoPos.getY() * Global::tileSize - displayDim.H() < 0) {
+		destinationRect.y -= displayInfoPos.getY() * Global::tileSize - displayDim.H();
+	}
+	
+	
+	for (int i = 0; i < displayInfo->getWidth(); i++) {
+		for (int j = 0; j < displayInfo->getHeight(); j++) {
+			Unit* currentUnit = displayInfo->getUnit(i, j);
+			SDL_Rect unitRect = destinationRect;
+			unitRect.x += i * 100;
+			unitRect.y += j * 100;
+			unitRect.w = 100;
+			unitRect.h = 100;
+			if (currentUnit != NULL && !currentUnit->isDead()) {
+				currentUnit->render(unitRect);
+			} else {
+				switch (displayInfo->getUPFromPos(i, j)) {
+					case UnitPosition::FRONTROW:
+						Global::resourceHandler->getATexture(TT::GUI, "armyslotbg_front")->render(unitRect);
+						break;
+					case UnitPosition::BACKROW:
+						Global::resourceHandler->getATexture(TT::GUI, "armyslotbg_back")->render(unitRect);
+						break;
+					case UnitPosition::SUPPORT:
+						Global::resourceHandler->getATexture(TT::GUI, "armyslotbg_support")->render(unitRect);
+						break;
+				}
+			}
+		}
+	}
 }
 
 void Map::loadTileMap() {

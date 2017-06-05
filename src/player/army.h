@@ -118,6 +118,7 @@ public:
 	Point getFirstOpenBackRowPosition();
 	
 	UnitPosition getUPFromPos(Point pos);
+	UnitPosition getUPFromPos(int x, int y);
 	
 	//FLAGS
 	//NOTE the inconvenience of the names

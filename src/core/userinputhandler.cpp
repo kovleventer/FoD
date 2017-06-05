@@ -147,10 +147,30 @@ void UserInputHandler::handleMousePressEvent(SDL_Event e) {
 			Global::guiHandler->getGUI()->handleRightClickEvent(Global::cursor->getPosition().getX(), Global::cursor->getPosition().getY());
 			return;
 		}
+		
+		//Checking clicked interactives or npcs
+		Point tileCoord = Global::map->getTileFromCursorPosition(Global::cursor->getPosition());
+		InteractiveWorldObject* clickedIWO = Global::map->getInteractiveOnTile(tileCoord);
+		if (clickedIWO != NULL) {
+			if (clickedIWO->getGarrisonArmy() != NULL) {
+				Global::map->setDisplayInfo(clickedIWO->getGarrisonArmy());
+				Global::map->setDisplayInfoPos(tileCoord);
+			}
+		} else {
+			NPC* clickedNPC = Global::map->getNPCOnTile(tileCoord);
+			if (clickedNPC != NULL) {
+				Global::map->setDisplayInfo(clickedNPC->getArmy());
+				Global::map->setDisplayInfoPos(tileCoord);
+			}
+		}
 	}
 }
 
-void UserInputHandler::handleMouseReleaseEvent(SDL_Event e) {}
+void UserInputHandler::handleMouseReleaseEvent(SDL_Event e) {
+	//Clearing current clicked displayable army
+	Global::map->setDisplayInfo(NULL);
+	Global::map->setDisplayInfoPos(Point::INVALID);
+}
 
 void UserInputHandler::handleMouseMotionEvent(int x, int y) {
 	//Checking present gui elements

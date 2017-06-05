@@ -18,8 +18,8 @@ BasePath::~BasePath() {}
 
 // SimplePath stuff
 
-SimplePath::SimplePath(std::vector<Point> points) : BasePath() {
-	path = points;
+SimplePath::SimplePath(Point start, Point end) : BasePath() {
+	path = Pathfinding::findPath(start, end);
 }
 
 Point SimplePath::next() {
@@ -39,6 +39,12 @@ bool SimplePath::isAtFirst() {
 
 bool SimplePath::isAtLast() {
 	return positionIndex == path.size() - 1;
+}
+
+void SimplePath::moveForward() {
+	if (!isAtLast()) {
+		positionIndex++;
+	}
 }
 
 

@@ -131,7 +131,7 @@ void Quest::addRewardItem(Item* rewardItemToAdd) {
 
 void Quest::start() {
 	if (questState == QuestState::NOT_YET_STARTED) {
-		Popup* popup = new Popup(800, 400, PopupType::POPUP_OK);
+		Popup* popup = new Popup(Popup::DEFAULT_DIM, PopupType::POPUP_OK);
 		popup->setText(description);
 		Global::guiHandler->addPopup(popup);
 		questState = QuestState::IN_PROGRESS;
@@ -140,7 +140,7 @@ void Quest::start() {
 
 void Quest::complete() {
 	if (questState == QuestState::IN_PROGRESS) {
-		Popup* popup = new Popup(800, 400, PopupType::POPUP_OK);
+		Popup* popup = new Popup(Popup::DEFAULT_DIM, PopupType::POPUP_OK);
 		popup->setItemList(rewardItems);
 		Global::guiHandler->addPopup(popup);
 		Global::player->giveGold(rewardGold);

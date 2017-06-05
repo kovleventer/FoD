@@ -73,9 +73,10 @@ public:
 	//Stores the item's statistics
 	std::map<std::string, int> stats;
 	
-private:
-	void init();
+	//Calculates a number based on item stats
+	int getItemValue();
 	
+private:
 	std::string name;
 	std::vector<std::string> description;
 	

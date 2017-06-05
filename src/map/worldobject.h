@@ -83,6 +83,9 @@ public:
 	//Returns NULL otherwise
 	Army* getGarrisonArmy();
 	
+	//Deletes all units from garrison army if that is possible
+	void clearGarrisonArmy();
+	
 	//Quest stuff
 	void addQuestTriggerCapture(Quest* questTriggerCaptureToAdd);
 	void addQuestObjectiveVisit(Quest* questObjectiveVisitToAdd);

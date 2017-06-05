@@ -193,6 +193,22 @@ Army* InteractiveWorldObject::getGarrisonArmy() {
 	return NULL;
 }
 
+void InteractiveWorldObject::clearGarrisonArmy() {
+	Army* garrisonArmy = getGarrisonArmy();
+	if (garrisonArmy != NULL) {
+		//Does NOT save the items belonging to the units
+		for (int i = 0; i < garrisonArmy->getWidth(); i++) {
+			for (int j = 0; j < garrisonArmy->getHeight(); j++) {
+				Unit* currentUnit = garrisonArmy->getUnit(i, j);
+				if (currentUnit != NULL) {
+					delete currentUnit;
+					garrisonArmy->setUnit(i, j, NULL);
+				}
+			}
+		}
+	}
+}
+
 void InteractiveWorldObject::addQuestTriggerCapture(Quest* questTriggerCaptureToAdd) {
 	questTriggerCaptures.push_back(questTriggerCaptureToAdd);
 }

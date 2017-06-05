@@ -15,7 +15,8 @@
 
 
 /*!
- * @enum PopupType offers two opion on popup types
+ * @enum PopupType 
+ * Offers two opion on popup types
  * One has only one button while the other has two
  * The yes-no popup offers no special functionality, so it is never used yet
  */
@@ -26,7 +27,8 @@ enum class PopupType {
 
 
 /*!
- * @class Popup displays a popup which is closed by clicking the OK button
+ * @class Popup 
+ * Displays a popup which is closed by clicking the OK button
  * Supports displaying text and item textures
  */
 class Popup : public BasicGUI {
@@ -36,7 +38,7 @@ public:
 	Popup(SDL_Rect dimensionRect, PopupType type);
 	//Auto-center popupss
 	Popup(int width, int height, PopupType type);
-	Popup(Point dimension, PopupType type);
+	Popup(Dimension dimension, PopupType type);
 	~Popup();
 	
 	void render();
@@ -63,9 +65,11 @@ public:
 	
 	//Event handling
 	void handleLeftClickEvent(int xp, int yp);
+	
+	static const Dimension DEFAULT_DIM;
 private:
 	//The width and the height of the used buttons
-	Point buttonDimensions;
+	Dimension buttonDimensions;
 	
 	//Padding of the text area
 	int padding;

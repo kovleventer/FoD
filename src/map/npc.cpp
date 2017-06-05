@@ -56,6 +56,11 @@ void NPC::updateNPCPosition() {
 	
 	if (fabs(progressVector.getX()) > 1 || fabs(progressVector.getY()) > 1) {
 		path->moveForward();
+		if (path->isAtLast()) {
+			delete path;
+			path = nextPath;
+			nextPath = NULL;
+		}
 		progressVector = PointD();
 	}
 }
@@ -82,7 +87,7 @@ NPCMovement NPC::getMovementType() {
 	return movementType;
 }
 
-CircularPath* NPC::getPath() {
+BasePath* NPC::getPath() {
 	return path;
 }
 
@@ -118,8 +123,14 @@ void NPC::kill() {
 	}
 	
 	//Check is NOT done by the delete operation
-	if (path != NULL)
+	if (path != NULL) {
 		delete path;
+		path = NULL;
+	}
+	if (nextPath != NULL) {
+		delete nextPath;
+		nextPath = NULL;
+	}
 	
 	stdex::remove_value_vec(Global::npcHandler->npcs, this);
 	
@@ -194,7 +205,35 @@ void NPC::rearrangeArmy() {
 		rangedUnits.pop();
 	}
 	
-	//TODO add items to units
+	//Add items to units
+	for (unsigned int i = 0; i < inventory->getInventorySize(); i++) {
+		Item* currentItem = inventory->getItem(i);
+		if (currentItem != NULL) {
+			std::cout << currentItem->getName() << "'s value: " << currentItem->getItemValue() << std::endl;
+			for (int j = 0; j < army->getWidth(); j++) {
+				for (int k = 0; k < army->getHeight(); k++) {
+					Unit* currentUnit = army->getUnit(j, k);
+					if (currentUnit != NULL && !currentUnit->isDead() && currentUnit->addItem(currentItem)) {
+						inventory->setItem(i, NULL);
+						//>:(
+						goto cont;
+					}
+				}
+			}
+		}
+		//>:(
+		cont: ;
+	}
+	
+	for (int i = 0; i < army->getWidth(); i++) {
+		for (int j = 0; j < army->getHeight(); j++) {
+			Unit* currentUnit = army->getUnit(i, j);
+			
+			if (currentUnit != NULL) {
+				currentUnit->recalculateInventory();
+			}
+		}
+	}
 }
 
 void NPC::addQuestTriggerTalk(Quest* questTriggerTalkToAdd) {
@@ -215,6 +254,7 @@ void NPC::init() {
 					Global::permaGUI->getDim().w * 4 / 5,
 					Global::permaGUI->getDim().h / 2,
 					5, 2, true);
+	nextPath = NULL;
 	enemy = true;
 	atBackground = false;
 	inventory = new Inventory(20);
@@ -250,9 +290,21 @@ void NPC::recalculatePathByOwned() {
 	for (unsigned int i = 0; i < ownedBuildings.size(); i++) {
 		ownedPoses.push_back(ownedBuildings[i]->getPosition());
 	}
+	
 	if (path != NULL) {
 		delete path;
+		path = NULL;
 	}
-	//TODO add temp path so that the npc can walk to its structure
-	path = new CircularPath(ownedPoses);
+	if (nextPath != NULL) {
+		delete nextPath;
+		nextPath = NULL;
+	}
+	
+	CircularPath* tempCP = new CircularPath(ownedPoses);
+	if (tempCP->current() == position) {
+		path = tempCP;
+	} else {
+		nextPath = tempCP;
+		path = new SimplePath(position, tempCP->current());
+	}
 }
