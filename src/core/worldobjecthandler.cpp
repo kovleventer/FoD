@@ -35,6 +35,12 @@ void WorldObjectHandler::setOwnershipRelations() {
 	}
 }
 
+void WorldObjectHandler::refillStocks() {
+	for (unsigned int i = 0; i < interactives.size(); i++) {
+		interactives[i]->refillStocks();
+	}
+}
+
 InteractiveWorldObject* WorldObjectHandler::getInteractiveByName(std::string interactiveName) {
 	if (interactivesByName.find(interactiveName) == interactivesByName.end()) {
 		return NULL;
@@ -179,14 +185,14 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 			}
 		}
 		
-		std::vector<Unit*> unitsToSell;
+		std::vector<std::string> unitsToSellNames;
 		if (hasUBM) {
 			int armLen;
 			file >> armLen;
 			for (int i = 0; i < armLen; i++) {
 				std::string unitName;
 				file >> std::quoted(unitName);
-				unitsToSell.push_back(Global::unitHandler->getUnit(unitName, 1));
+				unitsToSellNames.push_back(unitName);
 			}
 		}
 		
@@ -269,7 +275,7 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 		}
 		if (hasUBM) {
 			Barracks* tempBarracks = new Barracks(loaded->getGUI());
-			tempBarracks->getUnitBuyingMenu()->setUnitList(unitsToSell);
+			tempBarracks->getUnitBuyingMenu()->setUnitList(unitsToSellNames);
 			loaded->getGUI()->addPart({"Barracks", tempBarracks});
 		}
 		if (hasGar) {

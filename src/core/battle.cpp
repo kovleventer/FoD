@@ -81,6 +81,10 @@ void Battle::start() {
 }
 
 void Battle::continueBattle() {
+	if (Battle::isMainLoopEnded) {
+		delete this;
+		return;
+	}
 	
 	removeUnitFromQueue(currentAttackingUnit);
 	
@@ -387,6 +391,8 @@ void Battle::setAttackTexturePosition(Point newAttackTexturePosition) {
 	attackTexturePosition = newAttackTexturePosition;
 }
 
+bool Battle::isMainLoopEnded = false;
+
 void Battle::initGUIBattle() {
 	//Intializing the battle
 	currentAttackingUnit = NULL;
@@ -616,6 +622,30 @@ void Battle::aiWhichUnitToAttack(Unit* currentUnit, Army* unitsArmy, Army* relat
 		return;
 	}
 	
+	if (unitsArmy->getUPFromPos(currentUnit->getPosition()) == UnitPosition::BACKROW && currentUnit->isMelee()) {
+		//Places a melee unit in backrow to an open place in frontrow
+		Point openPosition = unitsArmy->getFirstOpenFrontRowPosition();
+		if (openPosition != Point::INVALID) {
+			unitsArmy->switchUnits(currentUnit->getPosition(), openPosition);
+		}
+		
+		removeUnitFromQueue(currentUnit);
+		
+		return;
+	}
+	
+	if (unitsArmy->getUPFromPos(currentUnit->getPosition()) == UnitPosition::FRONTROW && currentUnit->isRanged()) {
+		//Places a ranged unit in backrow to an open place in backrow
+		Point openPosition = unitsArmy->getFirstOpenBackRowPosition();
+		if (openPosition != Point::INVALID) {
+			unitsArmy->switchUnits(currentUnit->getPosition(), openPosition);
+		}
+		
+		removeUnitFromQueue(currentUnit);
+		
+		return;
+	}
+	
 	std::vector<Unit*> attackableUnits;
 	
 	switch (unitsArmy->getUPFromPos(currentUnit->getPosition())) {
@@ -632,38 +662,18 @@ void Battle::aiWhichUnitToAttack(Unit* currentUnit, Army* unitsArmy, Army* relat
 						}
 					}
 				}
-			} else {
-				//Melee attack case
 				
-				//Adding front row
-				for (int i = 1; i < relativeEnemyArmy->getWidth() - 1; i++) {
-					Unit* possibleAttackableUnit = relativeEnemyArmy->getUnit(i, 0);
-					if (possibleAttackableUnit != NULL && !possibleAttackableUnit->isDead()) {
-						attackableUnits.push_back(possibleAttackableUnit);
-					}
-				}
-				
-				if (relativeEnemyArmy->isFrontRowEmpty()) {
-					//If front row is empty, adding back row
-					for (int i = 1; i < relativeEnemyArmy->getWidth() - 1; i++) {
-						Unit* possibleAttackableUnit = relativeEnemyArmy->getUnit(i, 1);
+				//If front&back row is empty, then we add support too
+				if (relativeEnemyArmy->areFrontAndBackRowsEmpty()) {
+					std::vector<Point> supportPoints = {Point(0, 0), Point(0, 1),
+						Point(relativeEnemyArmy->getWidth() - 1, 0),
+						Point(relativeEnemyArmy->getWidth() - 1, 1)};
+					
+					for (unsigned int i = 0; i < supportPoints.size(); i++) {
+						Unit* possibleAttackableUnit = relativeEnemyArmy->getUnit(supportPoints[i]);
 						if (possibleAttackableUnit != NULL && !possibleAttackableUnit->isDead()) {
 							attackableUnits.push_back(possibleAttackableUnit);
 						}
-					}
-				}
-			}
-			
-			//If front&back row is empty, then we add support too
-			if (relativeEnemyArmy->areFrontAndBackRowsEmpty()) {
-					std::vector<Point> supportPoints = {Point(0, 0), Point(0, 1),
-					Point(relativeEnemyArmy->getWidth() - 1, 0),
-					Point(relativeEnemyArmy->getWidth() - 1, 1)};
-				
-				for (unsigned int i = 0; i < supportPoints.size(); i++) {
-					Unit* possibleAttackableUnit = relativeEnemyArmy->getUnit(supportPoints[i]);
-					if (possibleAttackableUnit != NULL && !possibleAttackableUnit->isDead()) {
-						attackableUnits.push_back(possibleAttackableUnit);
 					}
 				}
 			}

@@ -32,6 +32,9 @@ public:
 	//Handles ownership relations
 	void setOwnershipRelations();
 	
+	//Resets market and barracks inventories
+	void refillStocks();
+	
 	//For easier deletion on cleanup
 	std::vector<WorldObject*> worldObjects;
 	std::vector<ImpassableWorldObject*> impassables;

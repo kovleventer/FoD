@@ -255,6 +255,7 @@ void NPCHandler::loadAll() {
 void NPCHandler::updateNPCsPosition() {
 	for (unsigned int i = 0; i < npcs.size(); i++) {
 		npcs[i]->updateNPCPosition();
+		npcs[i]->giveGold(1);
 	}
 }
 

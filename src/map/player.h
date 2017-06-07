@@ -26,7 +26,8 @@ enum class PlayerState {
 	STANDING,
 	HAS_WAY,
 	MOVING,
-	BATTLING
+	BATTLING,
+	WAITING
 };
 
 

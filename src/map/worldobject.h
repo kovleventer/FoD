@@ -59,6 +59,8 @@ public:
 	InteractiveWorldObject(std::string text, Point pos, std::vector<Point> intTiles, bool isNeut);
 	~InteractiveWorldObject();
 	
+	void refillStocks();
+	
 	//Getters
 	std::vector<Point> getInteractiveTiles();
 	bool isNeutral();

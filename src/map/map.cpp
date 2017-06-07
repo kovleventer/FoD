@@ -109,7 +109,7 @@ void Map::render() {
 }
 
 Point Map::getTileFromCursorPosition(Point cursorPosition) {
-	//If we pass an invalid cursor position we return (-1, -1) (Point::INVALID)
+	//If we pass an invalid cursor position we return Point::INVALID
 	if (cursorPosition.getX() < 0 ||
 		cursorPosition.getX() >= Global::screenWidth ||
 		cursorPosition.getY() < 0 ||

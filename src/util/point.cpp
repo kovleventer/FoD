@@ -129,7 +129,7 @@ bool Point::operator!=(const Point& other) const {
 	return !(*this == other);
 }
 
-const Point Point::INVALID = Point(-1, -1);
+const Point Point::INVALID = Point(-100, -100);
 
 
 //Dimension stuff
@@ -290,4 +290,4 @@ bool PointD::operator!=(const PointD& other) const {
 	return !(*this == other);
 }
 
-const PointD PointD::INVALID = PointD(-1, -1);
+const PointD PointD::INVALID = PointD(-100, -100);

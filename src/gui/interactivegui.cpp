@@ -187,6 +187,10 @@ void ItemBuyingMenu::render() {
 	}
 }
 
+void ItemBuyingMenu::refill() {
+	itemsToSell = itemsToSellInvisible;
+}
+
 Item* ItemBuyingMenu::getItem(unsigned int index) {
 	//NULL checking
 	if (index < itemsToSell.size()) {
@@ -209,7 +213,7 @@ void ItemBuyingMenu::removeCurrentItem() {
 }
 
 void ItemBuyingMenu::setItemList(std::vector<Item*> newList) {
-	itemsToSell = newList;
+	itemsToSellInvisible = newList;
 }
 
 int ItemBuyingMenu::getFontSize() {
@@ -496,6 +500,16 @@ void UnitBuyingMenu::render() {
 	}
 }
 
+void UnitBuyingMenu::refill() {
+	//When we are overwriting units
+	//Overwritten units are deleted
+	stdex::clear_ptr_vec(unitsToSell);
+	for (unsigned int i = 0; i < unitsToSellInvisible.size(); i++) {
+		unitsToSell.push_back(Global::unitHandler->getUnit(unitsToSellInvisible[i], 1));
+	}
+	recalcPositions();
+}
+
 Unit* UnitBuyingMenu::getUnit(unsigned int index) {
 	//NULL checking
 	if (index < unitsToSell.size()) {
@@ -532,19 +546,8 @@ void UnitBuyingMenu::removeUnit(unsigned int index) {
 	}
 }
 
-void UnitBuyingMenu::setUnitList(std::vector<Unit*> newList) {
-	if (unitsToSell.size() == 0) {
-		unitsToSell = newList;
-		recalcPositions();
-	} else {
-		//When we are overwriting units
-		std::clog << "Warning: Trying to overwrite non empty unit list. Overwritten units are deleted." << std::endl;
-		for (unsigned int i = 0; i < unitsToSell.size(); i++) {
-			delete unitsToSell[i];
-		}
-		unitsToSell = newList;
-		recalcPositions();
-	}
+void UnitBuyingMenu::setUnitList(std::vector<std::string> newList) {
+	unitsToSellInvisible = newList;
 }
 
 void UnitBuyingMenu::handleLeftClickEvent(int xp, int yp) {

@@ -37,6 +37,85 @@ NPC::~NPC() {
 
 void NPC::updateNPCPosition() {
 	if (movementType == NPCMovement::STANDING) return;
+	
+	//NOTE this will be very slow since it runs n^2 times
+	//Using an optimized solution requires further reading from me
+	if (movementType == NPCMovement::VISIT_OWN_STRUCT) {
+		
+		if (followed == NULL) {
+			
+			//Player checking
+			if (enemy &&
+				Global::player->getPosition().distanceTo(position) < aggroRange &&
+				Global::player->getArmy()->getArmyValue(false) < army->getArmyValue(false)) {
+				
+				followed = Global::player;
+				
+				if (dynamic_cast<CircularPath*>(path) != NULL) {
+					//IF PATH IS CIRCULARPATH
+					//Does not delete nextpath (might be unsafe)
+					nextPath = path;
+				} else {
+					//IF PATH IS SIMPLEPATH
+					delete path;
+				}
+				path = new SimplePath(position, followed->getPosition());
+			}
+			
+			//NPC checking
+			for (unsigned int i = 0; i < Global::npcHandler->npcs.size(); i++) {
+				if (Global::npcHandler->npcs[i] == this) continue;
+				
+				if (Global::npcHandler->npcs[i]->enemy != enemy) {
+					//If the two npcs are hostile towards each other
+					
+					if (Global::npcHandler->npcs[i]->getPosition().distanceTo(position) < aggroRange) {
+						//If npcs are close enough to each other
+						
+						if (Global::npcHandler->npcs[i]->getArmy()->getArmyValue(false) < army->getArmyValue(false)) {
+							//If the enemy is weaker
+							
+							if (Global::npcHandler->npcs[i]->getPosition() == position) {
+								//Activating npc
+								Global::npcHandler->npcs[i]->activate(this);
+							} else {
+								
+								followed = Global::npcHandler->npcs[i];
+								
+								
+								if (dynamic_cast<CircularPath*>(path) != NULL) {
+									//IF PATH IS CIRCULARPATH
+									//Does not delete nextpath (might be unsafe)
+									nextPath = path;
+								} else {
+									//IF PATH IS SIMPLEPATH
+									delete path;
+								}
+								path = new SimplePath(position, followed->getPosition());
+							}
+						}
+					}
+				}
+			}
+		} else {
+			if (followed->getPosition().distanceTo(position) >= aggroRange) {
+				followed = NULL;
+				
+				setupPath();
+			} else if (followed->getPosition() == position) {
+				NPC* followNPC = dynamic_cast<NPC*>(followed);
+				if (followNPC != NULL) {
+					followNPC->activate(this);
+				} else if (Global::player == followed) {
+					activate();
+				}
+				
+				setupPath();
+			}
+		}
+	}
+	
+	
 	Point nextTile = path->next();
 	Point currentTile = path->current();
 	progressVector += PointD(nextTile - currentTile) * speed;
@@ -45,6 +124,7 @@ void NPC::updateNPCPosition() {
 	calcRotation(nextTile - currentTile);
 	
 	if (fabs(progressVector.getX()) > 0.5 || fabs(progressVector.getY()) > 0.5) {
+	//if (fabs(progressVector.getX()) > 1 || fabs(progressVector.getY()) > 1) {
 		//We can not simply change the positon, we need the update the references on the tile
 		if (!positionSet) {
 			setPositionAI(nextTile);
@@ -62,6 +142,10 @@ void NPC::updateNPCPosition() {
 			nextPath = NULL;
 		}
 		progressVector = PointD();
+		if (followed != NULL) {
+			delete path;
+			path = new SimplePath(position, followed->getPosition());
+		}
 	}
 }
 
@@ -80,6 +164,14 @@ void NPC::activate() {
 		new Battle(this);
 		Global::player->clearPath();
 		Global::player->setState(PlayerState::BATTLING);
+	}
+}
+
+void NPC::activate(NPC* npc) {
+	if (enemy != npc->enemy) {
+		//Quick battle between npcs
+		new Battle(this, npc);
+		followed = NULL;
 	}
 }
 
@@ -209,7 +301,6 @@ void NPC::rearrangeArmy() {
 	for (unsigned int i = 0; i < inventory->getInventorySize(); i++) {
 		Item* currentItem = inventory->getItem(i);
 		if (currentItem != NULL) {
-			std::cout << currentItem->getName() << "'s value: " << currentItem->getItemValue() << std::endl;
 			for (int j = 0; j < army->getWidth(); j++) {
 				for (int k = 0; k < army->getHeight(); k++) {
 					Unit* currentUnit = army->getUnit(j, k);
@@ -261,6 +352,8 @@ void NPC::init() {
 	dead = false;
 	positionSet = false;
 	temporaryStanding = false;
+	followed = NULL;
+	aggroRange = 10;
 }
 
 void NPC::setPositionAI(Point newPosition) {
@@ -273,7 +366,7 @@ void NPC::setPositionAI(Point newPosition) {
 }
 
 void NPC::recalculatePathByOwned() {
-	std::vector<Point> ownedPoses;
+	if (dead) return;
 	if (ownedBuildings.size() <= 1) {
 		if (path != NULL) {
 			delete path;
@@ -286,6 +379,13 @@ void NPC::recalculatePathByOwned() {
 	
 	temporaryStanding = false;
 	movementType = NPCMovement::VISIT_OWN_STRUCT;
+	
+	setupPath();
+}
+
+void NPC::setupPath() {
+	//This is not the fastest method so don't call it too often
+	std::vector<Point> ownedPoses;
 	
 	for (unsigned int i = 0; i < ownedBuildings.size(); i++) {
 		ownedPoses.push_back(ownedBuildings[i]->getPosition());

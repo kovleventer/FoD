@@ -287,6 +287,19 @@ void Army::nullifyUnits() {
 	}
 }
 
+int Army::getArmyValue(bool withItems) {
+	int armyValue = 0;
+	for (int i = 0; i < iWidth; i++) {
+		for (int j = 0; j < iHeight; j++) {
+			Unit* currentUnit = getUnit(i, j);
+			if (currentUnit != NULL && !currentUnit->isDead()) {
+				armyValue += currentUnit->getUnitValue(withItems);
+			}
+		}
+	}
+	return armyValue;
+}
+
 void Army::switchUnits(Point unitPos1, Point unitPos2) {
 	Unit* unitA = getUnit(unitPos1);
 	Unit* unitB = getUnit(unitPos2);
@@ -644,6 +657,6 @@ Point Army::getUnitOnCursor(int xp, int yp) {
 			}
 		}
 	}
-	//Returns (-1, -1) (invalid) if no unit position is clicked
+	//Returns invalid if no unit position is clicked
 	return Point::INVALID;
 }

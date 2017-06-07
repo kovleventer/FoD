@@ -43,6 +43,9 @@ void TickHandler::nextTick(bool isGameTickToo) {
 				Global::questHandler->qtTimePQ.pop();
 			}
 		}
+		if (gameTicks % 1000 == 0) {
+			Global::worldObjectHandler->refillStocks();
+		}
 		gameTicks++;
 	}
 }
@@ -74,6 +77,9 @@ void TickHandler::animateBattleAction(Point startCoord, Point endCoord) {
 	allowAnimatingBattle = true;
 	
 	std::this_thread::sleep_for(std::chrono::milliseconds(t * Global::ticks / 4));
+	//Required due to threading also down here
+	//It is possible that the battle animation still runs when cleanup is happening
+	if (Global::guiHandler == NULL) return;
 	Global::guiHandler->getBattle()->attackTexture = NULL;
 	allowAnimatingBattle = false;
 }

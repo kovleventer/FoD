@@ -15,6 +15,10 @@ BasePath::BasePath()  {
 
 BasePath::~BasePath() {}
 
+unsigned int BasePath::getPositionIndex() {
+	return positionIndex;
+}
+
 
 // SimplePath stuff
 

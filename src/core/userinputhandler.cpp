@@ -14,6 +14,13 @@ void UserInputHandler::handleKeyPressEvent(SDL_Event e) {
 	//Useful:
 	//https://wiki.libsdl.org/SDL_Keycode
 	switch (e.key.keysym.sym) {
+		case SDLK_F2:
+			if (Global::player->getState() == PlayerState::STANDING) {
+				Global::player->setState(PlayerState::WAITING);
+			} else if (Global::player->getState() == PlayerState::WAITING) {
+				Global::player->setState(PlayerState::STANDING);
+			}
+			break;
 		case SDLK_F3:
 			Game::checkPerformance();
 			break;
@@ -138,6 +145,7 @@ void UserInputHandler::handleMousePressEvent(SDL_Event e) {
 				Global::player->clearPath();
 				break;
 			case PlayerState::BATTLING:
+			case PlayerState::WAITING:
 				//Do nothing
 				break;
 		}

@@ -17,6 +17,9 @@ public:
 	BasePath();
 	virtual ~BasePath();
 	
+	//Getters
+	unsigned int getPositionIndex();
+	
 	//Gets the next point in the path
 	virtual Point next() = 0;
 	//Gets the current point in the path

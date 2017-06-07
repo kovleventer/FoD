@@ -26,7 +26,7 @@ class Quest;
 enum class NPCMovement {
 	STANDING,
 	CIRCULATING,
-	VISIT_OWN_STRUCT
+	VISIT_OWN_STRUCT,
 };
 
 
@@ -53,6 +53,8 @@ public:
 	
 	//When the player meets with this NPC
 	void activate();
+	//When another npc meets with this NPC
+	void activate(NPC* npc);
 	
 	//Getters
 	double getSpeed();
@@ -83,6 +85,9 @@ public:
 private:
 	void init();
 	
+	//NULL if npc is not following anybody
+	Character* followed;
+	
 	BasePath* path;
 	//The path which is going to be active after current path finishes
 	BasePath* nextPath;
@@ -92,6 +97,9 @@ private:
 	
 	//Sets NPC's position and the AI makes decisions
 	void setPositionAI(Point newPosition);
+	
+	//Agression maximal distance
+	int aggroRange;
 	
 	//TODO factions
 	bool enemy;
@@ -107,6 +115,9 @@ private:
 	
 	//Regenerates path by taking all owned structures
 	void recalculatePathByOwned();
+	
+	//Contains a small piece of code which would be repeated otherwise
+	void setupPath();
 	
 	//Storing data dor quests
 	std::vector<Quest*> questTriggerTalks;

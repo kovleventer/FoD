@@ -73,6 +73,9 @@ public:
 	
 	//Stores the animation texture
 	ATexture* attackTexture;
+	
+	//Hopefuly this solves some threading issues
+	static bool isMainLoopEnded;
 private:
 	WholeScreenGUI* gui;
 	BattleType battleType;

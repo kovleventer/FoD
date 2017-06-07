@@ -88,6 +88,9 @@ public:
 	//Renders the gui and the currently visible parts of the list
 	void render();
 	
+	//Refills items (copies itemsToSell to itemsToSellInvisible)
+	void refill();
+	
 	//Getters, setters for items
 	Item* getItem(unsigned int index);
 	unsigned int getItemsToSellSize();
@@ -114,6 +117,7 @@ public:
 private:
 	//An item contains its price value now
 	std::vector<Item*> itemsToSell;
+	std::vector<Item*> itemsToSellInvisible;
 	
 	//Item's height is itemSlotHeight - 2 * padding
 	int padding;
@@ -193,18 +197,21 @@ public:
 	
 	void render();
 	
+	void refill();
+	
 	//Getters, setters for units
 	Unit* getUnit(unsigned int index);
 	unsigned int getUnitsToSellSize();
 	void addUnit(Unit* unitToAdd);
 	void removeUnit(unsigned int index);
-	void setUnitList(std::vector<Unit*> newList);
+	void setUnitList(std::vector<std::string> newList);
 	
 	//Event handling
 	void handleLeftClickEvent(int xp, int yp);
 	void handleMouseWheelEvent(bool up);
 private:
 	std::vector<Unit*> unitsToSell;
+	std::vector<std::string> unitsToSellInvisible;
 	
 	//The first rendered unit's index
 	unsigned int currentUnitPosition;

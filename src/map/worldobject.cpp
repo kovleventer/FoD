@@ -56,6 +56,20 @@ InteractiveWorldObject::~InteractiveWorldObject() {
 	delete gui;
 }
 
+void InteractiveWorldObject::refillStocks() {
+	for (unsigned int i = 0; i < gui->getPartCount(); i++) {
+		ItemMarket* possibleItemMarket = dynamic_cast<ItemMarket*>(gui->getPart(i));
+		if (possibleItemMarket != NULL) {
+			possibleItemMarket->getItemBuyingMenu()->refill();
+		}
+		
+		Barracks* possibleBarracks = dynamic_cast<Barracks*>(gui->getPart(i));
+		if (possibleBarracks != NULL) {
+			possibleBarracks->getUnitBuyingMenu()->refill();
+		}
+	}
+}
+
 std::vector<Point> InteractiveWorldObject::getInteractiveTiles() {
 	return interactiveTiles;
 }
@@ -114,7 +128,6 @@ void InteractiveWorldObject::activate() {
 }
 
 void InteractiveWorldObject::activate(NPC* npc) {
-	std::cout << npc->getName() << " activated " << name << " with $ of " << npc->getGold() << std::endl;
 	if (owner->getName() == "__takeable__") {
 		setOwner(npc);
 	}
@@ -151,11 +164,12 @@ void InteractiveWorldObject::activate(NPC* npc) {
 				
 				//The NPC does not hesitate, he simply buys all items he can
 				if (currentItem->getPrice() <= npc->getGold()) {
-					npc->takeGold(currentItem->getPrice());
-					npc->getInventory()->addItem(currentItem);
-					ibm->setSelectedItemPosition(j);
-					ibm->removeCurrentItem();
-					boughtAnything = true;
+					if (npc->getInventory()->addItem(currentItem)) {
+						npc->takeGold(currentItem->getPrice());
+						ibm->setSelectedItemPosition(j);
+						ibm->removeCurrentItem();
+						boughtAnything = true;
+					}
 				}
 			}
 		}
@@ -169,10 +183,11 @@ void InteractiveWorldObject::activate(NPC* npc) {
 				
 				//The NPC does not hesitate, he simply buys all units he can
 				if (currentUnit->statsWithItems["price"] <= npc->getGold()) {
-					npc->takeGold(currentUnit->statsWithItems["price"]);
-					npc->getArmy()->addUnit(currentUnit);
-					ubm->removeUnit(j);
-					boughtAnything = true;
+					if (npc->getArmy()->addUnit(currentUnit)) {
+						npc->takeGold(currentUnit->statsWithItems["price"]);
+						ubm->removeUnit(j);
+						boughtAnything = true;
+					}
 				}
 			}
 		}
@@ -180,6 +195,58 @@ void InteractiveWorldObject::activate(NPC* npc) {
 	
 	if (boughtAnything) {
 		npc->rearrangeArmy();
+	}
+	
+	//Adding few units to garrison
+	Army* garrisonArmy = getGarrisonArmy();
+	if (garrisonArmy != NULL && owner == npc) {
+		int npcUnitCount = 0;
+		int garrisonUnitCount = 0;
+		for (int i = 0; i < npc->getArmy()->getWidth(); i++) {
+			for (int j = 0; j < npc->getArmy()->getHeight(); j++) {
+				Unit* currentNPCUnit = npc->getArmy()->getUnit(i, j);
+				if (currentNPCUnit != NULL) {
+					npcUnitCount++;
+				}
+				
+				Unit* currentGarrUnit = garrisonArmy->getUnit(i, j);
+				if (currentGarrUnit != NULL) {
+					if (currentGarrUnit->isDead()) {
+						delete currentGarrUnit;
+						garrisonArmy->setUnit(i, j, NULL);
+					} else {
+						garrisonUnitCount++;
+					}
+				}
+			}
+		}
+		
+		int diff = npcUnitCount - garrisonUnitCount;
+		
+		for (int i = 0; i < npc->getArmy()->getWidth(); i++) {
+			for (int j = 0; j < npc->getArmy()->getHeight(); j++) {
+				if (diff > 0) {
+					Unit* currentUnit = npc->getArmy()->getUnit(i, j);
+					if (currentUnit != NULL) {
+						garrisonArmy->addUnit(currentUnit);
+						npc->getArmy()->setUnit(i, j, NULL);
+						npcUnitCount--;
+						garrisonUnitCount++;
+						diff = npcUnitCount - garrisonUnitCount;
+					}
+				}
+				if (diff < 0) {
+					Unit* currentUnit = garrisonArmy->getUnit(i, j);
+					if (currentUnit != NULL) {
+						npc->getArmy()->addUnit(currentUnit);
+						garrisonArmy->setUnit(i, j, NULL);
+						npcUnitCount++;
+						garrisonUnitCount--;
+						diff = npcUnitCount - garrisonUnitCount;
+					}
+				}
+			}
+		}
 	}
 }
 

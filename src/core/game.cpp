@@ -29,6 +29,7 @@ Game::Game(std::string aName, Version version) {
 	
 	Global::tileSize = 64;
 	
+	//Changing this is not really safe
 	Global::ticks = 64;
 	
 	try {
@@ -333,9 +334,12 @@ void Game::mainLoop() {
 					Global::cursor->update();
 					renderGame();
 				} else if (e.user.code == 2) {
-					Global::tickHandler->nextTick(Global::player->getState() == PlayerState::MOVING);
+					Global::tickHandler->nextTick(Global::player->getState() == PlayerState::MOVING || Global::player->getState() == PlayerState::WAITING);
 					if (Global::player->getState() == PlayerState::MOVING) {
 						Global::player->updatePlayerPosition();
+						Global::npcHandler->updateNPCsPosition();
+					}
+					if (Global::player->getState() == PlayerState::WAITING) {
 						Global::npcHandler->updateNPCsPosition();
 					}
 				}
@@ -372,6 +376,8 @@ void Game::renderGame() {
 
 void Game::cleanup() {
 	std::clog << "Closing...";
+	
+	Battle::isMainLoopEnded = true;
 	
 	//Deletes global variables
 	//Setting these pointers to NULL might be pointless but it would cause problems otherwise

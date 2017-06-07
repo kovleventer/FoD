@@ -13,7 +13,8 @@
  */
 
 /*!
- * @enum UnitAddingPreference to which place should we try to add the unit
+ * @enum UnitAddingPreference 
+ * To which place should we try to add the unit
  * If the unit can not be added to a position we try another
  */
 enum class UnitAddingPreference {
@@ -24,7 +25,8 @@ enum class UnitAddingPreference {
 
 
 /*!
- * @enum UnitPosition where is the unit
+ * @enum UnitPosition 
+ * Indicates where is the unit
  * This is not the unit's property
  */
 enum class UnitPosition {
@@ -35,7 +37,8 @@ enum class UnitPosition {
 
 
 /*!
- * @class Army represents an army
+ * @class Army 
+ * Represents an army
  * Has a gui, so it is renderable
  * Holds a specified amount of units
  * Interactable by mouse events
@@ -97,6 +100,9 @@ public:
 	//NOTE save all pointer values otherwise memory leak will occurs
 	void nullifyUnits();
 	
+	//Returns the sum of the alive units' values
+	int getArmyValue(bool withItems);
+	
 	//Switches two units on the given positions
 	void switchUnits(Point unitPos1, Point unitPos2);
 	
@@ -113,7 +119,7 @@ public:
 	bool areFrontAndBackRowsEmpty();
 	
 	//Gets the first open position on the back/front row
-	//Retruns Point(-1, -1) (Point::INVALID), if no such position exists
+	//Retruns Point::INVALID, if no such position exists
 	Point getFirstOpenFrontRowPosition();
 	Point getFirstOpenBackRowPosition();
 	
@@ -154,7 +160,7 @@ private:
 	bool addUnitToSupport(Unit* unitToAdd);
 	
 	//Gets the position in point
-	//Returns -1, -1 (Point::INVALID), if no unit is clicked
+	//Returns Point::INVALID, if no unit is clicked
 	Point getUnitOnCursor(int xp, int yp);
 	
 	//Variables used in battles
