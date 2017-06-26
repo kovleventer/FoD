@@ -63,6 +63,7 @@ public:
 	
 	
 	SDL_Color getColor(std::string name);
+	SDL_Color getTileColor(std::string name);
 private:
 	//***IMAGES***
 	void loadImages();
@@ -78,6 +79,8 @@ private:
 	void loadUnitImages();
 	
 	SDL_Texture* loadTexture(std::string path);
+	//Returns the average color of the surface
+	SDL_Color analyzeSurface(std::string path);
 	
 	
 	//Every texture is loaded once
@@ -104,6 +107,7 @@ private:
 	void loadColors();
 	//Stores the colors that can be later referenced
 	std::map<std::string, SDL_Color> colors;
+	std::map<std::string, SDL_Color> tileAvgColors;
 	
 	
 	//***AUDIO***

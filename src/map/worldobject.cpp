@@ -169,6 +169,7 @@ void InteractiveWorldObject::activate(NPC* npc) {
 						ibm->setSelectedItemPosition(j);
 						ibm->removeCurrentItem();
 						boughtAnything = true;
+						j--;
 					}
 				}
 			}
@@ -183,10 +184,13 @@ void InteractiveWorldObject::activate(NPC* npc) {
 				
 				//The NPC does not hesitate, he simply buys all units he can
 				if (currentUnit->statsWithItems["price"] <= npc->getGold()) {
-					if (npc->getArmy()->addUnit(currentUnit)) {
-						npc->takeGold(currentUnit->statsWithItems["price"]);
-						ubm->removeUnit(j);
-						boughtAnything = true;
+					if (currentUnit->getUnitValue(false) > npc->getArmy()->getArmyValue(false) / 10) {
+						if (npc->getArmy()->addUnit(currentUnit)) {
+							npc->takeGold(currentUnit->statsWithItems["price"]);
+							ubm->removeUnit(j);
+							boughtAnything = true;
+							j--;
+						}
 					}
 				}
 			}

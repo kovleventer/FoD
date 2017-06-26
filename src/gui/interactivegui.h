@@ -232,7 +232,8 @@ private:
 
 
 /*!
- * @class Garrison if the player owes the world object he can place guard there
+ * @class Garrison
+ * If the player owes the world object he can place guard there
  * Stores units
  */
 class Garrison : public BasicGUI {
@@ -259,7 +260,37 @@ private:
 
 
 /*!
- * @class ItemMarket holds all item buying related classes
+ * @class TaxCollector
+ * Allows money collecting from structures
+ */
+class TaxCollector : public BasicGUI {
+public:
+	TaxCollector(int xp, int yp, int wp, int hp);
+	TaxCollector(SDL_Rect dimensionRect);
+	~TaxCollector();
+	
+	ATexture* bgText;
+	
+	void render();
+	
+	//Getters
+	int getMaxAccumulableGold();
+	
+	//Setters
+	void setMaxAccumulableGold(int newMaxAccumulableGold);
+	
+	//Event handling
+	void handleLeftClickEvent(int xp, int yp);
+private:
+	Button* collectButton;
+	
+	int maxAccumulableGold;
+};
+
+
+/*!
+ * @class ItemMarket
+ * Holds all item buying related classes
  */
 class ItemMarket : public WholeScreenGUI {
 public:
@@ -280,7 +311,8 @@ private:
 
 
 /*!
- * @class Barracks holds all unit buying classes
+ * @class Barracks
+ * Holds all unit buying classes
  */
 class Barracks : public WholeScreenGUI {
 public:
@@ -297,7 +329,8 @@ private:
 
 
 /*!
- * @class GarrisonWrapper holds the garrison and the player's army
+ * @class GarrisonWrapper
+ * Holds the garrison and the player's army
  */
 class GarrisonWrapper : public WholeScreenGUI {
 public:
@@ -310,4 +343,19 @@ private:
 	Garrison* garrison;
 	//Player's army
 	Army* army;
+};
+
+
+/*!
+ * @class TaxCollectorWrapper
+ * Holds a Tax Collector
+ */
+class TaxCollectorWrapper : public WholeScreenGUI {
+public:
+	TaxCollectorWrapper(InteractiveGUI* parent);
+	
+	//Getters
+	TaxCollector* getTaxCollector();
+private:
+	TaxCollector* taxCollector;
 };

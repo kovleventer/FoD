@@ -39,6 +39,10 @@ int Character::getGold() {
 	return gold;
 }
 
+std::vector<InteractiveWorldObject*> Character::getOwnedBuildings() {
+	return ownedBuildings;
+}
+
 void Character::setProgressVector(PointD newProgressVector) {
 	progressVector = newProgressVector;
 }

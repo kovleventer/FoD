@@ -157,6 +157,14 @@ SDL_Color ResourceHandler::getColor(std::string name) {
 	return colors[name];
 }
 
+SDL_Color ResourceHandler::getTileColor(std::string name) {
+	if (tileAvgColors.find(name) == tileAvgColors.end()) {
+		std::clog << "Error: Tile Color missing: " << name << " Using black as fallback" << std::endl;
+		return {0, 0, 0};
+	}
+	return tileAvgColors[name];
+}
+
 void ResourceHandler::loadImages() {
 	loadTerrainImages();
 	loadWorldObjectImages();
@@ -176,6 +184,7 @@ void ResourceHandler::loadTerrainImages() {
 	
 	for (unsigned int i = 0; i < textureNames.size(); i++) {
 		tileTextures[FilesystemHandler::removeExtension(textureNames[i])] = new ATexture(loadTexture(terrainImagePath + textureNames[i]));
+		tileAvgColors[FilesystemHandler::removeExtension(textureNames[i])] = analyzeSurface(terrainImagePath + textureNames[i]);
 	}
 	
 	for (unsigned int i = 0; i < directoryNames.size(); i++) {
@@ -185,6 +194,11 @@ void ResourceHandler::loadTerrainImages() {
 		for (unsigned int j = 0; j < textureNamesInSubdir.size(); j++) {
 			animationParts.push_back({loadTexture(terrainImagePath + directoryNames[i] + "/" + textureNamesInSubdir[j]),
 							/* string to int*/	std::stoi(textureNamesInSubdir[j], NULL)});
+			if (j == 0) {
+				//Only check the first tile
+				//NOTE still unoptimized since we read most texture files twice
+				tileAvgColors[directoryNames[i]] = analyzeSurface(terrainImagePath + directoryNames[i] + "/" + textureNamesInSubdir[j]);
+			}
 		}
 		tileTextures[directoryNames[i]] = new ATexture(animationParts);
 	}
@@ -293,6 +307,38 @@ SDL_Texture* ResourceHandler::loadTexture(std::string path) {
 	SDL_FreeSurface(loadedSurface);
 	
 	return newTexture;
+}
+
+SDL_Color ResourceHandler::analyzeSurface(std::string path) {
+	//IMG_Load needs a c-type string (char*)
+	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
+	
+	long rS = 0;
+	long gS = 0;
+	long bS = 0;
+	
+	int magicNumber = 123; // Does magic, shold be 3k
+	
+	//https://gamedev.stackexchange.com/questions/38186/trying-to-figure-out-sdl-pixel-manipulation
+	//Uses a random pointer for temporarily storing the location of the pixels
+	uint32_t* pixels = (uint32_t*)loadedSurface->pixels;
+	
+	//Optimized traversing
+	for (int i = 0; i < loadedSurface->w * loadedSurface->h; i+=magicNumber) {
+		//Does not really works with non 32 bit pixel formats so dont use them
+		unsigned char r, g, b;
+		SDL_GetRGB(pixels[i], loadedSurface->format, &r, &g, &b);
+		rS += r;
+		gS += g;
+		bS += b;
+	}
+	
+	//NOTE For some reason, this method generates slightly different shades in each run
+	rS /= loadedSurface->w * loadedSurface->h / magicNumber;
+	gS /= loadedSurface->w * loadedSurface->h / magicNumber;
+	bS /= loadedSurface->w * loadedSurface->h / magicNumber;
+	SDL_FreeSurface(loadedSurface);
+	return {(unsigned char)rS, (unsigned char)gS, (unsigned char)bS};
 }
 
 void ResourceHandler::loadFont() {

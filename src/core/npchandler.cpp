@@ -25,8 +25,8 @@ NPCHandler::~NPCHandler() {
 void NPCHandler::loadAll() {
 	Character::characterPlaceholderTakeable = new Character(Point::INVALID);
 	Character::characterPlaceholderTakeable->setName("__takeable__");
-	Character::characterPlaceholderTakeable = new Character(Point::INVALID);
-	Character::characterPlaceholderTakeable->setName("__neutral__");
+	Character::characterPlaceholderNeutral = new Character(Point::INVALID);
+	Character::characterPlaceholderNeutral->setName("__neutral__");
 	
 	std::vector<std::string> npcNames = FilesystemHandler::getFilesInDir(basePath);
 	

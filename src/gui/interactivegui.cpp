@@ -636,6 +636,61 @@ void Garrison::handleMouseMotionEvent(int xp, int yp) {
 	garrisonArmy->handleMouseMotionEvent(xp, yp);
 }
 
+TaxCollector::TaxCollector(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp, wp, hp) {
+	//TODO change this
+	bgText = Global::resourceHandler->getATexture(TT::GUI, "marketitembg");
+	Dimension buttonDim = Dimension(200, 50);
+	collectButton = new Button(x + (w - buttonDim.W()) / 2, y + h / 4 * 3 - buttonDim.H() / 2, buttonDim.W(), buttonDim.H());
+	collectButton->setText("Collect");
+}
+
+TaxCollector::TaxCollector(SDL_Rect dimensionRect) : TaxCollector(dimensionRect.x, dimensionRect.y, dimensionRect.w, dimensionRect.h) {}
+
+TaxCollector::~TaxCollector() {
+	delete collectButton;
+}
+
+void TaxCollector::render() {
+	//Setting rectangle
+	SDL_Rect destinationRect = {x, y, w, h};
+	bgText->render(destinationRect);
+	collectButton->render();
+	
+	ATexture* goldText = Global::resourceHandler->getATexture(TT::GUI, "gold");
+	int goldSize = 100;
+	destinationRect.x += (w - goldSize) / 2;
+	destinationRect.y += h / 2 - goldSize / 2;
+	destinationRect.w = goldSize;
+	destinationRect.h = goldSize;
+	goldText->render(destinationRect);
+	
+	ATexture* collectValueText = Global::resourceHandler->getTextTexture(std::to_string(maxAccumulableGold), Global::resourceHandler->getColor("gold"));
+	Dimension d = collectValueText->getDimensions();
+	int fontSize = 40;
+	d *= fontSize;
+	d /= Global::defaultFontSize;
+	destinationRect.x = x + (w - d.W()) / 2;
+	destinationRect.y = y + h / 4 - d.H() / 2;
+	destinationRect.w = d.W();
+	destinationRect.h = d.H();
+	collectValueText->render(destinationRect);
+}
+
+int TaxCollector::getMaxAccumulableGold() {
+	return maxAccumulableGold;
+}
+
+void TaxCollector::setMaxAccumulableGold(int newMaxAccumulableGold) {
+	maxAccumulableGold = newMaxAccumulableGold;
+}
+
+void TaxCollector::handleLeftClickEvent(int xp, int yp) {
+	if (collectButton->contains(xp, yp)) {
+		Global::player->giveGold(maxAccumulableGold);
+		maxAccumulableGold = 0;
+	}
+}
+
 ItemMarket::ItemMarket(InteractiveGUI* parent) : WholeScreenGUI(parent->getRemainingDim()) {
 	inventory = Global::player->getInventory();
 	itemBuyingMenu = new ItemBuyingMenu(inventory->getItemInfo()->getDimensionRect());
@@ -679,3 +734,11 @@ GarrisonWrapper::GarrisonWrapper(InteractiveGUI* parent) : WholeScreenGUI(parent
 
 Garrison* GarrisonWrapper::getGarrison() {return garrison;}
 Army* GarrisonWrapper::getArmy() {return army;}
+
+TaxCollectorWrapper::TaxCollectorWrapper(InteractiveGUI* parent) : WholeScreenGUI(parent->getRemainingDim()) {
+	taxCollector = new TaxCollector(x, y, w, h);
+	
+	addTempPart(taxCollector);
+}
+
+TaxCollector* TaxCollectorWrapper::getTaxCollector() {return taxCollector;}

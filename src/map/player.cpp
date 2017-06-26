@@ -46,6 +46,11 @@ void Player::updatePlayerPosition() {
 			clearPath();
 			return;
 		}
+		
+		if (follow->isDead()) {
+			clearPath();
+			return;
+		}
 	}
 	
 	Point nextTile = path[tileProgress + 1];

@@ -27,32 +27,29 @@ void Minimap::render() {
 void Minimap::regenerateMinimap() {
 	//NOTE does not check height
 	int tileSizeInPixels = w / Global::gameBoardWidth;
+	if (tileSizeInPixels == 0) tileSizeInPixels = 1;
 	
 	for (int i = 0; i < Global::map->getWidth(); i++) {
 		for (int j = 0; j < Global::map->getHeight(); j++) {
 			std::string currentType = Global::map->getTile(i, j)->getType();
+			SDL_Color color = Global::resourceHandler->getTileColor(currentType);
+			uint32_t currColor = 0x00 | (color.b << 0) | (color.g << 8) | (color.r << 16);
 			
-			for (int k = 0; k < tileSizeInPixels; k++) {
-				for (int l = 0; l < tileSizeInPixels; l++) {
-					//https://stackoverflow.com/questions/650162/why-switch-statement-cannot-be-applied-on-strings
-					if (currentType == "grass") {
-						setPixel(minimapSurface, i * tileSizeInPixels + k, j * tileSizeInPixels + l, 0x0000FF00);
-					} else if (currentType == "water") {
-						setPixel(minimapSurface, i * tileSizeInPixels + k, j * tileSizeInPixels + l, 0x000000FF);
-					} else if (currentType == "sand") {
-						setPixel(minimapSurface, i * tileSizeInPixels + k, j * tileSizeInPixels + l, 0x00FFFF00);
-					} else if (currentType == "snow") {
-						setPixel(minimapSurface, i * tileSizeInPixels + k, j * tileSizeInPixels + l, 0x00FFFFFF);
-					}
+			for (int k = 0; k <= tileSizeInPixels; k++) {
+				for (int l = 0; l <= tileSizeInPixels; l++) {
+					setPixel(minimapSurface, i * tileSizeInPixels + k, j * tileSizeInPixels + l, currColor);
 				}
 			}
 		}
 	}
-	//TODO fix memleak
+	if (generatedTexture != NULL) {
+		SDL_DestroyTexture(generatedTexture);
+	}
 	generatedTexture = SDL_CreateTextureFromSurface(Global::renderer, minimapSurface);
 }
 
-void Minimap::setPixel(SDL_Surface *surface, int x, int y, uint32_t pixel) {
+void Minimap::setPixel(SDL_Surface* surface, int x, int y, uint32_t pixel) {
+	if (x >= surface->w || y >= surface->h) return;
 	//https://stackoverflow.com/questions/20070155/how-to-set-a-pixel-in-a-sdl-surface
 	uint8_t *target_pixel = (uint8_t *)surface->pixels + y * surface->pitch + x * 4;
 	*(uint32_t *)target_pixel = pixel;

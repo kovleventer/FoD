@@ -58,7 +58,7 @@ void GUIHandler::setGUI(BasicGUI* newGUI) {
 	}
 	
 	//Stopping player movement if neccesary
-	if (hasGUI && Global::player->getState() == PlayerState::MOVING) {
+	if (hasGUI && (Global::player->getState() == PlayerState::MOVING || Global::player->getState() == PlayerState::WAITING)) {
 		Global::player->clearPath();
 	}
 }
@@ -98,7 +98,7 @@ void GUIHandler::clear() {
 		
 		popups.pop();
 		//Stopping player movement if neccesary
-		if (hasGUI && Global::player->getState() == PlayerState::MOVING) {
+		if (hasGUI && (Global::player->getState() == PlayerState::MOVING || Global::player->getState() == PlayerState::WAITING)) {
 			Global::player->clearPath();
 		}
 	}
@@ -143,7 +143,7 @@ void GUIHandler::addPopup(Popup* popupToAdd) {
 		}
 		popups.pop();
 		//Stopping player movement if neccesary
-		if (hasGUI && Global::player->getState() == PlayerState::MOVING) {
+		if (hasGUI && (Global::player->getState() == PlayerState::MOVING || Global::player->getState() == PlayerState::WAITING)) {
 			Global::player->clearPath();
 		}
 	}

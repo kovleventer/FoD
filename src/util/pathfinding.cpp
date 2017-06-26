@@ -23,7 +23,7 @@ std::vector<Point> Pathfinding::findPath(Point start, Point destination) {
 	
 	std::vector<Point> path;
 	
-	//ALERT infinity loop if not implemented properly
+	//ALERT infinite loop if not implemented properly
 	while (!frontier.empty()) {
 		//Store the first element and then remove it from the queue
 		Point current = frontier.front();

@@ -391,6 +391,12 @@ void NPC::setupPath() {
 		ownedPoses.push_back(ownedBuildings[i]->getPosition());
 	}
 	
+	if (Character::characterPlaceholderNeutral != NULL) {
+		for (unsigned int i = 0; i < Character::characterPlaceholderNeutral->getOwnedBuildings().size(); i++) {
+			ownedPoses.push_back(Character::characterPlaceholderNeutral->getOwnedBuildings()[i]->getPosition());
+		}
+	}
+	
 	if (path != NULL) {
 		delete path;
 		path = NULL;

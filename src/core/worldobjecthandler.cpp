@@ -149,11 +149,15 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 		//Name
 		//Texture name
 		//Owner name
-		//Has ItemBuyingMenu?, Has UnitBuyingMenu?, Has Garrison? bools
+		//Has ItemBuyingMenu?, Has UnitBuyingMenu?, Has Garrison?, Has TaxCollector? bools
 		//IF HAS ItemBuyingMenu
 		//	[itemcount] ["itemname"] itemcount times
 		//IF HAS UnitBuyingMenu
 		//	[unitcount] ["unitname"] unitcount times
+		//IF HAS Garrison
+		//	{army}
+		//IF HAS TaxCollector
+		//	maxAccumulableGold
 		//Position point
 		// a [b c (a times)]
 		// a: number of interactive tiles
@@ -169,10 +173,11 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 		std::string ownerName;
 		std::getline(file, ownerName);
 		
-		bool hasIBM, hasUBM, hasGar;
+		bool hasIBM, hasUBM, hasGar, hasTax;
 		file >> hasIBM;
 		file >> hasUBM;
 		file >> hasGar;
+		file >> hasTax;
 		
 		std::vector<Item*> itemsToSell;
 		if (hasIBM) {
@@ -234,6 +239,11 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 				file >> std::quoted(itemName);
 				unitInventory.push_back(itemName);
 			}
+		}
+		
+		int maxAccGold;
+		if (hasTax) {
+ 			file >> maxAccGold;
 		}
 		
 		int posX, posY;
@@ -299,6 +309,11 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 				tempGarrisonWrapper->getGarrison()->getArmy()->setUnit(i, currentUnit);
 			}
 			loaded->getGUI()->addPart({"Garrison", tempGarrisonWrapper});
+		}
+		if (hasTax) {
+			TaxCollectorWrapper* tempTaxCollectorWrapper = new TaxCollectorWrapper(loaded->getGUI());
+			tempTaxCollectorWrapper->getTaxCollector()->setMaxAccumulableGold(maxAccGold);
+			loaded->getGUI()->addPart({"Collect Tax", tempTaxCollectorWrapper});
 		}
 		
 		loaded->setScale(scale);

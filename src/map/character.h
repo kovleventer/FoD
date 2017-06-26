@@ -32,6 +32,7 @@ public:
 	Army* getArmy();
 	std::string getName();
 	int getGold();
+	std::vector<InteractiveWorldObject*> getOwnedBuildings();
 	
 	//Setters
 	void setProgressVector(PointD newProgressVector);
