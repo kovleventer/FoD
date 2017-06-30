@@ -10,7 +10,7 @@
  */
 
 const std::string APPNAME = "Fall of Dyrangor";
-const Version VERSION = Version("1.1.6.0");
+const Version VERSION = Version("1.1.7.0");
 
 int main (int argc, char* args[]) {
 	Game* game;

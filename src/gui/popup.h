@@ -49,12 +49,14 @@ public:
 	//Getters
 	PopupType getPopupType();
 	std::string getText();
+	int getTextSize();
 	Item* getItem(int index);
 	
 	//Setters
 	//NOTE dont use this
 	void setPopupType(PopupType newPopupType);
 	void setText(std::string newText);
+	void setTextSize(int newTextSize);
 	void addItem(Item* itemToAdd);
 	void setItemList(std::vector<Item*> newItemList);
 	
@@ -78,6 +80,7 @@ private:
 	PopupType popupType;
 	
 	std::string text;
+	int textSize;
 	
 	std::vector<Item*> items;
 };

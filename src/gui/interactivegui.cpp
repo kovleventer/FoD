@@ -165,20 +165,16 @@ void ItemBuyingMenu::render() {
 			currentRenderedItem->render(itemDestionationRect, true);
 			
 			//Rendering item name
-			ATexture* itemNameText = Global::resourceHandler->getTextTexture(currentRenderedItem->getName(), Global::resourceHandler->getColor("whole-header"));
+			ATexture* itemNameText = Global::resourceHandler->getTextTexture(currentRenderedItem->getName(), Global::resourceHandler->getColor("whole-header"), fontSize);
 			Dimension d = itemNameText->getDimensions();
-			d *= fontSize;
-			d /= Global::defaultFontSize;
 			itemDestionationRect.x += padding + itemDestionationRect.w;
 			itemDestionationRect.w = d.W();
 			itemDestionationRect.h = d.H();
 			itemNameText->render(itemDestionationRect);
 			
 			//Rendering item price
-			ATexture* itemPriceText = Global::resourceHandler->getTextTexture(std::to_string(currentRenderedItem->getPrice()), Global::resourceHandler->getColor("whole-header"));
+			ATexture* itemPriceText = Global::resourceHandler->getTextTexture(std::to_string(currentRenderedItem->getPrice()), Global::resourceHandler->getColor("whole-header"), fontSize);
 			d = itemPriceText->getDimensions();
-			d *= fontSize;
-			d /= Global::defaultFontSize;
 			itemDestionationRect.x = destinationRect.x + destinationRect.w - padding - d.W();
 			itemDestionationRect.w = d.W();
 			itemDestionationRect.h = d.H();
@@ -327,13 +323,11 @@ void ItemCheckoutMenu::render() {
 	//Rendering item price textures
 	ATexture* itemPriceTextB;
 	if (Global::player->getGold() >= itemToBuyPrice) {
-		itemPriceTextB = Global::resourceHandler->getTextTexture(std::to_string(itemToBuyPrice), Global::resourceHandler->getColor("unitinfo-values-unchanged"));
+		itemPriceTextB = Global::resourceHandler->getTextTexture(std::to_string(itemToBuyPrice), Global::resourceHandler->getColor("unitinfo-values-unchanged"), fontSize);
 	} else {
-		itemPriceTextB = Global::resourceHandler->getTextTexture(std::to_string(itemToBuyPrice), Global::resourceHandler->getColor("unitinfo-values-decremented"));
+		itemPriceTextB = Global::resourceHandler->getTextTexture(std::to_string(itemToBuyPrice), Global::resourceHandler->getColor("unitinfo-values-decremented"), fontSize);
 	}
 	d = itemPriceTextB->getDimensions();
-	d *= fontSize;
-	d /= Global::defaultFontSize;
 	destinationRect.x = x + w / 2 - d.W() / 2;
 	destinationRect.y = y + verticalPadding + rowHeight / 2 - d.H() / 2;
 	destinationRect.w = d.W();
@@ -342,20 +336,16 @@ void ItemCheckoutMenu::render() {
 		itemPriceTextB->render(destinationRect);
 	}
 	
-	ATexture* goldValueText = Global::resourceHandler->getTextTexture(std::to_string(Global::player->getGold()), Global::resourceHandler->getColor("gold"));
+	ATexture* goldValueText = Global::resourceHandler->getTextTexture(std::to_string(Global::player->getGold()), Global::resourceHandler->getColor("gold"), fontSize);
 	d = goldValueText->getDimensions();
-	d *= fontSize;
-	d /= Global::defaultFontSize;
 	destinationRect.x = x + w / 2 - d.W() / 2;
 	destinationRect.y += 2 * verticalPadding + rowHeight;
 	destinationRect.w = d.W();
 	destinationRect.h = d.H();
 	goldValueText->render(destinationRect);
 	
-	ATexture* itemPriceTextS = Global::resourceHandler->getTextTexture(std::to_string(itemToSellPrice), Global::resourceHandler->getColor("unitinfo-values-incremented"));
+	ATexture* itemPriceTextS = Global::resourceHandler->getTextTexture(std::to_string(itemToSellPrice), Global::resourceHandler->getColor("unitinfo-values-incremented"), fontSize);
 	d = itemPriceTextS->getDimensions();
-	d *= fontSize;
-	d /= Global::defaultFontSize;
 	destinationRect.x = x + w / 2 - d.W() / 2;
 	destinationRect.y += 2 * verticalPadding + rowHeight;
 	destinationRect.w = d.W();
@@ -485,10 +475,8 @@ void UnitBuyingMenu::render() {
 		buyButtons[i]->render();
 		
 		ATexture* priceText = Global::resourceHandler->getTextTexture(std::to_string(unitsToSell[i + currentUnitPosition]->statsWithItems["price"]),
-																	  Global::resourceHandler->getColor("whole-header"));
+																	  Global::resourceHandler->getColor("whole-header"), fontSize);
 		Dimension d = priceText->getDimensions();
-		d *= fontSize;
-		d /= Global::defaultFontSize;
 		SDL_Rect textDestinationRect = destinationRect;
 		textDestinationRect.w = d.W();
 		textDestinationRect.h = d.H();
@@ -664,11 +652,8 @@ void TaxCollector::render() {
 	destinationRect.h = goldSize;
 	goldText->render(destinationRect);
 	
-	ATexture* collectValueText = Global::resourceHandler->getTextTexture(std::to_string(maxAccumulableGold), Global::resourceHandler->getColor("gold"));
+	ATexture* collectValueText = Global::resourceHandler->getTextTexture(std::to_string(maxAccumulableGold), Global::resourceHandler->getColor("gold"), 40);
 	Dimension d = collectValueText->getDimensions();
-	int fontSize = 40;
-	d *= fontSize;
-	d /= Global::defaultFontSize;
 	destinationRect.x = x + (w - d.W()) / 2;
 	destinationRect.y = y + h / 4 - d.H() / 2;
 	destinationRect.w = d.W();

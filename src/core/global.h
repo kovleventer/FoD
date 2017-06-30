@@ -43,7 +43,6 @@ public:
 	static int gameBoardWidth;
 	static int gameBoardHeight;
 	static int tileSize;
-	static int defaultFontSize;
 	
 	static SDL_Renderer* renderer;
 	static SDL_Window* window;

@@ -25,10 +25,8 @@ void ItemInfo::render() {
 							 false);
 		for (unsigned int i = 0; i < selectedItem->getDescription().size(); i++) {
 			//Renders description line by line
-			ATexture* descText = Global::resourceHandler->getTextTexture(selectedItem->getDescription()[i], Global::resourceHandler->getColor("iteminfo-desc"));
+			ATexture* descText = Global::resourceHandler->getTextTexture(selectedItem->getDescription()[i], Global::resourceHandler->getColor("iteminfo-desc"), descriptionSize);
 			Dimension d = descText->getDimensions();
-			d *= descriptionSize;
-			d /= Global::defaultFontSize;
 			destinationRect.x = x + w / 2 - d.W() / 2;
 			destinationRect.y = y + h / 3 - d.H() / 2 + i * d.H();
 			destinationRect.w = d.W();

@@ -418,10 +418,8 @@ void Battle::initGUIBattle() {
 			SDL_Rect destinationRect = {x, y, w, h};
 			Global::resourceHandler->getATexture(TT::GUI, "guiheader")->render(destinationRect);
 			
-			ATexture* turnCounterTexture = Global::resourceHandler->getTextTexture(std::to_string(turnCounter), Global::resourceHandler->getColor("whole-header"));
+			ATexture* turnCounterTexture = Global::resourceHandler->getTextTexture(std::to_string(turnCounter), Global::resourceHandler->getColor("whole-header"), 64);
 			Dimension d = turnCounterTexture->getDimensions();
-			d *= 64;
-			d /= Global::defaultFontSize;
 			destinationRect.x = x + w / 2 - d.W() / 2;
 			destinationRect.y = y + h / 2 - d.H() / 2;
 			destinationRect.w = d.W();

@@ -53,7 +53,7 @@ public:
 	
 	ATexture* getATexture(TT tType, std::string name);
 	
-	ATexture* getTextTexture(std::string text, SDL_Color color);
+	ATexture* getTextTexture(std::string text, SDL_Color color, uint8_t size);
 	ATexture* getTextTexture(Text text);
 	//Clears all rendered text textures thus clearing memory
 	void clearTextTextures();
@@ -97,10 +97,9 @@ private:
 	
 	
 	//***TEXTS***
-	void loadFont();
-	TTF_Font* font;
-	
 	std::map<Text, ATexture*> renderedTexts;
+	std::map<int, TTF_Font*> loadedFonts;
+	TTF_Font* getFont(int size);
 	
 	
 	//***COLORS***

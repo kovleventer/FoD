@@ -25,8 +25,6 @@ Game::Game(std::string aName, Version version) {
 	//Passing metadata
 	Global::appName = aName + version.toString();
 	
-	Global::defaultFontSize = 100;
-	
 	Global::tileSize = 64;
 	
 	//Changing this is not really safe

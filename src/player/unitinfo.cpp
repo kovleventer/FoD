@@ -42,10 +42,8 @@ void UnitInfo::render() {
 		}
 		
 		//Name
-		ATexture* nameText = Global::resourceHandler->getTextTexture(Text(selectedUnit->getName(), Global::resourceHandler->getColor("unitinfo-desc")));
+		ATexture* nameText = Global::resourceHandler->getTextTexture(selectedUnit->getName(), Global::resourceHandler->getColor("unitinfo-desc"), nameSize);
 		Dimension d = nameText->getDimensions();
-		d *= nameSize;
-		d /= Global::defaultFontSize;
 		destinationRect.x = unitTextX + unitTextWidth / 2 - d.W() / 2;
 		destinationRect.y = unitTextY - d.H();
 		destinationRect.w = d.W();
@@ -98,10 +96,8 @@ void UnitInfo::render() {
 				ossValue << selectedUnit->getLevel();
 			}
 			
-			ATexture* statText = Global::resourceHandler->getTextTexture(Text(ossStat.str(), Global::resourceHandler->getColor("unitinfo-desc")));
+			ATexture* statText = Global::resourceHandler->getTextTexture(ossStat.str(), Global::resourceHandler->getColor("unitinfo-desc"), statsSize);
 			d = statText->getDimensions();
-			d *= statsSize;
-			d /= Global::defaultFontSize;
 			destinationRect.x = unitTextX;
 			destinationRect.y = unitTextY + unitTextHeight * 2 + i * (d.H() + 10);
 			destinationRect.w = d.W();
@@ -118,10 +114,8 @@ void UnitInfo::render() {
 				valueColor = Global::resourceHandler->getColor("unitinfo-values-decremented");
 			}
 			
-			ATexture* valueText = Global::resourceHandler->getTextTexture(Text(ossValue.str(), valueColor));
+			ATexture* valueText = Global::resourceHandler->getTextTexture(ossValue.str(), valueColor, statsSize);
 			d = valueText->getDimensions();
-			d *= statsSize;
-			d /= Global::defaultFontSize;
 			destinationRect.x = unitTextX + unitTextWidth - d.W();
 			destinationRect.y = unitTextY + unitTextHeight * 2 + i * (d.H() + 10);
 			destinationRect.w = d.W() * 1.1;

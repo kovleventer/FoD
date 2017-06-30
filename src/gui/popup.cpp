@@ -17,6 +17,7 @@ Popup::Popup(int xp, int yp, int wp, int hp, PopupType type) : BasicGUI(xp, yp, 
 	foregroundT = Global::resourceHandler->getATexture(TT::GUI, "popupfore");
 	
 	text = "";
+	textSize = 36;
 	
 	if (popupType == PopupType::POPUP_OK) {
 		buttonOK = new Button(
@@ -85,12 +86,8 @@ void Popup::render() {
 	}
 	
 	if (text != "") {
-		ATexture* textTexture = Global::resourceHandler->getTextTexture(Text(text, Global::resourceHandler->getColor("popup-text")));
+		ATexture* textTexture = Global::resourceHandler->getTextTexture(text, Global::resourceHandler->getColor("popup-text"), textSize);
 		Dimension d = textTexture->getDimensions();
-		//TODO change this
-		int textSize = 36;
-		d *= textSize;
-		d /= Global::defaultFontSize;
 		//Setting rectangle
 		destinationRect.x = x + w / 2 - d.W() / 2;
 		destinationRect.y = y + h / 2 - d.H() / 2;
@@ -117,6 +114,10 @@ std::string Popup::getText() {
 	return text;
 }
 
+int Popup::getTextSize() {
+	return textSize;
+}
+
 Item* Popup::getItem(int index) {
 	return items[index];
 }
@@ -127,6 +128,10 @@ void Popup::setPopupType(PopupType newPopupType) {
 
 void Popup::setText(std::string newText) {
 	text = newText;
+}
+
+void Popup::setTextSize(int newTextSize) {
+	textSize = newTextSize;
 }
 
 void Popup::addItem(Item* itemToAdd) {

@@ -354,7 +354,7 @@ void Army::handleLeftClickEvent(int xp, int yp) {
 				if (clickPos == selectedUnitPos) {
 					//When we click again on a selected unit, we remove the selection
 					selectedUnitPos = Point::INVALID;
-					unitInfo->setUnit(NULL);
+					
 				} else if (selectedUnitPos == Point::INVALID) {
 					if (Global::player->getArmy()->selectedUnitPos != Point::INVALID) {
 						//Switching the units
@@ -370,9 +370,9 @@ void Army::handleLeftClickEvent(int xp, int yp) {
 					setUnit(clickPos, getUnit(selectedUnitPos));
 					setUnit(selectedUnitPos, tempUnit);
 					selectedUnitPos = Point::INVALID;
-					unitInfo->setUnit(NULL);
 				}
 				Global::player->getArmy()->selectedUnitPos = Point::INVALID;
+				unitInfo->setUnit(NULL);
 			} else if (dynamic_cast<GarrisonWrapper*>(dynamic_cast<InteractiveGUI*>(Global::guiHandler->getGUI()) == NULL
 				? NULL : ((InteractiveGUI*)Global::guiHandler->getGUI())->getCurrentPart()) != NULL) { //It works
 				Army* garrisonArmy = dynamic_cast<GarrisonWrapper*>(dynamic_cast<InteractiveGUI*>(Global::guiHandler->getGUI())->getCurrentPart())->getGarrison()->getArmy();
@@ -387,6 +387,7 @@ void Army::handleLeftClickEvent(int xp, int yp) {
 						Unit* tempUnit = getUnit(clickPos);
 						setUnit(clickPos, garrisonArmy->getUnit(garrisonArmy->selectedUnitPos));
 						garrisonArmy->setUnit(garrisonArmy->selectedUnitPos, tempUnit);
+						unitInfo->setUnit(NULL);
 					} else {
 						selectedUnitPos = clickPos;
 					}

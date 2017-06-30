@@ -584,11 +584,10 @@ void Map::renderTileCoordinates() {
 				j * Global::tileSize - Global::camera->getPosition().getY()
 			);
 			
-			ATexture* textTextureX = Global::resourceHandler->getTextTexture(Text(std::to_string(i), Global::resourceHandler->getColor("debug-coord")));
-			Dimension d = textTextureX->getDimensions();
 			int textSize = Global::tileSize / 4;
-			d *= textSize;
-			d /= Global::defaultFontSize;
+			
+			ATexture* textTextureX = Global::resourceHandler->getTextTexture(std::to_string(i), Global::resourceHandler->getColor("debug-coord"), textSize);
+			Dimension d = textTextureX->getDimensions();
 			
 			//Setting rectangle
 			SDL_Rect destinationRect;
@@ -601,11 +600,8 @@ void Map::renderTileCoordinates() {
 			
 			
 			
-			ATexture* textTextureY = Global::resourceHandler->getTextTexture(Text(std::to_string(j), Global::resourceHandler->getColor("debug-coord")));
+			ATexture* textTextureY = Global::resourceHandler->getTextTexture(std::to_string(j), Global::resourceHandler->getColor("debug-coord"), textSize);
 			d = textTextureY->getDimensions();
-			textSize = Global::tileSize / 4;
-			d *= textSize;
-			d /= Global::defaultFontSize;
 			
 			//Setting rectangle
 			destinationRect.x = i * Global::tileSize - Global::camera->getPosition().getX() + Global::tileSize / 2 - d.W() / 2;

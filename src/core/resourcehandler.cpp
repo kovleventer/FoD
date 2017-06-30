@@ -37,7 +37,10 @@ ResourceHandler::~ResourceHandler() {
 	
 	clearTextTextures();
 	
-	TTF_CloseFont(font);
+	//Close all opened fonts
+	for(auto it = loadedFonts.begin(); it != loadedFonts.end(); ++it) {
+		TTF_CloseFont(it->second);
+	}
 	
 	
 	//Free all the sounds
@@ -54,7 +57,6 @@ ResourceHandler::~ResourceHandler() {
 
 void ResourceHandler::loadAll() {
 	loadImages();
-	loadFont();
 	loadColors();
 	loadAudio();
 }
@@ -112,15 +114,15 @@ ATexture* ResourceHandler::getATexture(TT tType, std::string name) {
 	return NULL;
 }
 
-ATexture* ResourceHandler::getTextTexture(std::string text, SDL_Color color) {
-	return getTextTexture(Text(text, color));
+ATexture* ResourceHandler::getTextTexture(std::string text, SDL_Color color, uint8_t size) {
+	return getTextTexture(Text(text, color, size));
 }
 
 ATexture* ResourceHandler::getTextTexture(Text text) {
 	std::map<Text, ATexture*>::iterator it = renderedTexts.find(text);
 	if (it == renderedTexts.end()) {
 		SDL_Surface* tempSurface;
-		tempSurface = TTF_RenderText_Blended(font, text.getText().c_str(), text.getColor());
+		tempSurface = TTF_RenderText_Blended(getFont(text.getSize()), text.getText().c_str(), text.getColor());
 		SDL_Texture* tempTexture = SDL_CreateTextureFromSurface(Global::renderer, tempSurface);
 		SDL_FreeSurface(tempSurface);
 		ATexture* tempATexture = new ATexture(tempTexture);
@@ -341,10 +343,17 @@ SDL_Color ResourceHandler::analyzeSurface(std::string path) {
 	return {(unsigned char)rS, (unsigned char)gS, (unsigned char)bS};
 }
 
-void ResourceHandler::loadFont() {
-	font = TTF_OpenFont(fontPath.c_str(), Global::defaultFontSize);
-	if (font == NULL) {
-		throw std::runtime_error("Font data missing: " + fontPath);
+TTF_Font* ResourceHandler::getFont(int size) {
+	std::map<int, TTF_Font*>::iterator it = loadedFonts.find(size);
+	if (it == loadedFonts.end()) {
+		TTF_Font* font = TTF_OpenFont(fontPath.c_str(), size);
+		if (font == NULL) {
+			throw std::runtime_error("Font data missing: " + fontPath);
+		}
+		loadedFonts[size] = font;
+		return font;
+	} else {
+		return it->second;
 	}
 }
 

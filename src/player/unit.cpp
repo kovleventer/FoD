@@ -32,6 +32,11 @@ Unit::Unit(std::string n, UnitType uT) {
 
 Unit::~Unit() {
 	delete[] items;
+	
+	//Most effective solution
+	if (this == Global::player->getArmy()->getUnitInfo()->getUnit()) {
+		Global::player->getArmy()->getUnitInfo()->setUnit(NULL);
+	}
 }
 
 void Unit::render(int x, int y, int w, int h) {
@@ -55,10 +60,8 @@ void Unit::renderMiniStats(SDL_Rect destinationRect) {
 	Dimension d;
 	SDL_Rect tempDestRect;
 	
-	ATexture* attackText = Global::resourceHandler->getTextTexture("A: " + std::to_string(getAttack()), Global::resourceHandler->getColor("whole-header"));
+	ATexture* attackText = Global::resourceHandler->getTextTexture("A: " + std::to_string(getAttack()), Global::resourceHandler->getColor("whole-header"), miniStatsFontSize);
 	d = attackText->getDimensions();
-	d *= miniStatsFontSize;
-	d /= Global::defaultFontSize;
 	tempDestRect.x = destinationRect.x;
 	tempDestRect.y = destinationRect.y;
 	tempDestRect.w = d.W();
@@ -67,10 +70,8 @@ void Unit::renderMiniStats(SDL_Rect destinationRect) {
 	
 	ATexture* defenseText = Global::resourceHandler->getTextTexture(
 		"D: " + std::to_string(statsWithItems["physicalDefense"]) + "/" +  std::to_string(statsWithItems["magicDefense"]),
-																	Global::resourceHandler->getColor("whole-header"));
+													Global::resourceHandler->getColor("whole-header"), miniStatsFontSize);
 	d = defenseText->getDimensions();
-	d *= miniStatsFontSize;
-	d /= Global::defaultFontSize;
 	tempDestRect.x = destinationRect.x + destinationRect.w - d.W();
 	tempDestRect.y = destinationRect.y;
 	tempDestRect.w = d.W();
@@ -79,10 +80,8 @@ void Unit::renderMiniStats(SDL_Rect destinationRect) {
 	
 	ATexture* lifeText = Global::resourceHandler->getTextTexture(
 		"L: " + std::to_string(statsWithItems["currentLife"]) + "/" + std::to_string(statsWithItems["life"]),
-																 Global::resourceHandler->getColor("whole-header"));
+													Global::resourceHandler->getColor("whole-header"), miniStatsFontSize);
 	d = lifeText->getDimensions();
-	d *= miniStatsFontSize;
-	d /= Global::defaultFontSize;
 	tempDestRect.x = destinationRect.x;
 	tempDestRect.y = destinationRect.y + destinationRect.h - d.H();
 	tempDestRect.w = d.W();
@@ -91,10 +90,8 @@ void Unit::renderMiniStats(SDL_Rect destinationRect) {
 	
 	ATexture* noaText = Global::resourceHandler->getTextTexture(
 		"N: " + std::to_string(statsWithItems["currentNumberOfActions"]) /*+ "/" + std::to_string(statsWithItems["numberOfActions"])*/,
-																 Global::resourceHandler->getColor("whole-header"));
+													Global::resourceHandler->getColor("whole-header"), miniStatsFontSize);
 	d = noaText->getDimensions();
-	d *= miniStatsFontSize;
-	d /= Global::defaultFontSize;
 	tempDestRect.x = destinationRect.x + destinationRect.w - d.W();
 	tempDestRect.y = destinationRect.y + destinationRect.h - d.H();
 	tempDestRect.w = d.W();
