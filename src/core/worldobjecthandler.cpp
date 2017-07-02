@@ -157,7 +157,7 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 		//IF HAS Garrison
 		//	{army}
 		//IF HAS TaxCollector
-		//	maxAccumulableGold
+		//	maxAccumulableGold currentAccumulatedGold
 		//Position point
 		// a [b c (a times)]
 		// a: number of interactive tiles
@@ -242,8 +242,10 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 		}
 		
 		int maxAccGold;
+		int curAccGold;
 		if (hasTax) {
  			file >> maxAccGold;
+			file >> curAccGold;
 		}
 		
 		int posX, posY;
@@ -313,6 +315,7 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 		if (hasTax) {
 			TaxCollectorWrapper* tempTaxCollectorWrapper = new TaxCollectorWrapper(loaded->getGUI());
 			tempTaxCollectorWrapper->getTaxCollector()->setMaxAccumulableGold(maxAccGold);
+			tempTaxCollectorWrapper->getTaxCollector()->addAccumulatedGold(curAccGold);
 			loaded->getGUI()->addPart({"Collect Tax", tempTaxCollectorWrapper});
 		}
 		
@@ -321,6 +324,10 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 		if (Global::map->getTile(posX, posY) == NULL) throw std::runtime_error("Invalid world object position (" + interactiveNames[i] + ", (" + std::to_string(posX) + ";" + std::to_string(posY) + "))");
 		Global::map->getTile(posX, posY)->entities.push_back(loaded);
 		interactives.push_back(loaded);
+		
+		if (interactivesByName.find(name) != interactivesByName.end()) {
+			throw std::runtime_error("Duplicate name: \"" + name + "\"");
+		}
 		interactivesByName[name] = loaded;
 	}
 }

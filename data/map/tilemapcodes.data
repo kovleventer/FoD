@@ -1,5 +1,5 @@
 32 32
-0 "grass"
-1 "water"
-2 "sand"
-3 "snow"
+_ 0 "grass"
+x 1 "water"
+_ 2 "sand"
+_ 3 "snow"

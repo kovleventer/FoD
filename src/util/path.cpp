@@ -23,6 +23,7 @@ unsigned int BasePath::getPositionIndex() {
 // SimplePath stuff
 
 SimplePath::SimplePath(Point start, Point end) : BasePath() {
+	//NOTE no error checking
 	path = Pathfinding::findPath(start, end);
 }
 
@@ -97,6 +98,7 @@ void CircularPath::generatePath(std::vector<Point> points) {
 		Point start = points[i];
 		Point end = (i == points.size() - 1) ? points[0] : points[i + 1];
 		std::vector<Point> tempPath = Pathfinding::findPath(start, end);
+		if (!Pathfinding::good()) continue; // We skip the unreachable ones
 		//We merge those paths into one circular path
 		path.insert(path.end(), tempPath.begin(), tempPath.end());
 		//To prevent duplications

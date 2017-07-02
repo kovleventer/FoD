@@ -19,6 +19,8 @@ ResourceHandler::ResourceHandler() {
 	
 	fontPath = "data/MerriweatherSans-Regular.ttf";
 	
+	colorsPath = "data/colors.data";
+	
 	chunkPath = "data/audio/sound/";
 	musicPath = "data/audio/music/";
 }
@@ -358,17 +360,16 @@ TTF_Font* ResourceHandler::getFont(int size) {
 }
 
 void ResourceHandler::loadColors() {
-	//TODO make this a file
-	colors["whole-header"] = {220, 210, 200};
-	colors["iteminfo-desc"] = {240, 240, 240};
-	colors["unitinfo-desc"] = {235, 235, 235};
-	colors["unitinfo-values-unchanged"] = {45, 75, 228};
-	colors["unitinfo-values-incremented"] = {75, 228, 45};
-	colors["unitinfo-values-decremented"] = {228, 45, 75};
-	colors["button-text"] = {210, 220, 190};
-	colors["popup-text"] = {210, 220, 190};
-	colors["debug-coord"] = {0, 255, 255};
-	colors["gold"] = {220, 220, 14};
+	//Uses file IO to get the color list
+	std::fstream file;
+	file.open(colorsPath, std::ios::in);
+	
+	std::string name;
+	int r, g, b;
+	
+	while (file >> name && file >> r && file >> g && file >> b) {
+		colors[name] = {(uint8_t)r, (uint8_t)g, (uint8_t)b};
+	}
 }
 
 void ResourceHandler::loadAudio() {
@@ -394,7 +395,6 @@ void ResourceHandler::loadMusicFiles() {
 
 Mix_Chunk* ResourceHandler::loadChunk(std::string path) {
 	//LoadWAV needs a c-type string (char*)
-	//TODO add support for other formats
 	Mix_Chunk* newChunk = Mix_LoadWAV(path.c_str());
 	if (newChunk == NULL) {
 		std::clog << "Error: Audio loading failed at " << path << std::endl;

@@ -23,6 +23,9 @@ QuestHandler::~QuestHandler() {
 void QuestHandler::loadAll() {
 	std::vector<std::string> questNames = FilesystemHandler::getFilesInDir(questPath);
 	
+	//Key depends on value
+	std::map<std::string, std::string> tempQuestRelationStorage;
+	
 	//NOTE uses file IO
 	std::fstream file;
 	for (unsigned int i = 0; i < questNames.size(); i++) {
@@ -92,8 +95,9 @@ void QuestHandler::loadAll() {
 				loaded->qtTimeInTicks = std::stoi(triggerTimeString);
 				break; }
 			case QuestTrigger::QUEST_COMPLETION: {
-				//TODO implementation
-				//That is going to be a hard one
+				std::string triggerQuestString;
+				std::getline(file, triggerQuestString);
+				tempQuestRelationStorage[name] = triggerQuestString;
 				break; }
 		}
 		
@@ -163,7 +167,7 @@ void QuestHandler::loadAll() {
 				}
 				break;
 			case QuestTrigger::QUEST_COMPLETION:
-				//TODO implementation
+				//Targeting added below
 				break;
 		}
 		
@@ -180,6 +184,28 @@ void QuestHandler::loadAll() {
 		}
 		
 		Global::player->getQuestLister()->addQuest(loaded);
+		questsByName[loaded->getName()] = loaded;
+	}
+	
+	for (auto it = tempQuestRelationStorage.begin(); it != tempQuestRelationStorage.end(); it++) {
+		Quest* current = getQuestByName(it->first);
+		Quest* previous = getQuestByName(it->second);
+		if (current == NULL || previous == NULL) {
+			std::clog << "Warning: Invalid quest names: [" << it->first << "] [" << it->second << "]" << std::endl;
+			continue;
+		}
+		
+		current->qtPreviousQuest = previous;
+		previous->qtNextQuests.push_back(current);
+	}
+}
+
+Quest* QuestHandler::getQuestByName(std::string name) {
+	auto it = questsByName.find(name);
+	if(it == questsByName.end()) {
+		return NULL;
+	} else {
+		return questsByName[name];
 	}
 }
 

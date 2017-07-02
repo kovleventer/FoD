@@ -22,7 +22,8 @@
 
 
 /*!
- * @enum TT Stands for texturetype
+ * @enum TT 
+ * Stands for texturetype
  * Used at texture-getting
  */
 enum class TT {
@@ -39,7 +40,8 @@ enum class TT {
 
 
 /*!
- * @class ResourceHandler responisble for handling textures, fonts, audio and colors
+ * @class ResourceHandler 
+ * Responisble for handling textures, fonts, audio and colors
  */
 class ResourceHandler {
 public:
@@ -137,6 +139,8 @@ private:
 	std::string unitImagePath;
 	
 	std::string fontPath;
+	
+	std::string colorsPath;
 	
 	std::string chunkPath;
 	std::string musicPath;

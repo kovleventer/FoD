@@ -28,7 +28,6 @@ Map::~Map() {
 	//delete tilemap
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
-			//TODO delete all entities on tile
 			delete tiles[i][j];
 		}
 	}
@@ -443,10 +442,14 @@ void Map::loadTileMap() {
 	}
 	
 	
+	std::string isImpassable;
 	int tileCode;
 	std::string tileName;
-	while (file >> tileCode && file >> std::quoted(tileName)) {
+	while (file >> isImpassable && file >> tileCode && file >> std::quoted(tileName)) {
 		tileMapCodes[tileCode] = tileName;
+		if (isImpassable == "x" || isImpassable == "X") {
+			baseImpassable.push_back(tileName);
+		}
 	}
 	file.close();
 	
@@ -462,7 +465,7 @@ void Map::loadTileMap() {
 		}
 	}
 	if (!file) {
-		//throw MapLoadError();
+		//std::clog << "Warning: Map might be corrupted" << std::endl;
 	}
 	file.close();
 }
@@ -497,8 +500,6 @@ void Map::createPassabilityMap() {
 	}
 	
 	//Some tiles are impassable eventough we do not place terrain objects on the top of them
-	//TODO move them to file
-	std::vector<std::string> baseImpassable = {"water"};
 	for (int i = 0; i < width; i++) {
 		for (int j = 0; j < height; j++) {
 			if (std::find(baseImpassable.begin(), baseImpassable.end(), getTile(i, j)->getType()) != baseImpassable.end()) {

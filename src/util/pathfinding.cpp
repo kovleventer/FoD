@@ -16,17 +16,18 @@ std::vector<Point> Pathfinding::findPath(Point start, Point destination) {
 	cameFrom[start] = Point::INVALID;
 	
 	//Tiles to check
-	std::queue<Point> frontier;
-	frontier.push(start);
+	std::priority_queue< PathEntry, std::vector<PathEntry>, PathPriority> frontier;
+	frontier.push({start, 0, 0});
 	
 	int count = 0;
+	int maxIterations = 1000;
 	
 	std::vector<Point> path;
 	
-	//ALERT infinite loop if not implemented properly
 	while (!frontier.empty()) {
 		//Store the first element and then remove it from the queue
-		Point current = frontier.front();
+		Point current = frontier.top().point;
+		int cost = frontier.top().cost;
 		frontier.pop();
 		
 		//If we found it, we do an early exit
@@ -43,26 +44,41 @@ std::vector<Point> Pathfinding::findPath(Point start, Point destination) {
 			//If we have not visited the tile, we add it to the queue and the map
 			std::map<Point, Point>::iterator it = cameFrom.find(next);
 			if (it == cameFrom.end()) {
-				frontier.push(next);
-				//std::cout << current << "<-" << next << std::endl;
+				frontier.push({next, destination.distanceToManhattan(next) + cost + 1, cost + 1});
 				cameFrom[next] = current;
 			}
 		}
 		count++;
-		if (count == 1000) return path;
+		if (count == maxIterations) {
+			wasLastPathfindingSuccessful = false;
+			return path;
+		}
+	}
+	
+	if (cameFrom.find(destination) == cameFrom.end()) {
+		wasLastPathfindingSuccessful = false;
+		return path;
 	}
 	
 	//Get the final path from the map
+	//NOTE both the insertion and reverse have linear complexity
+	//As a vector is not the fastest container for front insertion
+	//And we can not note preallocation since we do not know the length of the path before iterating through it
+	//It might be the best solution
 	Point current = destination;
-	path.push_back(current);
-	while (current != start) {
-		current = cameFrom[current];
+	do {
 		path.push_back(current);
-	}
-	//path.push_back(start);
+		current = cameFrom[current];
+	} while (current != start);
+	path.push_back(start);
 	std::reverse(path.begin(), path.end());
 	
+	wasLastPathfindingSuccessful = true;
 	return path;
+}
+
+bool Pathfinding::good() {
+	return wasLastPathfindingSuccessful;
 }
 
 std::vector<Point> Pathfinding::getNeighbours(Point p) {
@@ -140,4 +156,10 @@ std::vector<Point> Pathfinding::getNeighbours(Point p) {
 	}
 	
 	return neighbours;
+}
+
+bool Pathfinding::wasLastPathfindingSuccessful = false;
+
+bool PathPriority::operator()(PathEntry a, PathEntry b) {
+	return (a.distance > b.distance);
 }

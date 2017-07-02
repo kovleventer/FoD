@@ -67,6 +67,11 @@ void InteractiveWorldObject::refillStocks() {
 		if (possibleBarracks != NULL) {
 			possibleBarracks->getUnitBuyingMenu()->refill();
 		}
+		
+		TaxCollectorWrapper* possibleTaxCollectorWrapper = dynamic_cast<TaxCollectorWrapper*>(gui->getPart(i));
+		if (possibleTaxCollectorWrapper != NULL) {
+			possibleTaxCollectorWrapper->getTaxCollector()->addAccumulatedGold(10);
+		}
 	}
 }
 
@@ -154,6 +159,11 @@ void InteractiveWorldObject::activate(NPC* npc) {
 	//The NPC will be able to buy and sell items & units
 	bool boughtAnything = false;
 	for (unsigned int i = 0; i < gui->getPartCount(); i++) {
+		TaxCollectorWrapper* possibleTaxCollectorWrapper = dynamic_cast<TaxCollectorWrapper*>(gui->getPart(i));
+		if (possibleTaxCollectorWrapper != NULL) {
+			npc->giveGold(possibleTaxCollectorWrapper->getTaxCollector()->removeAccumulatedGold());
+		}
+		
 		//NOTE a bit slow due to the loop
 		ItemMarket* possibleItemMarket = dynamic_cast<ItemMarket*>(gui->getPart(i));
 		if (possibleItemMarket != NULL) {
@@ -164,12 +174,14 @@ void InteractiveWorldObject::activate(NPC* npc) {
 				
 				//The NPC does not hesitate, he simply buys all items he can
 				if (currentItem->getPrice() <= npc->getGold()) {
-					if (npc->getInventory()->addItem(currentItem)) {
-						npc->takeGold(currentItem->getPrice());
-						ibm->setSelectedItemPosition(j);
-						ibm->removeCurrentItem();
-						boughtAnything = true;
-						j--;
+					if (npc->getInventory()->getItemCount() <= 5) {
+						if (npc->getInventory()->addItem(currentItem)) {
+							npc->takeGold(currentItem->getPrice());
+							ibm->setSelectedItemPosition(j);
+							ibm->removeCurrentItem();
+							boughtAnything = true;
+							j--;
+						}
 					}
 				}
 			}

@@ -37,6 +37,13 @@ void Player::updatePlayerPosition() {
 	if (follow != NULL) {
 		//NOTE this might slow down the program a lot
 		path = Pathfinding::findPath(position, follow->getPosition());
+		
+		//On unsuccessful pathfinding
+		if (!Pathfinding::good()) {
+			clearPath();
+			return;
+		}
+		
 		tileProgress = 0;
 		
 		//TODO clean up this mess

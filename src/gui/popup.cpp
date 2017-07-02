@@ -95,10 +95,21 @@ void Popup::render() {
 		destinationRect.h = d.H();
 		textTexture->render(destinationRect);
 	} else if (items.size() != 0) {
+		ATexture* textTexture = Global::resourceHandler->getTextTexture("Acquired Items:", Global::resourceHandler->getColor("popup-text"), textSize);
+		Dimension d = textTexture->getDimensions();
+		//Setting rectangle
+		destinationRect.x = x + w / 2 - d.W() / 2;
+		destinationRect.y = y + padding;
+		destinationRect.w = d.W();
+		destinationRect.h = d.H();
+		textTexture->render(destinationRect);
+		
+		int lineWidth = w - padding * 2;
+		lineWidth /= Global::player->getInventory()->getSlotSize();
+		int lineCount = (int)std::ceil((double)items.size() / lineWidth);
 		for (unsigned int i = 0; i < items.size(); i++) {
-			//TODO packing, or better management
-			destinationRect.x = x + i * Global::player->getInventory()->getSlotSize();
-			destinationRect.y = y + h / 2 - Global::player->getInventory()->getSlotSize() / 2;
+			destinationRect.x = x + (i % lineWidth) * Global::player->getInventory()->getSlotSize();
+			destinationRect.y = y + (h - lineCount * Global::player->getInventory()->getSlotSize()) / 2 + ((i / lineWidth) * Global::player->getInventory()->getSlotSize());
 			destinationRect.w = Global::player->getInventory()->getSlotSize();
 			destinationRect.h = Global::player->getInventory()->getSlotSize();
 			items[i]->render(destinationRect, false);

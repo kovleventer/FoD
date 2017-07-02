@@ -15,7 +15,7 @@ build
 #Settings file
 settings.txt
 
-#Text editor stuff
+#Text editor and ide stuff
 *.kate-swp
 *.swp
 *.kdev4

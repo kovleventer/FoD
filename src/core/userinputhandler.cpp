@@ -121,11 +121,13 @@ void UserInputHandler::handleMousePressEvent(SDL_Event e) {
 				
 				if (cursorTile->getTileInfo() != TileInfo::IMPASSABLE) {
 					
-					Global::player->setFollow(Global::map->getNPCOnTile(cursorTilePos));
-					
-					Global::player->setPath(Pathfinding::findPath(Global::player->getPosition(), cursorTilePos));
-					Global::player->setHasPlannedPath(true);
-					Global::player->setState(PlayerState::HAS_WAY);
+					auto path = Pathfinding::findPath(Global::player->getPosition(), cursorTilePos);
+					if (Pathfinding::good()) {
+						Global::player->setPath(path);
+						Global::player->setFollow(Global::map->getNPCOnTile(cursorTilePos));
+						Global::player->setHasPlannedPath(true);
+						Global::player->setState(PlayerState::HAS_WAY);
+					}
 				}
 				break;
 			}

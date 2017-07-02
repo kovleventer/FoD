@@ -55,6 +55,7 @@ Battle::~Battle() {
 		delete gui;
 		gui = NULL;
 		Global::player->getArmy()->getUnitInfo()->setUnit(NULL);
+		Global::player->setState(PlayerState::STANDING);
 	}
 }
 

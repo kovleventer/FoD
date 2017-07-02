@@ -7,7 +7,7 @@
 #include "item.h"
 #include "../gui/popup.h"
 
-//Ugliest fwd declaration I've ever made
+//Forward declaration
 class Quest;
 class NPC;
 class InteractiveWorldObject;
@@ -101,6 +101,7 @@ private:
 	InteractiveWorldObject* qtStructTarget;
 	int qtTimeInTicks;
 	Quest* qtPreviousQuest;
+	std::vector<Quest*> qtNextQuests;
 	
 	//Different quest objective informations
 	NPC* qoTalkTarget;

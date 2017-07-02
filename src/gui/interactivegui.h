@@ -275,9 +275,13 @@ public:
 	
 	//Getters
 	int getMaxAccumulableGold();
+	int getCurrentAccumulatedGold();
 	
 	//Setters
 	void setMaxAccumulableGold(int newMaxAccumulableGold);
+	void addAccumulatedGold(int goldToAdd);
+	
+	int removeAccumulatedGold();
 	
 	//Event handling
 	void handleLeftClickEvent(int xp, int yp);
@@ -285,6 +289,7 @@ private:
 	Button* collectButton;
 	
 	int maxAccumulableGold;
+	int currentAccumulatedGold;
 };
 
 

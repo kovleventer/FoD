@@ -148,5 +148,8 @@ void Quest::complete() {
 			Global::player->getInventory()->addItem(rewardItems[i]);
 		}
 		questState = QuestState::COMPLETED;
+		for (unsigned int i = 0; i < qtNextQuests.size(); i++) {
+			qtNextQuests[i]->start();
+		}
 	}
 }

@@ -68,6 +68,16 @@ unsigned int Inventory::getInventorySize() {
 	return iSize;
 }
 
+int Inventory::getItemCount() {
+	int count = 0;
+	for (unsigned int i = 0; i < iSize; i++) {
+		if (items[i] != NULL) {
+			count++;
+		}
+	}
+	return count;
+}
+
 void Inventory::setItemInfo(ItemInfo* newItemInfo) {
 	itemInfo = newItemInfo;
 }

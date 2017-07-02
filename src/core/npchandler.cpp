@@ -247,6 +247,10 @@ void NPCHandler::loadAll() {
 			loaded->giveGold(gold);
 			
 			npcs.push_back(loaded);
+			
+			if (npcsByName.find(name) != npcsByName.end()) {
+				throw std::runtime_error("Duplicate name: \"" + name + "\"");
+			}
 			npcsByName[name] = loaded;
 		}
 	}
@@ -255,7 +259,6 @@ void NPCHandler::loadAll() {
 void NPCHandler::updateNPCsPosition() {
 	for (unsigned int i = 0; i < npcs.size(); i++) {
 		npcs[i]->updateNPCPosition();
-		npcs[i]->giveGold(1);
 	}
 }
 

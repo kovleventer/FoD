@@ -86,6 +86,7 @@ private:
 	//Loading
 	//Uses file IO
 	void loadTileMap();
+	std::vector<std::string> baseImpassable;
 	
 	//Army for display info rendering
 	Army* displayInfo;

@@ -4,6 +4,7 @@
 #include <vector>
 #include <fstream>
 #include <queue>
+#include <map>
 
 #include "../util/filesystemhandler.h"
 #include "../player/quest.h"
@@ -24,7 +25,8 @@ public:
 };
 
 /*!
- * @class QuestHandler handles quests, WIP
+ * @class QuestHandler 
+ * Handles and loads quests
  */
 class QuestHandler {
 public:
@@ -35,6 +37,8 @@ public:
 	
 	//Varios storage methods
 	std::priority_queue<Quest*, std::vector<Quest*>, QuestTimeComparator> qtTimePQ;
+	
+	Quest* getQuestByName(std::string name);
 	
 	//Translater
 	QuestTrigger translateQT(std::string questTriggerString);
@@ -51,6 +55,8 @@ private:
 	//Not accessable
 	//Used only at deletion
 	std::vector<Quest*> backgroundStorage;
+	
+	std::map<std::string, Quest*> questsByName;
 	
 	//Translater stuff
 	std::map<std::string, QuestTrigger> translaterSQT;

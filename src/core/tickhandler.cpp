@@ -43,7 +43,7 @@ void TickHandler::nextTick(bool isGameTickToo) {
 				Global::questHandler->qtTimePQ.pop();
 			}
 		}
-		if (gameTicks % 1000 == 0) {
+		if (gameTicks % 100 == 0) {
 			Global::worldObjectHandler->refillStocks();
 		}
 		gameTicks++;

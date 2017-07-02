@@ -625,11 +625,11 @@ void Garrison::handleMouseMotionEvent(int xp, int yp) {
 }
 
 TaxCollector::TaxCollector(int xp, int yp, int wp, int hp) : BasicGUI(xp, yp, wp, hp) {
-	//TODO change this
-	bgText = Global::resourceHandler->getATexture(TT::GUI, "marketitembg");
+	bgText = Global::resourceHandler->getATexture(TT::GUI, "collectbg");
 	Dimension buttonDim = Dimension(200, 50);
 	collectButton = new Button(x + (w - buttonDim.W()) / 2, y + h / 4 * 3 - buttonDim.H() / 2, buttonDim.W(), buttonDim.H());
 	collectButton->setText("Collect");
+	currentAccumulatedGold = 0;
 }
 
 TaxCollector::TaxCollector(SDL_Rect dimensionRect) : TaxCollector(dimensionRect.x, dimensionRect.y, dimensionRect.w, dimensionRect.h) {}
@@ -652,7 +652,7 @@ void TaxCollector::render() {
 	destinationRect.h = goldSize;
 	goldText->render(destinationRect);
 	
-	ATexture* collectValueText = Global::resourceHandler->getTextTexture(std::to_string(maxAccumulableGold), Global::resourceHandler->getColor("gold"), 40);
+	ATexture* collectValueText = Global::resourceHandler->getTextTexture(std::to_string(currentAccumulatedGold), Global::resourceHandler->getColor("gold"), 40);
 	Dimension d = collectValueText->getDimensions();
 	destinationRect.x = x + (w - d.W()) / 2;
 	destinationRect.y = y + h / 4 - d.H() / 2;
@@ -665,14 +665,30 @@ int TaxCollector::getMaxAccumulableGold() {
 	return maxAccumulableGold;
 }
 
+int TaxCollector::getCurrentAccumulatedGold() {
+	return currentAccumulatedGold;
+}
+
 void TaxCollector::setMaxAccumulableGold(int newMaxAccumulableGold) {
 	maxAccumulableGold = newMaxAccumulableGold;
 }
 
+void TaxCollector::addAccumulatedGold(int goldToAdd) {
+	currentAccumulatedGold += goldToAdd;
+	if (currentAccumulatedGold > maxAccumulableGold) {
+		currentAccumulatedGold = maxAccumulableGold;
+	}
+}
+
+int TaxCollector::removeAccumulatedGold() {
+	int gold = currentAccumulatedGold;
+	currentAccumulatedGold = 0;
+	return gold;
+}
+
 void TaxCollector::handleLeftClickEvent(int xp, int yp) {
 	if (collectButton->contains(xp, yp)) {
-		Global::player->giveGold(maxAccumulableGold);
-		maxAccumulableGold = 0;
+		Global::player->giveGold(removeAccumulatedGold());
 	}
 }
 

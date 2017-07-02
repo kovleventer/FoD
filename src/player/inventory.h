@@ -38,6 +38,7 @@ public:
 	ItemInfo* getItemInfo();
 	int getCurrentHeightPosition();
 	unsigned int getInventorySize();
+	int getItemCount();
 	
 	//Setters
 	void setItemInfo(ItemInfo* newItemInfo);

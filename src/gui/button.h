@@ -13,7 +13,8 @@
 
 
 /*!
- * @class Button A clickable button that support text over it
+ * @class Button
+ * A clickable button that support text over it
  * Clicking is done with a callback function and function pointers
  * @note This can be inconvinient to use, so a better alternative might should be designed
  */
