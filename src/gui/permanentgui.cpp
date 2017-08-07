@@ -47,6 +47,10 @@ PermanentGUI::PermanentGUI(int uH, int lH) {
 	guiQuests->addPart(tempQuestLister);
 	Global::player->setQuestLister(tempQuestLister);
 	
+	QuestDisplay* tempQuestDisplay = new QuestDisplay(tempX,  tempY + tempH / 10, tempW * 3 / 4, tempH * 9 / 10);
+	guiQuests->addPart(tempQuestDisplay);
+	tempQuestLister->setQuestDisplay(tempQuestDisplay);
+	
 	//Player's inventory (5*5)
 	Inventory* tempInventory = new Inventory(tempX + tempW / 5, tempY + tempH / 10, tempW * 2 / 5, tempH * 2 / 5, 5, 10);
 	guiArmy->addPart(tempInventory);

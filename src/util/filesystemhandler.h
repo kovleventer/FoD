@@ -19,6 +19,7 @@
 #include <vector>
 #include <iostream>
 #include <utility>
+#include <fstream>
 
 /*!
  * @author kovlev
@@ -26,7 +27,8 @@
 
 
 /*!
- * @class FilesystemHandler contains helper functions on listing all files and directories in a folder
+ * @class FilesystemHandler
+ * Contains helper functions on listing all files and directories in a folder
  * Also can be used for dealing with extensions
  */
 class FilesystemHandler {
@@ -34,7 +36,11 @@ public:
 	//Filesystem traversing methods
 	static std::vector<std::string> getFilesInDir(std::string path);
 	static std::vector<std::string> getDirsInDir(std::string path);
+	//The first enty is the filelist, the second entry is the dirlist
 	static std::pair< std::vector<std::string>, std::vector<std::string> > getFilesAndDirsInDir(std::string path);
+	
+	//In bytes
+	static int getFileSize(std::string path);
 	
 	//Extension handling methods
 	static std::string removeExtension(std::string filename);

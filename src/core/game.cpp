@@ -101,7 +101,7 @@ Game::Game(std::string aName, Version version) {
 			tickID = SDL_AddTimer(1000 / Global::ticks, timer, (char*)2);
 			
 			
-			//new Battle((NPC*)Global::npcHandler->getCharacterByName("Kov Lev"), (NPC*)Global::npcHandler->getCharacterByName("Friend"));
+			
 			
 			
 			//Contains a while loop
@@ -113,7 +113,7 @@ Game::Game(std::string aName, Version version) {
 			
 			
 		} catch (std::runtime_error& e) {
-			//Catchng standard errors
+			//Catching standard errors
 			std::clog << "Fatal error : " << e.what() << std::endl;
 		}
 		

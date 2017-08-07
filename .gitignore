@@ -23,3 +23,6 @@ settings.txt
 #Log files
 log
 *.log
+
+#Junk
+*.directory

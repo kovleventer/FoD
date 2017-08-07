@@ -218,6 +218,12 @@ std::pair< std::vector<std::string>, std::vector<std::string> > FilesystemHandle
 	return std::pair< std::vector<std::string>, std::vector<std::string> >(fileList, directoryList);
 }
 
+int FilesystemHandler::getFileSize(std::string path) {
+	//Not sure if works with large files
+	std::ifstream file(path, std::ios::binary | std::ios::ate);
+	return file.tellg();
+}
+
 std::string FilesystemHandler::removeExtension(std::string filename) {
 	//Removes file extension
 	//https://stackoverflow.com/questions/6417817/easy-way-to-remove-extension-from-a-filename
