@@ -86,6 +86,7 @@ void UnitHandler::loadUnitData() {
 	//speed;
 	//numberOfActions;
 	//experience;
+	//price;
 	for (unsigned int i = 0; i < unitList.size(); i++) {
 		//Loading the units into level 1 unittemplates
 		file.open(basePath + unitList[i], std::ios::in);

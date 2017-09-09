@@ -62,6 +62,7 @@ void NPC::updateNPCPosition() {
 				path = new SimplePath(position, followed->getPosition());
 			}
 			
+			bool enemyNPCFound = false;
 			//NPC checking
 			for (unsigned int i = 0; i < Global::npcHandler->npcs.size(); i++) {
 				if (Global::npcHandler->npcs[i] == this) continue;
@@ -93,6 +94,51 @@ void NPC::updateNPCPosition() {
 								}
 								path = new SimplePath(position, followed->getPosition());
 							}
+							enemyNPCFound = true;
+						}
+					}
+				}
+			}
+			
+			if (!enemyNPCFound) {
+				for (unsigned int i = 0; i < Global::worldObjectHandler->interactives.size(); i++) {
+					InteractiveWorldObject* currInter = Global::worldObjectHandler->interactives[i];
+					bool isTarget = false;
+					if (enemy && Global::player == currInter->getOwner()) {
+						isTarget = true;
+					}
+					NPC* possibleOwner = dynamic_cast<NPC*>(currInter->getOwner());
+					if (possibleOwner != NULL && possibleOwner->enemy != enemy) {
+						isTarget = true;
+					}
+					if (isTarget) {
+						//If current structure is attackable
+						if (currInter->getPosition().distanceTo(position) < aggroRange) {
+							//If target is close enough
+							
+							if (currInter->getGarrisonArmy() == NULL || currInter->getGarrisonArmy()->getArmyValue(false) < army->getArmyValue(false)) {
+								//If the enemy is weaker
+								
+								if (currInter->getPosition() == position) {
+									//Activating npc
+									currInter->activate(this);
+								} else {
+									
+									followed = currInter;
+									
+									
+									if (dynamic_cast<CircularPath*>(path) != NULL) {
+										//IF PATH IS CIRCULARPATH
+										//Does not delete nextpath (might be unsafe)
+										nextPath = path;
+									} else {
+										//IF PATH IS SIMPLEPATH
+										delete path;
+									}
+									path = new SimplePath(position, followed->getPosition());
+								}
+								enemyNPCFound = true;
+							}
 						}
 					}
 				}
@@ -106,8 +152,14 @@ void NPC::updateNPCPosition() {
 				NPC* followNPC = dynamic_cast<NPC*>(followed);
 				if (followNPC != NULL) {
 					followNPC->activate(this);
+					followed = NULL;
 				} else if (Global::player == followed) {
 					activate();
+				}
+				InteractiveWorldObject* followInter = dynamic_cast<InteractiveWorldObject*>(followed);
+				if (followInter != NULL) {
+					followInter->activate(this);
+					followed = NULL;
 				}
 				
 				setupPath();
@@ -171,7 +223,6 @@ void NPC::activate(NPC* npc) {
 	if (enemy != npc->enemy) {
 		//Quick battle between npcs
 		new Battle(this, npc);
-		followed = NULL;
 	}
 }
 
@@ -262,6 +313,7 @@ void NPC::rearrangeArmy() {
 					//Not preserving unit if dead
 					delete currentUnit;
 					army->setUnit(i, j, NULL);
+					std::cout << "Kille dunit delted" << std::endl;
 					continue;
 				}
 				if (currentUnit->isMelee()) {
@@ -374,7 +426,7 @@ void NPC::recalculatePathByOwned() {
 		}
 		movementType = NPCMovement::STANDING;
 		temporaryStanding = true;
-		return;
+		//return;
 	}
 	
 	temporaryStanding = false;
@@ -389,11 +441,9 @@ void NPC::setupPath() {
 	
 	for (unsigned int i = 0; i < ownedBuildings.size(); i++) {
 		ownedPoses.push_back(ownedBuildings[i]->getPosition());
-	}
-	
-	if (Character::characterPlaceholderNeutral != NULL) {
-		for (unsigned int i = 0; i < Character::characterPlaceholderNeutral->getOwnedBuildings().size(); i++) {
-			ownedPoses.push_back(Character::characterPlaceholderNeutral->getOwnedBuildings()[i]->getPosition());
+		std::vector<InteractiveWorldObject*> children = ownedBuildings[i]->getChildren();
+		for (unsigned int j = 0; j < children.size(); j++) {
+			ownedPoses.push_back(children[i]->getPosition());
 		}
 	}
 	

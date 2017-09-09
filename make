@@ -64,6 +64,7 @@ LINKER=(
 	"-lSDL2_ttf"
 	"-lSDL2_mixer"
 	"-lpthread"
+	"-lz"
 )
 
 FLAGS="-O3 -Wall `sdl2-config --cflags` -std=c++14 -c"

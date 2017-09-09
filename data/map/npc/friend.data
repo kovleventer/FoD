@@ -1,7 +1,7 @@
 Friend
 friend
-"" "Bowman" "Bowman" "" "" "" "" "" "" ""
-0 1 2 0 0 0 0 0 0 0
+"Spearman" "Legionnaire" "Legionnaire" "Legionnaire" "Spearman" "Hunter" "Hunter" "Hunter" "Hunter" "Hunter"
+1 1 1 1 1 1 1 1 1 1
 0 0 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0 0 0
 "" "" "" ""
@@ -16,6 +16,6 @@ friend
 "" "" "" ""
 1 "sword"
 200
-1 0 2
+-1 0 2
 1
 friend

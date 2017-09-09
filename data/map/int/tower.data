@@ -1,10 +1,10 @@
 Tower
 tower
-Friend
-1 1 1 0
+Kov Lev
+1 1 1 0 0
 5 "sword" "ring" "staff" "mshield1" "boots"
-1 "Knight"
-"Dog" "Bowman" "Bowman" "" "" "" "" "" "" ""
+2 "Knight" "Legionnaire"
+"Legionnaire" "Legionnaire" "Legionnaire" "" "" "" "" "" "" ""
 4 1 2 0 0 0 0 0 0 0
 42 0 0 0 0 0 0 0 0 0
 26 0 0 0 0 0 0 0 0 0

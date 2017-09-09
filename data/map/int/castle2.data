@@ -1,10 +1,10 @@
 Purple Castle
 castle2
 Kov Lev
-1 1 1 0
+1 1 1 0 0
 5 "helmet" "ring" "staff" "mshield1" "boots"
-4 "Gray Mage" "Gray Mage" "Bowman" "Gray Mage"
-"Dog" "Dog" "Dog" "" "" "" "" "" "" ""
+3 "Axeman" "Hunter" "Hunter"
+"Gray Mage" "Axeman" "Axeman" "" "" "" "" "" "" ""
 4 1 2 0 0 0 0 0 0 0
 42 0 0 0 0 0 0 0 0 0
 26 0 0 0 0 0 0 0 0 0

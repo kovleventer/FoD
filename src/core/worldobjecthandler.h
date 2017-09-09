@@ -42,13 +42,16 @@ public:
 	
 	InteractiveWorldObject* getInteractiveByName(std::string interactiveName);
 private:
-	std::string worldObjectBasePath;
-	std::string impassableBasePath;
+	std::string worldObjectPath;
+	std::string impassablePath;
 	std::string interactiveBasePath;
 	
 	void loadWorldObjects();
 	void loadImpassableWorldObjects();
 	void loadInteractiveWorldObjects();
+	
+	//Sets parent relationships between interactives
+	void setParentRelations();
 	
 	//For quick search
 	//Technically since the keys are string that may not be the most optimized solution

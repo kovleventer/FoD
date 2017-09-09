@@ -48,6 +48,9 @@ private:
 };
 
 
+//Self-referencing
+class InteractiveWorldObject;
+
 /*!
  * @class InteractiveWorldObject a world objects that has tiles, which trigger some kind of events
  * Has properties like owner or name
@@ -67,10 +70,16 @@ public:
 	std::string getName();
 	Character* getOwner();
 	InteractiveGUI* getGUI();
+	InteractiveWorldObject* getParent();
+	std::string getTempParentName();
+	std::vector<InteractiveWorldObject*> getChildren();
 	
 	//Setters
 	void setName(std::string newName);
 	void setOwner(Character* newOwner);
+	void setParent(InteractiveWorldObject* newParent);
+	void setTempParentName(std::string newTempParentName);
+	void addChild(InteractiveWorldObject* childToAdd);
 	
 	//Activates the current IWO
 	//If the player does this
@@ -104,7 +113,15 @@ protected:
 	//Either player or an npc
 	Character* owner;
 	
+	//Struct's GUI
 	InteractiveGUI* gui;
+	
+	//Parentship related stuff
+	//So for example a village belongs to a castle and stuff
+	//This way visiting neutral structures for ai becomes more easy and logical
+	InteractiveWorldObject* parent;
+	std::string tempParentName;
+	std::vector<InteractiveWorldObject*> children;
 	
 	//Quest stuff
 	std::vector<Quest*> questTriggerCaptures;

@@ -7,8 +7,8 @@
  */
 
 WorldObjectHandler::WorldObjectHandler() {
-	worldObjectBasePath = "data/map/wo/";
-	impassableBasePath = "data/map/imp/";
+	worldObjectPath = "data/map/worldobjects.data";
+	impassablePath = "data/map/impassables.data";
 	interactiveBasePath = "data/map/int/";
 }
 
@@ -27,6 +27,7 @@ void WorldObjectHandler::loadAll() {
 	loadWorldObjects();
 	loadImpassableWorldObjects();
 	loadInteractiveWorldObjects();
+	setParentRelations();
 }
 
 void WorldObjectHandler::setOwnershipRelations() {
@@ -49,12 +50,13 @@ InteractiveWorldObject* WorldObjectHandler::getInteractiveByName(std::string int
 }
 
 void WorldObjectHandler::loadWorldObjects() {
-	std::vector<std::string> worldObjectNames = FilesystemHandler::getFilesInDir(worldObjectBasePath);
-	
+	//Every entry is stored in a single file
 	//NOTE uses file IO
 	std::fstream file;
-	for (unsigned int i = 0; i < worldObjectNames.size(); i++) {
-		file.open(worldObjectBasePath + worldObjectNames[i], std::ios::in);
+	file.open(worldObjectPath, std::ios::in);
+	int count;
+	file >> count;
+	for (int i = 0; i < count; i++) {
 		//File pattern
 		//Texture name
 		//Position point
@@ -69,30 +71,30 @@ void WorldObjectHandler::loadWorldObjects() {
 		double scale;
 		file >> scale;
 		
-		file.close();
-		
 		if (!file) {
 			//If the file pattern is wrong
-			std::clog << "Error! Skipping " << worldObjectNames[i] << std::endl;
+			std::clog << "Error! Skipping entry" << std::endl;
 			continue;
 		}
 		
 		WorldObject* loaded = new WorldObject(textureName, posX, posY);
 		loaded->setScale(scale);
 		//Error checking for position
-		if (Global::map->getTile(posX, posY) == NULL) throw std::runtime_error("Invalid world object position (" + worldObjectNames[i] + ", (" + std::to_string(posX) + ";" + std::to_string(posY) + "))");
+		if (Global::map->getTile(posX, posY) == NULL) throw std::runtime_error("Invalid world object position (" + textureName + ", (" + std::to_string(posX) + ";" + std::to_string(posY) + "))");
 		Global::map->getTile(posX, posY)->backgroundEntities.push_back(loaded);
 		worldObjects.push_back(loaded);
 	}
+	file.close();
 }
 
 void WorldObjectHandler::loadImpassableWorldObjects() {
-	std::vector<std::string> impassableNames = FilesystemHandler::getFilesInDir(impassableBasePath);
-	
+	//Every entry is stored in a single file
 	//NOTE uses file IO
 	std::fstream file;
-	for (unsigned int i = 0; i < impassableNames.size(); i++) {
-		file.open(impassableBasePath + impassableNames[i], std::ios::in);
+	file.open(impassablePath, std::ios::in);
+	int count;
+	file >> count;
+	for (int i = 0; i < count; i++) {
 		//File pattern:
 		//Texture name
 		//Position point
@@ -102,7 +104,7 @@ void WorldObjectHandler::loadImpassableWorldObjects() {
 		// c: the x coordinate of current impassable tile (relative, so (0,0) means the position tile itself)
 		//Scale
 		std::string textureName;
-		std::getline(file, textureName);
+		file >> textureName;
 		
 		int posX, posY;
 		file >> posX;
@@ -111,7 +113,7 @@ void WorldObjectHandler::loadImpassableWorldObjects() {
 		int impLen;
 		std::vector<Point> impassableTiles;
 		file >> impLen;
-		for (int i = 0; i < impLen; i++) {
+		for (int j = 0; j < impLen; j++) {
 			int x, y;
 			file >> x;
 			file >> y;
@@ -121,21 +123,20 @@ void WorldObjectHandler::loadImpassableWorldObjects() {
 		double scale;
 		file >> scale;
 		
-		file.close();
-		
 		if (!file) {
 			//If the file pattern is wrong
-			std::clog << "Error! Skipping " << impassableNames[i] << std::endl;
+			std::clog << "Error! Skipping impassable entry" << std::endl;
 			continue;
 		}
 		
 		ImpassableWorldObject* loaded = new ImpassableWorldObject(textureName, posX, posY, impassableTiles);
 		loaded->setScale(scale);
 		//Error checking for position
-		if (Global::map->getTile(posX, posY) == NULL) throw std::runtime_error("Invalid world object position (" + impassableNames[i] + ", (" + std::to_string(posX) + ";" + std::to_string(posY) + "))");
+		if (Global::map->getTile(posX, posY) == NULL) throw std::runtime_error("Invalid world object position (" + textureName + ", (" + std::to_string(posX) + ";" + std::to_string(posY) + "))");
 		Global::map->getTile(posX, posY)->entities.push_back(loaded);
 		impassables.push_back(loaded);
 	}
+	file.close();
 }
 
 void WorldObjectHandler::loadInteractiveWorldObjects() {
@@ -149,7 +150,7 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 		//Name
 		//Texture name
 		//Owner name
-		//Has ItemBuyingMenu?, Has UnitBuyingMenu?, Has Garrison?, Has TaxCollector? bools
+		//Has ItemBuyingMenu?, Has UnitBuyingMenu?, Has Garrison?, Has TaxCollector? Has Parent? bools
 		//IF HAS ItemBuyingMenu
 		//	[itemcount] ["itemname"] itemcount times
 		//IF HAS UnitBuyingMenu
@@ -158,6 +159,8 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 		//	{army}
 		//IF HAS TaxCollector
 		//	maxAccumulableGold currentAccumulatedGold
+		//IF HAS Parent
+		//	parentname
 		//Position point
 		// a [b c (a times)]
 		// a: number of interactive tiles
@@ -173,11 +176,12 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 		std::string ownerName;
 		std::getline(file, ownerName);
 		
-		bool hasIBM, hasUBM, hasGar, hasTax;
+		bool hasIBM, hasUBM, hasGar, hasTax, hasPar;
 		file >> hasIBM;
 		file >> hasUBM;
 		file >> hasGar;
 		file >> hasTax;
+		file >> hasPar;
 		
 		std::vector<Item*> itemsToSell;
 		if (hasIBM) {
@@ -246,6 +250,11 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 		if (hasTax) {
  			file >> maxAccGold;
 			file >> curAccGold;
+		}
+		
+		std::string parentName;
+		if (hasPar) {
+			file >> std::quoted(parentName);
 		}
 		
 		int posX, posY;
@@ -318,6 +327,9 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 			tempTaxCollectorWrapper->getTaxCollector()->addAccumulatedGold(curAccGold);
 			loaded->getGUI()->addPart({"Collect Tax", tempTaxCollectorWrapper});
 		}
+		if (hasPar) {
+			loaded->setTempParentName(parentName);
+		}
 		
 		loaded->setScale(scale);
 		//Error checking for position
@@ -329,5 +341,20 @@ void WorldObjectHandler::loadInteractiveWorldObjects() {
 			throw std::runtime_error("Duplicate name: \"" + name + "\"");
 		}
 		interactivesByName[name] = loaded;
+	}
+}
+
+void WorldObjectHandler::setParentRelations() {
+	for (unsigned int i = 0; i < interactives.size(); i++) {
+		std::string parentName = interactives[i]->getTempParentName();
+		if (parentName != "") {
+			if (interactivesByName.find(parentName) != interactivesByName.end()) {
+				InteractiveWorldObject* parent = interactivesByName[parentName];
+				interactives[i]->setParent(parent);
+				parent->addChild(interactives[i]);
+			} else {
+				std::clog << "Warning: parent not found: " << parentName << std::endl;
+			}
+		}
 	}
 }

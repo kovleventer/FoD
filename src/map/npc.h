@@ -86,7 +86,8 @@ private:
 	void init();
 	
 	//NULL if npc is not following anybody
-	Character* followed;
+	//Can be an NPC, Player or an InteractiveWorldObject
+	MapEntity* followed;
 	
 	BasePath* path;
 	//The path which is going to be active after current path finishes

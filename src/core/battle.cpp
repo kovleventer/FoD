@@ -254,11 +254,13 @@ int Battle::getPossibleDamage(Unit* unitToAttack) {
 	int attackValue = currentAttackingUnit->getAttack();
 	int defenseValue = unitToAttack->getDefense(currentAttackingUnit);
 	
-	if (attackValue <= defenseValue) {
+	/*if (attackValue <= defenseValue) {
 		attackValue = 1;
 	} else {
 		attackValue -= defenseValue;
-	}
+	}*/
+	//New formula
+	attackValue = std::ceil(attackValue * std::pow(0.5, std::log2((double)defenseValue / attackValue + 1)));
 	
 	if (attackValue > unitToAttack->statsWithItems["currentLife"]) {
 		attackValue = unitToAttack->statsWithItems["currentLife"];

@@ -47,6 +47,7 @@ InteractiveWorldObject::InteractiveWorldObject(std::string text, Point pos, std:
 	neutral = isNeut;
 	name = "";
 	owner = NULL;
+	parent = NULL;
 	
 	gui = new InteractiveGUI(Global::permaGUI->getDim());
 	gui->setParent(this);
@@ -95,6 +96,18 @@ InteractiveGUI* InteractiveWorldObject::getGUI() {
 	return gui;
 }
 
+InteractiveWorldObject* InteractiveWorldObject::getParent() {
+	return parent;
+}
+
+std::string InteractiveWorldObject::getTempParentName() {
+	return tempParentName;
+}
+
+std::vector<InteractiveWorldObject*> InteractiveWorldObject::getChildren() {
+	return children;
+}
+
 void InteractiveWorldObject::setName(std::string newName) {
 	name = newName;
 }
@@ -112,6 +125,18 @@ void InteractiveWorldObject::setOwner(Character* newOwner) {
 	if (owner != NULL) {
 		owner->addOwned(this);
 	}
+}
+
+void InteractiveWorldObject::setParent(InteractiveWorldObject* newParent) {
+	parent = newParent;
+}
+
+void InteractiveWorldObject::setTempParentName(std::string newTempParentName) {
+	tempParentName = newTempParentName;
+}
+
+void InteractiveWorldObject::addChild(InteractiveWorldObject* childToAdd) {
+	children.push_back(childToAdd);
 }
 
 void InteractiveWorldObject::activate() {
@@ -148,7 +173,7 @@ void InteractiveWorldObject::activate(NPC* npc) {
 		}
 	} else {
 		//If current npc is not an enemy
-		if (ownerNPC->isEnemy()) {
+		if (ownerNPC != NULL && ownerNPC->isEnemy()) {
 			//If current structure's owner is hostile towards npc
 			new Battle(npc, this);
 			return;
@@ -196,7 +221,7 @@ void InteractiveWorldObject::activate(NPC* npc) {
 				
 				//The NPC does not hesitate, he simply buys all units he can
 				if (currentUnit->statsWithItems["price"] <= npc->getGold()) {
-					if (currentUnit->getUnitValue(false) > npc->getArmy()->getArmyValue(false) / 10) {
+					if (currentUnit->getUnitValue(false) > npc->getArmy()->getArmyValue(false) / 5) {
 						if (npc->getArmy()->addUnit(currentUnit)) {
 							npc->takeGold(currentUnit->statsWithItems["price"]);
 							ubm->removeUnit(j);
