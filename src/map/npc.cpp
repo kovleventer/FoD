@@ -313,7 +313,6 @@ void NPC::rearrangeArmy() {
 					//Not preserving unit if dead
 					delete currentUnit;
 					army->setUnit(i, j, NULL);
-					std::cout << "Kille dunit delted" << std::endl;
 					continue;
 				}
 				if (currentUnit->isMelee()) {
@@ -426,7 +425,7 @@ void NPC::recalculatePathByOwned() {
 		}
 		movementType = NPCMovement::STANDING;
 		temporaryStanding = true;
-		//return;
+		return;
 	}
 	
 	temporaryStanding = false;
@@ -443,7 +442,7 @@ void NPC::setupPath() {
 		ownedPoses.push_back(ownedBuildings[i]->getPosition());
 		std::vector<InteractiveWorldObject*> children = ownedBuildings[i]->getChildren();
 		for (unsigned int j = 0; j < children.size(); j++) {
-			ownedPoses.push_back(children[i]->getPosition());
+			ownedPoses.push_back(children[j]->getPosition());
 		}
 	}
 	
