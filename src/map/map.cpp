@@ -196,8 +196,9 @@ void Map::renderTileMap() {
 			SDL_Rect destinationRect;
 			destinationRect.x = i * Global::tileSize - camPos.getX();
 			destinationRect.y = j * Global::tileSize - camPos.getY();
-			destinationRect.w = Global::tileSize;
-			destinationRect.h = Global::tileSize;
+			//tileSize is a double now
+			destinationRect.w = std::ceil(Global::tileSize);
+			destinationRect.h = std::ceil(Global::tileSize);
 			getTile(i, j)->texture->render(destinationRect);
 		}
 	}

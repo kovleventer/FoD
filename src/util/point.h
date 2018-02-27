@@ -49,10 +49,10 @@ public:
 	Point operator/(const int& div) const;
 	
 	//'<operator> equal' overaloading
-	Point operator+=(const Point& add);
-	Point operator-=(const Point& sub);
-	Point operator*=(const int& mul);
-	Point operator/=(const int& div);
+	Point& operator+=(const Point& add);
+	Point& operator-=(const Point& sub);
+	Point& operator*=(const int& mul);
+	Point& operator/=(const int& div);
 	
 	//NOTE only for map comparission
 	//Do not use this anywhere else
@@ -134,10 +134,10 @@ public:
 	PointD operator/(const double& div) const;
 	
 	//'<operator> equal' overaloading
-	PointD operator+=(const PointD& add);
-	PointD operator-=(const PointD& sub);
-	PointD operator*=(const double& mul);
-	PointD operator/=(const double& div);
+	PointD& operator+=(const PointD& add);
+	PointD& operator-=(const PointD& sub);
+	PointD& operator*=(const double& mul);
+	PointD& operator/=(const double& div);
 	
 	//These two are working properly
 	bool operator==(const PointD& other) const;

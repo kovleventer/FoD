@@ -11,9 +11,10 @@ std::string Global::appName = "";
 int Global::fps = 0;
 int Global::ticks = 0;
 
-int Global::gameBoardWidth = 0; 
-int Global::gameBoardHeight = 0; 
-int Global::tileSize = 0; 
+int Global::gameBoardWidth = 0;
+int Global::gameBoardHeight = 0;
+double Global::defaultTileSize = 0;
+double Global::tileSize = 0; 
 
 SDL_Renderer* Global::renderer = NULL;
 SDL_Window* Global::window = NULL;

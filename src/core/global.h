@@ -42,7 +42,8 @@ public:
 	
 	static int gameBoardWidth;
 	static int gameBoardHeight;
-	static int tileSize;
+	static double defaultTileSize;
+	static double tileSize;
 	
 	static SDL_Renderer* renderer;
 	static SDL_Window* window;

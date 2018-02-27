@@ -14,6 +14,9 @@ void UserInputHandler::handleKeyPressEvent(SDL_Event e) {
 	//Useful:
 	//https://wiki.libsdl.org/SDL_Keycode
 	switch (e.key.keysym.sym) {
+		case SDLK_F1:
+			Global::tileSize = Global::defaultTileSize;
+			break;
 		case SDLK_F2:
 			if (Global::player->getState() == PlayerState::STANDING) {
 				Global::player->setState(PlayerState::WAITING);
@@ -218,15 +221,23 @@ void UserInputHandler::handleMouseWheelEvent(bool up) {
 		
 		return;
 	}
-	
+
+	double oldTileSize = Global::tileSize;
 	//Immersive zooming
+	double zoomRate = 1.01;
 	if (up) {
 		if (Global::tileSize <= 256) {
-			Global::tileSize *= 2;
+			Global::tileSize *= zoomRate;
 		}
 	} else {
 		if (Global::tileSize >= 4) {
-			Global::tileSize /= 2;
+			Global::tileSize /= zoomRate;
 		}
 	}
+	
+	//Point original = Global::camera->getPosition() / oldTileSize * Global::tileSize;
+	
+	//FIXME proper camera positioning on zoom
+	//std::cout << Global::camera->getPosition() << std::endl;
+	Global::camera->setPosition(PointD(Global::camera->getPosition() /*- Point(0, Global::permaGUI->getUpperHeight())*/) * Global::tileSize / oldTileSize);
 }

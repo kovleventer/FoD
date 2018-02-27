@@ -25,7 +25,8 @@ Game::Game(std::string aName, Version version) {
 	//Passing metadata
 	Global::appName = aName + version.toString();
 	
-	Global::tileSize = 64;
+	Global::defaultTileSize = 64;
+	Global::tileSize = Global::defaultTileSize;
 	
 	//Changing this is not really safe
 	Global::ticks = 64;

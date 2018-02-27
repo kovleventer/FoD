@@ -90,22 +90,22 @@ Point Point::operator/(const int& mul) const {
 	return p;
 }
 
-Point Point::operator+=(const Point& add) {
+Point& Point::operator+=(const Point& add) {
 	*this = *this + add;
 	return *this;
 }
 
-Point Point::operator-=(const Point& sub) {
+Point& Point::operator-=(const Point& sub) {
 	*this = *this - sub;
 	return *this;
 }
 
-Point Point::operator*=(const int& mul) {
+Point& Point::operator*=(const int& mul) {
 	*this = *this * mul;
 	return *this;
 }
 
-Point Point::operator/=(const int& div) {
+Point& Point::operator/=(const int& div) {
 	*this = *this / div;
 	return *this;
 }
@@ -262,22 +262,22 @@ PointD PointD::operator/(const double& mul) const {
 	return p;
 }
 
-PointD PointD::operator+=(const PointD& add) {
+PointD& PointD::operator+=(const PointD& add) {
 	*this = *this + add;
 	return *this;
 }
 
-PointD PointD::operator-=(const PointD& sub) {
+PointD& PointD::operator-=(const PointD& sub) {
 	*this = *this - sub;
 	return *this;
 }
 
-PointD PointD::operator*=(const double& mul) {
+PointD& PointD::operator*=(const double& mul) {
 	*this = *this * mul;
 	return *this;
 }
 
-PointD PointD::operator/=(const double& div) {
+PointD& PointD::operator/=(const double& div) {
 	*this = *this / div;
 	return *this;
 }
