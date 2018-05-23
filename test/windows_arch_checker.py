@@ -48,8 +48,8 @@ def check_file(path):
 		
 		#Gets PE header pointer
 		f.seek(0x3c, 0)
-		pe_pointer = f.read(1)
-		pe_pos = struct.unpack('>H', b'\x00' + pe_pointer)[0]
+		pe_pointer = f.read(2)
+		pe_pos = struct.unpack('<H', pe_pointer)[0]
 		
 		f.seek(pe_pos, 0)
 		pe = f.read(4)
