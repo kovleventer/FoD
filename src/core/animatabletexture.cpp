@@ -21,6 +21,7 @@ ATexture::ATexture(std::vector< std::pair<SDL_Texture*, int> > textParts) {
 		std::clog << "Warning! Animated texture consists only one stage. Simplifying to static texture" << std::endl;
 		currentTexture = textParts[0].first;
 		textureType = TextureType::STATIC;
+		return;
 	}
 	
 	textureParts = textParts;
