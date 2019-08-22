@@ -87,22 +87,10 @@ void Popup::render() {
 	
 	if (text != "") {
 		ATexture* textTexture = Global::resourceHandler->getTextTexture(text, Global::resourceHandler->getColor("popup-text"), textSize);
-		Dimension d = textTexture->getDimensions();
-		//Setting rectangle
-		destinationRect.x = x + w / 2 - d.W() / 2;
-		destinationRect.y = y + h / 2 - d.H() / 2;
-		destinationRect.w = d.W();
-		destinationRect.h = d.H();
-		textTexture->render(destinationRect);
+		PivotRender::render(textTexture, Pivot::CENTER, Point(x + w / 2, y + h / 2));
 	} else if (items.size() != 0) {
 		ATexture* textTexture = Global::resourceHandler->getTextTexture("Acquired Items:", Global::resourceHandler->getColor("popup-text"), textSize);
-		Dimension d = textTexture->getDimensions();
-		//Setting rectangle
-		destinationRect.x = x + w / 2 - d.W() / 2;
-		destinationRect.y = y + padding;
-		destinationRect.w = d.W();
-		destinationRect.h = d.H();
-		textTexture->render(destinationRect);
+		PivotRender::render(textTexture, Pivot::TOP, Point(x + w / 2, y + padding));
 		
 		int lineWidth = w - padding * 2;
 		lineWidth /= Global::player->getInventory()->getSlotSize();

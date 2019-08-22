@@ -313,7 +313,6 @@ void NPC::rearrangeArmy() {
 					//Not preserving unit if dead
 					delete currentUnit;
 					army->setUnit(i, j, NULL);
-					std::cout << "Kille dunit delted" << std::endl;
 					continue;
 				}
 				if (currentUnit->isMelee()) {

@@ -6,6 +6,7 @@
 
 #include "basicgui.h"
 #include "../core/animatabletexture.h"
+#include "../util/pivot.h"
 
 /*!
  * @author kovlev

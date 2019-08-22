@@ -8,6 +8,7 @@
 #include "../util/point.h"
 #include "../player/item.h"
 #include "../core/animatabletexture.h"
+#include "../util/pivot.h"
 
 /*!
  * @author kovlev

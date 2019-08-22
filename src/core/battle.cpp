@@ -16,6 +16,7 @@ Battle::Battle(NPC* n1, NPC* n2) {
 	army2 = npc2->getArmy();
 	
 	quickBattle();
+	//WARNING not safe
 	delete this;
 }
 
@@ -28,6 +29,7 @@ Battle::Battle(NPC* n1, InteractiveWorldObject* iwo) {
 	army2 = structToFight->getGarrisonArmy();
 	
 	quickBattle();
+	//WARNING not safe
 	delete this;
 }
 
@@ -216,6 +218,9 @@ void Battle::continueBattle() {
 				if (enemyArmy->isFrontRowEmpty()) {
 					flags |= Army::ALLOW_BACKLINE;
 				}
+				if (enemyArmy->areFrontAndBackRowsEmpty()) {
+					flags |= Army::ALLOW_SUPPORT;
+				}
 				
 				//Setting flags based on current attacking unit's position
 				switch(player->getArmy()->getUPFromPos(currentUnit->getPosition())) {
@@ -237,7 +242,6 @@ void Battle::continueBattle() {
 				
 				enemyArmy->setAttackRestrictionFlags(flags);
 				
-				enemyArmy->setAllowAttack(true);
 				currentAttackingUnit = currentUnit;
 				
 				return;
@@ -412,7 +416,7 @@ void Battle::initGUIBattle() {
 	maxTurns = 100;
 	currentTurn = 0;
 	
-	//Displayes the current turn
+	//Displays the current turn
 	class TurnCounter : public BasicGUI {
 	public:
 		TurnCounter(int xp, int yp, int wp, int hp, int& tC) : BasicGUI(xp, yp, wp, hp), turnCounter(tC) {}
@@ -422,12 +426,7 @@ void Battle::initGUIBattle() {
 			Global::resourceHandler->getATexture(TT::GUI, "guiheader")->render(destinationRect);
 			
 			ATexture* turnCounterTexture = Global::resourceHandler->getTextTexture(std::to_string(turnCounter), Global::resourceHandler->getColor("whole-header"), 64);
-			Dimension d = turnCounterTexture->getDimensions();
-			destinationRect.x = x + w / 2 - d.W() / 2;
-			destinationRect.y = y + h / 2 - d.H() / 2;
-			destinationRect.w = d.W();
-			destinationRect.h = d.H();
-			turnCounterTexture->render(destinationRect);
+			PivotRender::render(turnCounterTexture, Pivot::CENTER, Point(x + w / 2, y + h / 2));
 		}
 	private:
 		int& turnCounter;

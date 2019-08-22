@@ -34,12 +34,7 @@ void WholeScreenGUI::render() {
 	//Rendereing header text
 	int headerTextSize = headerSize;
 	ATexture* headerTextTexture = Global::resourceHandler->getTextTexture(headerText, Global::resourceHandler->getColor("whole-header"), headerTextSize);
-	Dimension d = headerTextTexture->getDimensions();
-	destinationRect.x = x + w / 2 - d.W() / 2;
-	destinationRect.y = y + headerSize / 2 - d.H() / 2;
-	destinationRect.w = d.W();
-	destinationRect.h = d.H();
-	headerTextTexture->render(destinationRect);
+	PivotRender::render(headerTextTexture, Pivot::CENTER, Point(x + w / 2, y + headerSize / 2));
 	
 	//Render all parts
 	for (unsigned int i = 0; i < parts.size(); i++) {

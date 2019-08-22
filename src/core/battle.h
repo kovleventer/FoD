@@ -7,6 +7,7 @@
 #include "../map/player.h"
 #include "../gui/popup.h"
 #include "animatabletexture.h"
+#include "../util/pivot.h"
 
 /*!
  * @author kovlev

@@ -588,7 +588,7 @@ void Map::renderTileCoordinates() {
 			int textSize = Global::tileSize / 4;
 			
 			ATexture* textTextureX = Global::resourceHandler->getTextTexture(std::to_string(i), Global::resourceHandler->getColor("debug-coord"), textSize);
-			Dimension d = textTextureX->getDimensions();
+			/*Dimension d = textTextureX->getDimensions();
 			
 			//Setting rectangle
 			SDL_Rect destinationRect;
@@ -597,12 +597,17 @@ void Map::renderTileCoordinates() {
 			destinationRect.w = d.W();
 			destinationRect.h = d.H();
 			
-			textTextureX->render(destinationRect);
+			textTextureX->render(destinationRect);*/
+			
+			PivotRender::render(textTextureX, Pivot::CENTER, Point(
+				i * Global::tileSize - Global::camera->getPosition().getX() + Global::tileSize / 2,
+				j * Global::tileSize - Global::camera->getPosition().getY() + Global::tileSize / 4
+			));
 			
 			
 			
 			ATexture* textTextureY = Global::resourceHandler->getTextTexture(std::to_string(j), Global::resourceHandler->getColor("debug-coord"), textSize);
-			d = textTextureY->getDimensions();
+			/*d = textTextureY->getDimensions();
 			
 			//Setting rectangle
 			destinationRect.x = i * Global::tileSize - Global::camera->getPosition().getX() + Global::tileSize / 2 - d.W() / 2;
@@ -610,7 +615,12 @@ void Map::renderTileCoordinates() {
 			destinationRect.w = d.W();
 			destinationRect.h = d.H();
 			
-			textTextureY->render(destinationRect);
+			textTextureY->render(destinationRect);*/
+			
+			PivotRender::render(textTextureY, Pivot::CENTER, Point(
+				i * Global::tileSize - Global::camera->getPosition().getX() + Global::tileSize / 2,
+				j * Global::tileSize - Global::camera->getPosition().getY() + Global::tileSize * 3 / 4
+			));
 		}
 	}
 }

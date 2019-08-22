@@ -56,6 +56,7 @@ SOURCES=(
 	"util/text.cpp"
 	"util/version.cpp"
 	"util/filesystemhandler.cpp"
+	"util/pivot.cpp"
 )
 
 LINKER=(
@@ -64,7 +65,6 @@ LINKER=(
 	"-lSDL2_ttf"
 	"-lSDL2_mixer"
 	"-lpthread"
-	"-lz"
 )
 
 FLAGS="-O3 -Wall `sdl2-config --cflags` -std=c++14 -c"
